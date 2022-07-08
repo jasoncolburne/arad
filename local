@@ -1,0 +1,62 @@
+#!/usr/bin/bash
+
+set -eo pipefail
+
+NODES=(administrator reviewer reader identity)
+
+stack_up() {
+  docker compose up
+}
+
+stack_build() {
+  docker compose build
+}
+
+poetry_relock() {
+  for NODE in "${NODES[@]}"; do
+    docker compose run --rm -v "./node-$NODE:/app" -it node-$NODE sh -c "rm -f poetry.lock && poetry lock -vv"
+  done
+}
+
+poetry() {
+  local ARGUMENTS=$1
+
+  for NODE in "${NODES[@]}"; do
+    docker compose run --rm -v "./node-$NODE:/app" -it node-$NODE sh -c "poetry ${ARGUMENTS}"
+  done
+}
+
+docker_image_prune() {
+  # prune dangling images
+  docker image prune -f
+}
+
+docker_compose_rm() {
+  # remove one off containers
+  docker compose rm
+}
+
+# we can probably do the rest in a single line by eval or something
+execute() {
+  local COMMAND=$1
+  local ARGUMENTS=$2
+
+  if [[ "${COMMAND}" == "up" ]]; then
+    stack_up
+  elif [[ "${COMMAND}" == "build" ]]; then
+    stack_build
+  elif [[ "${COMMAND}" == "relock" ]]; then
+    poetry_relock
+  elif [[ "${COMMAND}" == "poetry" ]]; then
+    poetry "${ARGUMENTS}"
+  elif [[ "${COMMAND}" == "prune" ]]; then
+    docker_image_prune
+  elif [[ "${COMMAND}" == "rm" ]]; then
+    docker_compose_rm
+  else
+    echo "unknown command ${COMMAND}"
+    exit 1
+  fi
+}
+
+execute "$1" "$2 $3 $4 $5 $6 $7 $8 $9"

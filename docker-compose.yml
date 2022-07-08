@@ -1,0 +1,53 @@
+version: "3.9"
+
+services:
+  front-end:
+    build: front-end
+    volumes:
+      - './front-end:/app'
+    depends_on:
+      - node-api
+    ports:
+      - "80:3000"
+
+  node-api:
+    build: node-api
+    depends_on:
+      - node-identity
+      - node-reader
+      - node-reviewer
+      - node-administrator
+
+  node-identity:
+    build: node-identity
+    volumes:
+      - './node-identity:/app'
+    depends_on:
+      - database
+
+  node-reader:
+    build: node-reader
+    volumes:
+      - './node-reader:/app'
+    depends_on:
+      - database
+
+  node-reviewer:
+    build: node-reviewer
+    volumes:
+      - './node-reviewer:/app'
+    depends_on:
+      - database
+
+  node-administrator:
+    build: node-administrator
+    volumes:
+      - './node-administrator:/app'
+    depends_on:
+      - database
+
+  database:
+    image: "postgres:bullseye"
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: password
