@@ -1,4 +1,4 @@
-function Logout() {
+const Logout = () => {
   return (
     <div className="Logout">
       <p>

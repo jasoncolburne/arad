@@ -1,4 +1,4 @@
-function Change() {
+const Change = () => {
   return (
     <div className="Change">
       <p>

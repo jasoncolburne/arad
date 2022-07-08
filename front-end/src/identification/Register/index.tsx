@@ -1,4 +1,4 @@
-function Register() {
+const Register = () => {
   return (
     <div className="Register">
       <p>

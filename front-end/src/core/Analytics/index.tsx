@@ -1,4 +1,4 @@
-function Analytics() {
+const Analytics = () => {
   return (
     <div className="Analytics">
       <p>

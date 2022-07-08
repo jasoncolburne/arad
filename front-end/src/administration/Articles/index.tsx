@@ -1,4 +1,4 @@
-function Articles() {
+const Articles = () => {
   return (
     <div className="Articles">
       <p>

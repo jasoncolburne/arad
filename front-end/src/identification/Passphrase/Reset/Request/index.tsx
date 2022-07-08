@@ -1,4 +1,4 @@
-function Request() {
+const Request = () => {
   return (
     <div className="Request">
       <p>

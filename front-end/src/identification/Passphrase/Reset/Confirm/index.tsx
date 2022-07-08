@@ -1,4 +1,4 @@
-function Confirm() {
+const Confirm = () => {
   return (
     <div className="Confirm">
       <p>

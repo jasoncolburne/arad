@@ -1,4 +1,4 @@
-function Search() {
+const Search = () => {
   return (
     <div className="Search">
       <p>

@@ -8,6 +8,7 @@ services:
     depends_on:
       - node-api
     ports:
+      - "3000:3000" # for websockets
       - "80:3000"
 
   node-api:

@@ -1,4 +1,4 @@
-function Login() {
+const Login = () => {
   return (
     <div className="Login">
       <p>
