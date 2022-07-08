@@ -1,8 +1,8 @@
 import { render, screen } from '@testing-library/react';
-import { App } from './App';
+import { Arad } from './Arad';
 
 test('renders learn react link', () => {
-  render(<App />);
-  const linkElement = screen.getByText(/learn react/i);
+  render(<Arad />);
+  const linkElement = screen.getByText(/ARAD: Accessible Research Article Database/);
   expect(linkElement).toBeInTheDocument();
 });

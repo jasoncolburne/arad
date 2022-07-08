@@ -7,7 +7,7 @@ import {
   Route,
 } from "react-router-dom";
 
-import { App } from './App';
+import { Arad } from './Arad';
 
 import { Login } from './identification/Login';
 import { Logout } from './identification/Logout';
@@ -34,7 +34,7 @@ ReactDOM.createRoot(
   <React.StrictMode>
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<App />}>
+        <Route path="/" element={<Arad />}>
           <Route index element={<Search />} />
 
           {/* authentication */}

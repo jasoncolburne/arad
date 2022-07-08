@@ -1,0 +1,16 @@
+.arad {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+
+  color: black;
+  background-color: white;
+}
+
+.content {
+  flex: 1;
+  padding: 3mm;
+}
+
