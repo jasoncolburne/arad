@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 
 import { Role } from "../../datatypes/Role";
-import { User } from "../../datatypes/User";
+import { useGlobalState } from "../../GlobalState";
 
 const adminLinks = (
   <>
@@ -11,12 +11,8 @@ const adminLinks = (
 );
 
 const Navigation = () => {
-  const user: User = {
-    roles: [],
-    email: '',
-  };
-  
-  const isAdmin = user.roles.includes(Role.Administrator)
+  const { state } = useGlobalState();
+  const isAdmin = state.user ? state.user.roles.includes(Role.Administrator) : false;
 
   return (
     <header>

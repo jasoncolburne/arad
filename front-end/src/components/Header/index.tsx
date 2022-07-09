@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { Navigation } from "../../administration/Navigation";
 
-import type { User } from "../../datatypes/User";
+import { useGlobalState } from "../../GlobalState";
 
 import "./index.css"
 
@@ -17,12 +17,8 @@ const clickableEmail = (email: string) => {
 }
 
 const Header = () => {
-  const user: User = {
-    roles: [],
-    email: '',
-  }
-  
-  const loggedIn = user.roles.length > 0;
+  const { state } = useGlobalState();
+  const loggedIn = state.user ? state.user.roles.length > 0 : false;
 
   return (
     <header className="header">
@@ -31,7 +27,7 @@ const Header = () => {
         <Navigation />
       </div>
       <div className="right">
-        {loggedIn ? clickableEmail(user.email) : authentication}
+        {loggedIn ? clickableEmail(state.user!.email) : authentication}
       </div>
     </header>
   )

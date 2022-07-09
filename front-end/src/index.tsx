@@ -10,7 +10,6 @@ import {
 import { Arad } from './Arad';
 
 import { Login } from './identification/Login';
-import { Logout } from './identification/Logout';
 import { Register } from './identification/Register';
 import { Request as PassphraseResetRequest } from './identification/Passphrase/Reset/Request';
 import { Confirm as PassphraseResetConfirm } from './identification/Passphrase/Reset/Confirm';
@@ -40,7 +39,6 @@ ReactDOM.createRoot(
           {/* authentication */}
           <Route path="register" element={<Register />} /> 
           <Route path="login" element={<Login />} />
-          <Route path="logout" element={<Logout />} />
           <Route path="passphrase" element={<Outlet />}>
             <Route index element={<PassphraseChange />} />
             <Route path="reset" element={<Outlet />}>
