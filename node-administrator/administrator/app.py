@@ -11,6 +11,7 @@ app = FastAPI()
 
 origins = [
     "http://arad.org",
+    "http://localhost",
 ]
 
 app.add_middleware(
