@@ -11,9 +11,10 @@ import './Arad.css';
 
 const initialState: ApplicationState = {
   user: {
-    roles: [],
+    id: '',
     email: '',
-  }
+  },
+  roles: [],
 }
 
 const Arad = () => {

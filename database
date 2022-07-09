@@ -1,0 +1,57 @@
+#!/usr/bin/env bash
+
+# TODO see if we can turn -e back on and make read work
+set -o pipefail
+
+DATABASE_HOST=database
+DATABASE_NAME=arad
+DATABASE_USER=postgres
+DATABASE_PASSPHRASE=postgres
+
+# i originally did this on identity and realized i needed to install postgresql client there
+# this seems cleaner/faster
+create() {
+  read -r -d '' CREATE_SCRIPT << EOS
+echo "SELECT 'CREATE DATABASE ${DATABASE_NAME}' WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = '${DATABASE_NAME}')\gexec" | PGPASSWORD=${DATABASE_PASSPHRASE} psql -U${DATABASE_USER} -h${DATABASE_HOST}
+EOS
+
+  docker compose run database bash -c "${CREATE_SCRIPT}"
+}
+
+drop() {
+  read -r -d '' DROP_SCRIPT << EOS
+PGPASSWORD=${DATABASE_PASSPHRASE} psql -U${DATABASE_USER} -h${DATABASE_HOST} -c "DROP DATABASE ${DATABASE_NAME}"
+EOS
+
+  docker compose run database bash -c "${DROP_SCRIPT}"
+}
+
+migrate() {
+  read -r -d '' MIGRATE_SCRIPT << EOS
+BASE_PATH=\$(poetry env info | grep '^Path' | head -n1 | cut -d':' -f2 | sed 's/\s*//')
+ACTIVATE="\${BASE_PATH}/bin/activate"
+. \${ACTIVATE}
+alembic upgrade head
+EOS
+
+  docker compose run node-identity bash -c "${MIGRATE_SCRIPT}"
+}
+
+# we can probably do the rest in a single line by eval or something
+execute() {
+  local COMMAND=$1
+  local ARGUMENTS=$2
+
+  if [[ "${COMMAND}" == "create" ]]; then
+    create
+  elif [[ "${COMMAND}" == "drop" ]]; then
+    drop
+  elif [[ "${COMMAND}" == "migrate" ]]; then
+    migrate
+  else
+    echo "unknown command ${COMMAND}"
+    exit 1
+  fi
+}
+
+execute "$1" "$2 $3 $4 $5 $6 $7 $8 $9"

@@ -1,6 +1,7 @@
 interface User {
-  roles: string[];
+  id: string;
   email: string;
+  roles?: string[];
 };
 
 export type { User };

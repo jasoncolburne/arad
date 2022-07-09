@@ -1,16 +1,28 @@
 # Additional content resides in front-end/.gitignore
 
 node-administrator/common
-node-administrator/Dockerfile
-node-administrator/.dockerignore
 node-reviewer/common
-node-reviewer/Dockerfile
-node-reviewer/.dockerignore
 node-reader/common
-node-reader/Dockerfile
-node-reader/.dockerignore
 node-identity/common
+
+node-administrator/database
+node-reviewer/database
+node-reader/database
+node-identity/database
+
+node-administrator/Dockerfile
+node-reviewer/Dockerfile
+node-reader/Dockerfile
 node-identity/Dockerfile
+
+node-administrator/.dockerignore
+node-reviewer/.dockerignore
+node-reader/.dockerignore
 node-identity/.dockerignore
+
+node-administrator/alembic.ini
+node-reviewer/alembic.ini
+node-reader/alembic.ini
+node-identity/alembic.ini
 
 __pycache__

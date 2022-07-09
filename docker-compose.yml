@@ -1,5 +1,8 @@
 version: "3.9"
 
+x-common-environment: &common-environment
+  DATABASE_URL: postgresql+asyncpg://postgres:postgres@database:5432/arad
+
 services:
   front-end:
     build: front-end
@@ -18,9 +21,12 @@ services:
       - node-reader
       - node-reviewer
       - node-administrator
+    ports:
+      - "81:80" # this is how the front end talks to the api. port 80 is taken atm.
 
   node-identity:
     build: node-identity
+    environment: *common-environment
     volumes:
       - './node-identity:/app'
     depends_on:
@@ -28,6 +34,7 @@ services:
 
   node-reader:
     build: node-reader
+    environment: *common-environment
     volumes:
       - './node-reader:/app'
     depends_on:
@@ -35,6 +42,7 @@ services:
 
   node-reviewer:
     build: node-reviewer
+    environment: *common-environment
     volumes:
       - './node-reviewer:/app'
     depends_on:
@@ -42,6 +50,7 @@ services:
 
   node-administrator:
     build: node-administrator
+    environment: *common-environment
     volumes:
       - './node-administrator:/app'
     depends_on:
@@ -51,4 +60,4 @@ services:
     image: "postgres:bullseye"
     restart: always
     environment:
-      POSTGRES_PASSWORD: password
+      POSTGRES_PASSWORD: postgres

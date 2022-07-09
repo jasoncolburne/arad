@@ -5,7 +5,7 @@ import { useGlobalState } from "../../GlobalState";
 import "./index.css"
 
 const emptyUser: User = {
-  roles: [],
+  id: '',
   email: '',
 }
 
@@ -13,12 +13,12 @@ const Footer = () => {
   const { state, setState } = useGlobalState();
   const navigate = useNavigate();
 
-  const loggedIn = state.user ? state.user.roles.length > 0 : false;
+  const loggedIn = state.user ? state.roles!.length > 0 : false;
 
   const logoutAction = (event: React.MouseEvent<HTMLAnchorElement>) => {
     event.preventDefault();
 
-    const newState = { ...state, user: emptyUser };
+    const newState = { ...state, user: emptyUser, roles: [] };
     setState(newState);
 
     navigate("/");

@@ -3,21 +3,21 @@ import { User } from "../../datatypes/User";
 import { useGlobalState } from "../../GlobalState";
 
 const admin: User = {
-  roles: [Role.Administrator, Role.Reviewer],
+  id: '1',
   email: 'admin@arad.org',
 };
 
-const reviewer: User = {
-  roles: [Role.Reviewer],
-  email: 'reviewer@arad.org',
-};
+const roles: Role[] = [
+  Role.Administrator,
+  Role.Reviewer,
+]
 
 const Login = () => {
   const { state, setState } = useGlobalState();
-  const loggedIn = state.user ? state.user.roles.length > 0 : false;
+  const loggedIn = state.user ? state.roles!.length > 0 : false;
 
   if (!loggedIn) {
-    const newState = { ...state, user: admin };
+    const newState = { ...state, user: admin, roles };
     setState(newState);
   }
 

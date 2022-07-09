@@ -12,7 +12,7 @@ const adminLinks = (
 
 const Navigation = () => {
   const { state } = useGlobalState();
-  const isAdmin = state.user ? state.user.roles.includes(Role.Administrator) : false;
+  const isAdmin = state.roles!.includes(Role.Administrator) || false;
 
   return (
     <header>

@@ -30,43 +30,41 @@ import './index.css';
 ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 ).render(
-  <React.StrictMode>
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Arad />}>
-          <Route index element={<Search />} />
+  <BrowserRouter>
+    <Routes>
+      <Route path="/" element={<Arad />}>
+        <Route index element={<Search />} />
 
-          {/* authentication */}
-          <Route path="register" element={<Register />} /> 
-          <Route path="login" element={<Login />} />
-          <Route path="passphrase" element={<Outlet />}>
-            <Route index element={<PassphraseChange />} />
-            <Route path="reset" element={<Outlet />}>
-              <Route index element={<PassphraseResetRequest />} />
-              <Route path="confirm" element={<PassphraseResetConfirm />} />
-            </Route>
+        {/* authentication */}
+        <Route path="register" element={<Register />} /> 
+        <Route path="login" element={<Login />} />
+        <Route path="passphrase" element={<Outlet />}>
+          <Route index element={<PassphraseChange />} />
+          <Route path="reset" element={<Outlet />}>
+            <Route index element={<PassphraseResetRequest />} />
+            <Route path="confirm" element={<PassphraseResetConfirm />} />
           </Route>
-
-          {/* core functionality */}
-          <Route path="search" element={<Outlet />}>
-            <Route index element={<Search />} />
-            <Route path=":articleId" element={<Analytics />} />
-          </Route>
-
-          {/* admin */}
-          <Route path="articles" element={<Outlet />}>
-            <Route index element={<Articles />} />
-            <Route path=":articleId" element={<Article />} />
-          </Route>
-          <Route path="users" element={<Outlet />}>
-            <Route index element={<Users />} />
-            <Route path=":userId" element={<User />} />
-          </Route>
-
         </Route>
-      </Routes>
-    </BrowserRouter>
-  </React.StrictMode>
+
+        {/* core functionality */}
+        <Route path="search" element={<Outlet />}>
+          <Route index element={<Search />} />
+          <Route path=":articleId" element={<Analytics />} />
+        </Route>
+
+        {/* admin */}
+        <Route path="articles" element={<Outlet />}>
+          <Route index element={<Articles />} />
+          <Route path=":articleId" element={<Article />} />
+        </Route>
+        <Route path="users" element={<Outlet />}>
+          <Route index element={<Users />} />
+          <Route path=":userId" element={<User />} />
+        </Route>
+
+      </Route>
+    </Routes>
+  </BrowserRouter>
 );
 
 // If you want to start measuring performance in your app, pass a function
