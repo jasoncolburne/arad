@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Role } from "../../datatypes/Role";
 import { User } from "../../datatypes/User";
 import { useGlobalState } from "../../GlobalState";
@@ -16,10 +17,12 @@ const Login = () => {
   const { state, setState } = useGlobalState();
   const loggedIn = state.user ? state.roles!.length > 0 : false;
 
-  if (!loggedIn) {
-    const newState = { ...state, user: admin, roles };
-    setState(newState);
-  }
+  useEffect(() => {
+    if (!loggedIn) {
+      const newState = { ...state, user: admin, roles };
+      setState(newState);
+    }
+  }, []);
 
   return (
     <div className="Login">
