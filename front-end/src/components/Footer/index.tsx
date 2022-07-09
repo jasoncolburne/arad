@@ -13,7 +13,7 @@ const Footer = () => {
   const { state, setState } = useGlobalState();
   const navigate = useNavigate();
 
-  const loggedIn = state.user ? state.roles!.length > 0 : false;
+  const loggedIn = state.roles!.length > 0;
 
   const logoutAction = (event: React.MouseEvent<HTMLAnchorElement>) => {
     event.preventDefault();

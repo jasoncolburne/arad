@@ -8,22 +8,22 @@ DATABASE_NAME=arad
 DATABASE_USER=postgres
 DATABASE_PASSPHRASE=postgres
 
-# i originally did this on identity and realized i needed to install postgresql client there
-# this seems cleaner/faster
 create() {
   read -r -d '' CREATE_SCRIPT << EOS
+apt-get -y install postgresql-client
 echo "SELECT 'CREATE DATABASE ${DATABASE_NAME}' WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = '${DATABASE_NAME}')\gexec" | PGPASSWORD=${DATABASE_PASSPHRASE} psql -U${DATABASE_USER} -h${DATABASE_HOST}
 EOS
 
-  docker compose run --rm database bash -c "${CREATE_SCRIPT}"
+  docker compose run --rm node-identity bash -c "${CREATE_SCRIPT}"
 }
 
 drop() {
   read -r -d '' DROP_SCRIPT << EOS
+apt-get -y install postgresql-client
 PGPASSWORD=${DATABASE_PASSPHRASE} psql -U${DATABASE_USER} -h${DATABASE_HOST} -c "DROP DATABASE ${DATABASE_NAME}"
 EOS
 
-  docker compose run --rm database bash -c "${DROP_SCRIPT}"
+  docker compose run --rm node-identity bash -c "${DROP_SCRIPT}"
 }
 
 migrate() {

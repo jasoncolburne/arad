@@ -7,6 +7,7 @@ import {
   Route,
 } from "react-router-dom";
 
+import { ColorModeScript } from "@chakra-ui/react"
 import { Arad } from './Arad';
 
 import { Login } from './identification/Login';
@@ -24,48 +25,57 @@ import { User } from './administration/User';
 import { Users } from './administration/Users';
 
 import reportWebVitals from './reportWebVitals';
+import * as serviceWorker from "./serviceWorker"
 
 import './index.css';
 
 ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 ).render(
-  <BrowserRouter>
-    <Routes>
-      <Route path="/" element={<Arad />}>
-        <Route index element={<Search />} />
-
-        {/* authentication */}
-        <Route path="register" element={<Register />} /> 
-        <Route path="login" element={<Login />} />
-        <Route path="passphrase" element={<Outlet />}>
-          <Route index element={<PassphraseChange />} />
-          <Route path="reset" element={<Outlet />}>
-            <Route index element={<PassphraseResetRequest />} />
-            <Route path="confirm" element={<PassphraseResetConfirm />} />
-          </Route>
-        </Route>
-
-        {/* core functionality */}
-        <Route path="search" element={<Outlet />}>
+  <>
+    <ColorModeScript />
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Arad />}>
           <Route index element={<Search />} />
-          <Route path=":articleId" element={<Analytics />} />
-        </Route>
 
-        {/* admin */}
-        <Route path="articles" element={<Outlet />}>
-          <Route index element={<Articles />} />
-          <Route path=":articleId" element={<Article />} />
-        </Route>
-        <Route path="users" element={<Outlet />}>
-          <Route index element={<Users />} />
-          <Route path=":userId" element={<User />} />
-        </Route>
+          {/* authentication */}
+          <Route path="register" element={<Register />} /> 
+          <Route path="login" element={<Login />} />
+          <Route path="passphrase" element={<Outlet />}>
+            <Route index element={<PassphraseChange />} />
+            <Route path="reset" element={<Outlet />}>
+              <Route index element={<PassphraseResetRequest />} />
+              <Route path="confirm" element={<PassphraseResetConfirm />} />
+            </Route>
+          </Route>
 
-      </Route>
-    </Routes>
-  </BrowserRouter>
+          {/* core functionality */}
+          <Route path="search" element={<Outlet />}>
+            <Route index element={<Search />} />
+            <Route path=":articleId" element={<Analytics />} />
+          </Route>
+
+          {/* admin */}
+          <Route path="articles" element={<Outlet />}>
+            <Route index element={<Articles />} />
+            <Route path=":articleId" element={<Article />} />
+          </Route>
+          <Route path="users" element={<Outlet />}>
+            <Route index element={<Users />} />
+            <Route path=":userId" element={<User />} />
+          </Route>
+
+        </Route>
+      </Routes>
+    </BrowserRouter>
+  </>
 );
+
+// If you want your app to work offline and load faster, you can change
+// unregister() to register() below. Note this comes with some pitfalls.
+// Learn more about service workers: https://cra.link/PWA
+serviceWorker.unregister()
 
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))

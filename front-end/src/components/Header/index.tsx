@@ -18,7 +18,7 @@ const clickableEmail = (email: string) => {
 
 const Header = () => {
   const { state } = useGlobalState();
-  const loggedIn = state.user ? state.roles!.length > 0 : false;
+  const loggedIn = state.roles!.length > 0;
 
   return (
     <header className="header">

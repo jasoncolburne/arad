@@ -15,14 +15,14 @@ const roles: Role[] = [
 
 const Login = () => {
   const { state, setState } = useGlobalState();
-  const loggedIn = state.user ? state.roles!.length > 0 : false;
+  const loggedIn = state.roles!.length > 0;
 
   useEffect(() => {
     if (!loggedIn) {
       const newState = { ...state, user: admin, roles };
       setState(newState);
     }
-  }, []);
+  }, [loggedIn, setState, state]);
 
   return (
     <div className="Login">
