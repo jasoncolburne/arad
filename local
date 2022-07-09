@@ -14,7 +14,7 @@ stack_build() {
 
 poetry_relock() {
   for NODE in "${NODES[@]}"; do
-    docker compose run --rm -v "./node-$NODE:/app" -it node-$NODE sh -c "rm -f poetry.lock && poetry lock -vv"
+    docker compose run --rm node-$NODE bash -c "rm -f poetry.lock && poetry lock -vv"
   done
 }
 
@@ -22,7 +22,7 @@ poetry() {
   local ARGUMENTS=$1
 
   for NODE in "${NODES[@]}"; do
-    docker compose run --rm -v "./node-$NODE:/app" -it node-$NODE sh -c "poetry ${ARGUMENTS}"
+    docker compose run --rm node-$NODE bash -c "poetry ${ARGUMENTS}"
   done
 }
 
