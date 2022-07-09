@@ -14,13 +14,13 @@ interface RegistrationPayload {
 const RegistrationForm = () => {
   const { state, setState } = useGlobalState();
   const [email, setEmail] = useState('');
-
   const navigate = useNavigate();
+
   useEffect(() => {
     if (state.roles!.length > 0) {
       navigate("/");
     }
-  }, [state])
+  }, [state, navigate])
 
   const register = async (event: React.MouseEvent<HTMLFormElement>) => {
     event.preventDefault();
