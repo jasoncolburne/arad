@@ -40,14 +40,14 @@ EOS
 generate_migrations() {
   local ARGUMENTS=$1
 
-  read -r -d '' MIGRATE_SCRIPT << EOS
+  read -r -d '' GENERATION_SCRIPT << EOS
 BASE_PATH=\$(poetry env info | grep '^Path' | head -n1 | cut -d':' -f2 | sed 's/\s*//')
 ACTIVATE="\${BASE_PATH}/bin/activate"
 . \${ACTIVATE}
 alembic revision --autogenerate -m "${ARGUMENTS}"
 EOS
 
-  docker compose run node-identity bash -c "${MIGRATE_SCRIPT}"
+  docker compose run node-identity bash -c "${GENERATION_SCRIPT}"
 
   echo
   echo "now that your migrations have been generated, don't forget to copy them from"
