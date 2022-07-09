@@ -15,7 +15,7 @@ create() {
 echo "SELECT 'CREATE DATABASE ${DATABASE_NAME}' WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = '${DATABASE_NAME}')\gexec" | PGPASSWORD=${DATABASE_PASSPHRASE} psql -U${DATABASE_USER} -h${DATABASE_HOST}
 EOS
 
-  docker compose run database bash -c "${CREATE_SCRIPT}"
+  docker compose run --rm database bash -c "${CREATE_SCRIPT}"
 }
 
 drop() {
@@ -23,7 +23,7 @@ drop() {
 PGPASSWORD=${DATABASE_PASSPHRASE} psql -U${DATABASE_USER} -h${DATABASE_HOST} -c "DROP DATABASE ${DATABASE_NAME}"
 EOS
 
-  docker compose run database bash -c "${DROP_SCRIPT}"
+  docker compose run --rm database bash -c "${DROP_SCRIPT}"
 }
 
 migrate() {
@@ -34,30 +34,36 @@ ACTIVATE="\${BASE_PATH}/bin/activate"
 alembic upgrade head
 EOS
 
-  docker compose run node-identity bash -c "${MIGRATE_SCRIPT}"
+  docker compose run --rm node-identity bash -c "${MIGRATE_SCRIPT}"
 }
 
 generate_migrations() {
   local ARGUMENTS=$1
+
+  if [[ -z "${ARGUMENTS}" ]]
+  then
+    echo "please supply a name for the migration"
+    exit 1
+  fi
 
   read -r -d '' GENERATION_SCRIPT << EOS
 BASE_PATH=\$(poetry env info | grep '^Path' | head -n1 | cut -d':' -f2 | sed 's/\s*//')
 ACTIVATE="\${BASE_PATH}/bin/activate"
 . \${ACTIVATE}
 alembic revision --autogenerate -m "${ARGUMENTS}"
+chown $(id -u):$(id -g) database/migrations/versions/*
 EOS
 
-  docker compose run node-identity bash -c "${GENERATION_SCRIPT}"
+  docker compose run --rm node-identity bash -c "${GENERATION_SCRIPT}"
 
-  echo
-  echo "now that your migrations have been generated, don't forget to copy them from"
-  echo "node-identity to node-common and run ./sync"
+  rsync -v -r -d node-identity/database/migrations/versions node-common/database/migrations
+  ./sync
 }
 
 # we can probably do the rest in a single line by eval or something
 execute() {
   local COMMAND=$1
-  local ARGUMENTS=$2
+  local ARGUMENTS=$(echo $2 | sed "s/^ *//" | sed "s/ *\$//")
 
   if [[ "${COMMAND}" == "create" ]]; then
     create
@@ -66,7 +72,7 @@ execute() {
   elif [[ "${COMMAND}" == "migrate" ]]; then
     migrate
   elif [[ "${COMMAND}" == "generate-migrations" ]]; then
-    generate-migrations "${ARGIMENTS}"
+    generate_migrations "${ARGUMENTS}"
   else
     echo "unknown command ${COMMAND}"
     exit 1

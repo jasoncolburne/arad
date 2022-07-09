@@ -39,7 +39,7 @@ docker_compose_rm() {
 # we can probably do the rest in a single line by eval or something
 execute() {
   local COMMAND=$1
-  local ARGUMENTS=$2
+  local ARGUMENTS=$(echo $2 | sed "s/^ *//" | sed "s/ *\$//")
 
   if [[ "${COMMAND}" == "up" ]]; then
     stack_up
