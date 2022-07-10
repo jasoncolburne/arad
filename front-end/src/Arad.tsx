@@ -1,4 +1,4 @@
-import { ChakraProvider, theme } from '@chakra-ui/react';
+import { Box, ChakraProvider, theme } from '@chakra-ui/react';
 import { Outlet } from 'react-router-dom';
 
 import { Header } from './components/Header';
@@ -22,13 +22,13 @@ const Arad = () => {
   return (
     <GlobalState value={initialState}>
       <ChakraProvider theme={theme}>
-        <div className="arad">
+        <Box className="arad">
           <Header />
-          <div className="content">
+          <Box className="content">
             <Outlet />
-          </div> 
+          </Box>
           <Footer />
-        </div>
+        </Box>
       </ChakraProvider>
     </GlobalState>
   );
