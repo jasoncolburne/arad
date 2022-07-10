@@ -3,6 +3,16 @@ version: "3.9"
 x-common-environment: &common-environment
   DATABASE_URL: postgresql+asyncpg://postgres:postgres@database:5432/arad
 
+x-node-healthcheck: &node-healthcheck
+  test: ["CMD-SHELL", "curl http://localhost:8000/health > /dev/null"]
+  interval: 5s
+  timeout: 5s
+  retries: 5
+
+x-node-database-dependency: &node-database-dependency
+  database:
+    condition: service_healthy
+
 services:
   front-end:
     build: front-end
@@ -17,10 +27,14 @@ services:
   node-api:
     build: node-api
     depends_on:
-      - node-identity
-      - node-reader
-      - node-reviewer
-      - node-administrator
+      node-identity:
+        condition: service_healthy
+      node-reader:
+        condition: service_healthy
+      node-reviewer:
+        condition: service_healthy
+      node-administrator:
+        condition: service_healthy
     ports:
       - "81:80" # this is how the front end talks to the api. port 80 is taken atm.
 
@@ -29,36 +43,32 @@ services:
     environment: *common-environment
     volumes:
       - './node-identity:/app'
-    depends_on:
-      database:
-        condition: service_healthy
+    depends_on: *node-database-dependency
+    healthcheck: *node-healthcheck
 
   node-reader:
     build: node-reader
     environment: *common-environment
     volumes:
       - './node-reader:/app'
-    depends_on:
-      database:
-        condition: service_healthy
+    depends_on: *node-database-dependency
+    healthcheck: *node-healthcheck
 
   node-reviewer:
     build: node-reviewer
     environment: *common-environment
     volumes:
       - './node-reviewer:/app'
-    depends_on:
-      database:
-        condition: service_healthy
+    depends_on: *node-database-dependency
+    healthcheck: *node-healthcheck
 
   node-administrator:
     build: node-administrator
     environment: *common-environment
     volumes:
       - './node-administrator:/app'
-    depends_on:
-      database:
-        condition: service_healthy
+    depends_on: *node-database-dependency
+    healthcheck: *node-healthcheck
 
   database:
     image: "postgres:bullseye"

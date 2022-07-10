@@ -7,6 +7,7 @@ from database.models import User
 
 from fastapi.middleware.cors import CORSMiddleware
 
+
 app = FastAPI()
 
 origins = [
@@ -21,6 +22,12 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+@app.get("/health")
+async def health():
+    return
+
 
 @app.get("/users", response_model=list[User])
 async def users(session: Session = Depends(get_session)):
