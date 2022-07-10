@@ -30,7 +30,8 @@ services:
     volumes:
       - './node-identity:/app'
     depends_on:
-      - database
+      database:
+        condition: service_healthy
 
   node-reader:
     build: node-reader
@@ -38,7 +39,8 @@ services:
     volumes:
       - './node-reader:/app'
     depends_on:
-      - database
+      database:
+        condition: service_healthy
 
   node-reviewer:
     build: node-reviewer
@@ -46,7 +48,8 @@ services:
     volumes:
       - './node-reviewer:/app'
     depends_on:
-      - database
+      database:
+        condition: service_healthy
 
   node-administrator:
     build: node-administrator
@@ -54,7 +57,8 @@ services:
     volumes:
       - './node-administrator:/app'
     depends_on:
-      - database
+      database:
+        condition: service_healthy
 
   database:
     image: "postgres:bullseye"
