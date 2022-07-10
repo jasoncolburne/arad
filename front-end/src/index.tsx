@@ -28,6 +28,7 @@ import reportWebVitals from './reportWebVitals';
 import * as serviceWorker from "./serviceWorker"
 
 import './index.css';
+import { Redirect } from './core/Redirect';
 
 ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
@@ -67,6 +68,9 @@ ReactDOM.createRoot(
           </Route>
 
         </Route>
+
+        {/* links */}
+        <Route path="/code" element={<Redirect url="https://github.com/jasoncolburne/arad" />} />
       </Routes>
     </BrowserRouter>
   </>

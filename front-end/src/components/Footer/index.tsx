@@ -30,7 +30,7 @@ const Footer = () => {
     <footer>
       <div className="footer">
         <div className="left">
-          Accessible Research Article Database
+          <Link to="/code">Accessible Research Article Database</Link>
         </div>
         <div className="right">
           {loggedIn ? logoutLink : null}
