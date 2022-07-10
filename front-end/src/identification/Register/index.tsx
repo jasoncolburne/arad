@@ -1,21 +1,14 @@
-import { useNavigate } from "react-router";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router";
 
-import {
-  Input,
-  InputGroup,
-} from "@chakra-ui/input";
-
-import {
-  FormControl,
-  Button,
-} from '@chakra-ui/react';
+import { Box, Center } from "@chakra-ui/layout";
+import { FormControl, Button } from '@chakra-ui/react';
+import { Input, InputGroup } from "@chakra-ui/input";
 
 import { useGlobalState } from "../../GlobalState";
 
 import { Role } from "../../datatypes/Role";
 import { User } from "../../datatypes/User";
-import { Box, Center, Stack } from "@chakra-ui/layout";
 
 
 interface RegistrationPayload {
