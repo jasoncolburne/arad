@@ -42,7 +42,13 @@ async def register(body: dict, database: Session = Depends(get_session)):
     user = User(email=email, hashed_passphrase=hashed_passphrase)
 
     user_service = UserService(database)
-    await user_service.create(user)
+    try:
+        await user_service.create(user)
+    except exc.IntegrityError:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid email address",
+        )
 
     role_service = RoleService()
     roles = role_service.list_current(user)

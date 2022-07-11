@@ -32,12 +32,19 @@ const Register = () => {
   }, [loggedIn, navigate])
 
   const handleErrors = (response: Response) => {
-    setErrorMessage('something went wrong');
+    if (response.status == 400) {
+      setErrorMessage('please enter a valid email address')
+    } else {
+      setErrorMessage(`something went wrong: ${response.status}`);
+    }
   };
 
   const postRegistration = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
-    if ([email, passphrase, verification].includes('') || passphrase !== verification) {
+    if ([email, passphrase, verification].includes('')) {
+      setErrorMessage('cannot be blank');
+    } else if (passphrase !== verification) {
+      setErrorMessage('passphrases must match');
     } else {
       const payload: RegistrationPayload = { email, passphrase };
       const response: ApplicationState = await Api().post('identify/register', null, payload, handleErrors)
