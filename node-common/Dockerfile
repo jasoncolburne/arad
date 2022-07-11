@@ -5,16 +5,16 @@
 # * edit the source file in `node-common`
 ########################################
 
-FROM debian:bullseye-slim
+FROM python:slim-bullseye
 
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV POETRY_HOME=/opt/poetry
-ENV PATH="${POETRY_HOME}/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+ENV PATH="${POETRY_HOME}/bin:/usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 
 RUN apt-get update
 RUN apt-get -y install --no-install-recommends \
-  python-is-python3 \
-  python3-venv \
+  gcc \
+  libc-dev \
   curl \
   ca-certificates
 
@@ -25,7 +25,11 @@ RUN curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/inst
   python - --preview
 
 RUN poetry config virtualenvs.options.system-site-packages true
+RUN poetry check
 RUN poetry lock --check
 RUN poetry install --no-root
+
+RUN apt-get -y remove gcc libc-dev ca-certificates
+RUN apt-get -y autoremove
 
 CMD ["poetry", "run", "start"]

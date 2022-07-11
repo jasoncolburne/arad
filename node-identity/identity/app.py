@@ -1,12 +1,14 @@
-from fastapi import Depends, FastAPI
-from sqlalchemy import select
+from fastapi import Depends, FastAPI, HTTPException, status
+from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy import exc
 from sqlmodel import Session
+
+from common.services.role import RoleService
+from common.services.user import UserService
+from identity.services.authentication import AuthenticationService
 
 from database import get_session
 from database.models import User
-
-from fastapi.middleware.cors import CORSMiddleware
-
 
 app = FastAPI()
 
@@ -23,15 +25,60 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-
 @app.get("/health")
 async def health():
-    return
+    return {"status": "healthy?"}
 
 
-@app.post("/register", response_model=User)
-async def register(body: dict, session: Session = Depends(get_session)):
-    user = User(email=body['email'])
-    session.add(user)
-    await session.commit()
-    return user
+# endpoints can share this since it is stateless
+authentication_service = AuthenticationService()
+
+@app.post("/register")
+async def register(body: dict, database: Session = Depends(get_session)):
+    email = body['email']
+    passphrase = body['passphrase']
+    
+    hashed_passphrase = authentication_service.hash_passphrase(passphrase)
+    user = User(email=email, hashed_passphrase=hashed_passphrase)
+
+    user_service = UserService(database)
+    await user_service.create(user)
+
+    role_service = RoleService()
+    roles = role_service.list_current(user)
+    access_token = authentication_service.create_access_token(user)
+    return {
+        "credentials": {"token": access_token, "token_type": "bearer"},
+        "user": {"id": user.id, "email": user.email},
+        "roles": roles,
+    }
+
+
+@app.post("/login")
+async def login(body: dict, database: Session = Depends(get_session)):
+    authentication_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Incorrect username or password",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+
+    email = body['email']
+    passphrase = body['passphrase']
+
+    user_service = UserService(database)
+    try:
+        user = await user_service.get_by_email(email)
+    except exc.NoResultFound:
+        raise authentication_exception
+
+    if not authentication_service.authenticate_user(user, passphrase):
+        raise authentication_exception
+
+    role_service = RoleService()
+    roles = role_service.list_current(user)
+    access_token = authentication_service.create_access_token(user)
+    return {
+        "credentials": {"token": access_token, "token_type": "bearer"},
+        "user": {"id": user.id, "email": user.email},
+        "roles": roles,
+    }

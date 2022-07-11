@@ -40,35 +40,47 @@ services:
 
   node-identity:
     build: node-identity
+    restart: always
     environment: *common-environment
     volumes:
       - './node-identity:/app'
     depends_on: *node-database-dependency
     healthcheck: *node-healthcheck
+    ports:
+      - "8003:8000" # for docs
 
   node-reader:
     build: node-reader
+    restart: always
     environment: *common-environment
     volumes:
       - './node-reader:/app'
     depends_on: *node-database-dependency
     healthcheck: *node-healthcheck
+    ports:
+      - "8002:8000" # for docs
 
   node-reviewer:
     build: node-reviewer
+    restart: always
     environment: *common-environment
     volumes:
       - './node-reviewer:/app'
     depends_on: *node-database-dependency
     healthcheck: *node-healthcheck
+    ports:
+      - "8001:8000" # for docs
 
   node-administrator:
     build: node-administrator
+    restart: always
     environment: *common-environment
     volumes:
       - './node-administrator:/app'
     depends_on: *node-database-dependency
     healthcheck: *node-healthcheck
+    ports:
+      - "8000:8000" # for docs
 
   database:
     image: "postgres:bullseye"

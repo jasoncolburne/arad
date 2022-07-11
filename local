@@ -8,6 +8,10 @@ stack_up() {
   docker compose up
 }
 
+stack_down() {
+  docker compose down
+}
+
 stack_build() {
   docker compose build
 }
@@ -43,6 +47,8 @@ execute() {
 
   if [[ "${COMMAND}" == "up" ]]; then
     stack_up
+  elif [[ "${COMMAND}" == "down" ]]; then
+    stack_down
   elif [[ "${COMMAND}" == "build" ]]; then
     stack_build
   elif [[ "${COMMAND}" == "relock" ]]; then

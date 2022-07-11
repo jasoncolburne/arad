@@ -5,7 +5,7 @@ description = "Reader node"
 authors = ["Jason Colburne <j.colburne@gmail.com>"]
 
 [tool.poetry.dependencies]
-python = "^3.9"
+python = "^3.10"
 fastapi = "^0.78.0"
 uvicorn = "^0.18.2"
 gunicorn = "^20.1.0"
@@ -13,6 +13,7 @@ toml = "^0.10.2"
 asyncpg = "^0.26.0"
 sqlmodel = "^0.0.6"
 alembic = "^1.8.0"
+pydantic = {extras = ["email"], version = "^1.9.1"}
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
