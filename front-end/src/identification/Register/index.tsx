@@ -41,10 +41,10 @@ const Register = () => {
 
   const postRegistration = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
-    if ([email, passphrase, verification].includes('')) {
-      setErrorMessage('cannot be blank');
-    } else if (passphrase !== verification) {
+    if (passphrase !== verification) {
       setErrorMessage('passphrases must match');
+    } else if ([email, passphrase, verification].includes('')) {
+      setErrorMessage('cannot be blank');
     } else {
       const payload: RegistrationPayload = { email, passphrase };
       const response: ApplicationState = await Api().post('identify/register', null, payload, handleErrors)
