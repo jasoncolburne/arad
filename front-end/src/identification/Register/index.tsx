@@ -5,9 +5,9 @@ import { Box, Center } from "@chakra-ui/layout";
 import { FormControl, Button } from '@chakra-ui/react';
 import { Input, InputGroup } from "@chakra-ui/input";
 
-import { useGlobalState } from "../../GlobalState";
 import { Api } from "../../api/Api";
 import { ApplicationState } from "../../datatypes/ApplicationState";
+import { useGlobalState } from "../../GlobalState";
 
 
 interface RegistrationPayload {
