@@ -13,7 +13,7 @@
     - [Database](#database)
     - [Cache](#cache)
 
-`Arad` is designed in layers. A layer recieves a request from above, does some processing and makes requests to the
+`Arad` is designed in layers. A layer receives a request from above, does some processing and makes requests to the
 layer below to compose a response to return to the layer above. By enforcing this architecture (easy enough in this
 application) we can ensure our [distributed traces](https://en.wikipedia.org/wiki/Tracing_(software))
 are short, understandable and debuggable.
