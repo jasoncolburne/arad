@@ -101,8 +101,8 @@ for completeness but due to the nature of `Reader` access, it will be rarely use
 
 #### Endpoints
 
-- analytics
 - search
+- analytics aka search/:article_id
 
 ### Reviewer
 
