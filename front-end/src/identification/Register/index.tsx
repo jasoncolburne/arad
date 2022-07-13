@@ -32,7 +32,7 @@ const Register = () => {
   }, [loggedIn, navigate])
 
   const handleErrors = (response: Response) => {
-    if (response.status == 400) {
+    if (response.status === 400) {
       setErrorMessage('please enter a valid email address')
     } else {
       setErrorMessage(`something went wrong: ${response.status}`);

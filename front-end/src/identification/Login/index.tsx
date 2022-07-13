@@ -40,6 +40,7 @@ const Login = () => {
   const postLogin = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
     if ([email, passphrase].includes('')) {
+      setErrorMessage('cannot be blank');
     } else {
       const payload: LoginPayload = { email, passphrase };
       const response: ApplicationState = await Api().post('identify/login', null, payload, handleErrors);

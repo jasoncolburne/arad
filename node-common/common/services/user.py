@@ -1,6 +1,7 @@
+from typing import List
 from uuid import UUID
 
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlmodel import Session
 
 from database.models import User
@@ -50,4 +51,12 @@ class UserService:
 
         return user
 
+    async def list_paginated(self, page: int = 1) -> List[User]:
+        limit = 10
+        offset = (page - 1) * limit
 
+        query = await self.database.execute(select(User).order_by(User.email).limit(limit).offset(offset))
+        return list(query.scalars().all())
+
+    async def count(self) -> int:
+        return await self.database.scalar(select(func.count(User.id)))
