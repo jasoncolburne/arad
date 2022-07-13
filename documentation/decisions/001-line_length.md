@@ -22,6 +22,6 @@ without line wrapping.
 **Chosen Option**: 120 characters (see below).
 
 **Positive Consequences**: <!-- optional -->
-- Can review in GitHub (max 160 characters)
+- Can review in GitHub (max 125 characters in review mode)
 - Fits on a typical editor screen when maximized (160 didn't)
 - More content on screen than 80 or 100 characters
