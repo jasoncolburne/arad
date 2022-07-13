@@ -136,4 +136,5 @@ alternatives. The current developer stack relies on PostgreSQL.
 
 ## Cache
 
-To allow higher performance we can cache some database objects in memory (particularly, things like refresh tokens).
+To allow higher performance we can cache some database objects in memory (particularly, things like refresh tokens
+where only `identity` can access the cache).
