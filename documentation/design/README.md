@@ -37,10 +37,10 @@ client may take many forms. Some examples include web browsers, mobile phones, o
 The `front-end` is a [React](https://reactjs.org/) [Single Page Application](https://en.wikipedia.org/wiki/Single-page_application).
 
 ## API Layer
-It commmunicates with the `back-end` stack (everything else) through an the internet, and ultimately, an interface
-called `api` - ([Application Programming Interface](https://en.wikipedia.org/wiki/API)). The sole responsibility of
-`api` is to proxy incoming requests to the appropriate `back-end` services. Navigating down the stack, `api` is the
-second layer.
+The `front-end` commmunicates with the `back-end` stack (everything else) through the internet, and ultimately, an
+interface service called `api` - ([Application Programming Interface](https://en.wikipedia.org/wiki/API)). The sole
+responsibility of `api` is to proxy incoming requests to the appropriate `back-end` services. Navigating down the stack,
+`api` is the second layer.
 
 ## Service Layer
 `api` delegates responsibility for processing these requests to one of four `back-end` services. The four services
@@ -48,7 +48,7 @@ running in the backend compose the `service` layer of our software graph. The se
 direct inter-service messaging, like synchronous [RPC](https://en.wikipedia.org/wiki/Remote_procedure_call).
 Additionally, they do not use any sophistocated mechanisms to transfer data and state. Instead, all user and
 application state is stored in a relational database and cached in a distributed memory store where appropriate. This
-eliminates several operational problems and should work well for this read-heavy application.
+eliminates several operational problems and should work well for this simple, read-heavy application.
 
 ### Identity
 `identity` is the foundational piece of the service layer, providing authentication and authorization capabilities to
