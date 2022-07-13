@@ -91,6 +91,7 @@ and the other services.
 - logout
 - passphrase_reset
 - passphrase_change (request and confirm)
+- roles
 - token
 
 ### Reader
