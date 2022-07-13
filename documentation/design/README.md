@@ -30,7 +30,7 @@ client may take many forms. Some examples include web browsers, mobile phones, o
 
 The `front-end` is a [React](https://reactjs.org/) [Single Page Application](https://en.wikipedia.org/wiki/Single-page_application).
 
-# API Layer
+## API Layer
 It commmunicates with the `back-end` stack (everything else) through an the internet, and ultimately, an interface
 called `api` - ([Application Programming Interface](https://en.wikipedia.org/wiki/API)). The sole responsibility of
 `api` is to proxy incoming requests to the appropriate `back-end` services. Navigating down the stack, `api` is the
