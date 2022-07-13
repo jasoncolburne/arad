@@ -14,6 +14,8 @@ stack_down() {
 
 stack_build() {
   docker compose build
+  echo "builing node_modules"
+  docker compose run --rm -v"$(pwd)/front-end:/app" front-end bash -c "npm install && chown -R $(id -u):$(id -g) node_modules"
 }
 
 poetry_relock() {
@@ -22,11 +24,11 @@ poetry_relock() {
   done
 }
 
-poetry() {
+nodes_exec() {
   local ARGUMENTS=$1
 
   for NODE in "${NODES[@]}"; do
-    docker compose run --rm node-$NODE bash -c "poetry ${ARGUMENTS}"
+    docker compose run --rm node-$NODE bash -c "${ARGUMENTS}"
   done
 }
 
@@ -53,8 +55,8 @@ execute() {
     stack_build
   elif [[ "${COMMAND}" == "relock" ]]; then
     poetry_relock
-  elif [[ "${COMMAND}" == "poetry" ]]; then
-    poetry "${ARGUMENTS}"
+  elif [[ "${COMMAND}" == "nodes-exec" ]]; then
+    nodes_exec "${ARGUMENTS}"
   elif [[ "${COMMAND}" == "prune" ]]; then
     docker_image_prune
   elif [[ "${COMMAND}" == "rm" ]]; then
