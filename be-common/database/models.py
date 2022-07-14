@@ -1,4 +1,4 @@
-# Make sure you are editing this file in node-common
+# Make sure you are editing this file in be-common
 
 from datetime import date
 from typing import Optional

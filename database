@@ -14,7 +14,7 @@ apt-get -y install postgresql-client
 echo "SELECT 'CREATE DATABASE ${DATABASE_NAME}' WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = '${DATABASE_NAME}')\gexec" | PGPASSWORD=${DATABASE_PASSPHRASE} psql -U${DATABASE_USER} -h${DATABASE_HOST}
 EOS
 
-  docker compose run --rm node-identity bash -c "${CREATE_SCRIPT}"
+  docker compose run --rm be-identity bash -c "${CREATE_SCRIPT}"
 }
 
 drop() {
@@ -23,7 +23,7 @@ apt-get -y install postgresql-client
 PGPASSWORD=${DATABASE_PASSPHRASE} psql -U${DATABASE_USER} -h${DATABASE_HOST} -c "DROP DATABASE ${DATABASE_NAME}"
 EOS
 
-  docker compose run --rm node-identity bash -c "${DROP_SCRIPT}"
+  docker compose run --rm be-identity bash -c "${DROP_SCRIPT}"
 }
 
 migrate() {
@@ -34,7 +34,7 @@ ACTIVATE="\${BASE_PATH}/bin/activate"
 alembic upgrade head
 EOS
 
-  docker compose run --rm node-identity bash -c "${MIGRATE_SCRIPT}"
+  docker compose run --rm be-identity bash -c "${MIGRATE_SCRIPT}"
 }
 
 generate_migrations() {
@@ -54,9 +54,9 @@ alembic revision --autogenerate -m "${ARGUMENTS}"
 chown $(id -u):$(id -g) database/migrations/versions/*
 EOS
 
-  docker compose run --rm node-identity bash -c "${GENERATION_SCRIPT}"
+  docker compose run --rm be-identity bash -c "${GENERATION_SCRIPT}"
 
-  rsync -v -r -d node-identity/database/migrations/versions node-common/database/migrations
+  rsync -v -r -d be-identity/database/migrations/versions be-common/database/migrations
   ./sync
 }
 

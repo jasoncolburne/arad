@@ -3,13 +3,13 @@ version: "3.9"
 x-common-environment: &common-environment
   DATABASE_URL: postgresql+asyncpg://postgres:postgres@database:5432/arad
 
-x-node-healthcheck: &node-healthcheck
+x-be-healthcheck: &be-healthcheck
   test: ["CMD-SHELL", "curl http://localhost:8000/health > /dev/null"]
   interval: 5s
   timeout: 5s
   retries: 5
 
-x-node-database-dependency: &node-database-dependency
+x-be-database-dependency: &be-database-dependency
   database:
     condition: service_healthy
 
@@ -19,66 +19,66 @@ services:
     volumes:
       - './front-end:/app'
     depends_on:
-      - node-api
+      - api
     ports:
       - "3000:3000" # for websockets
       - "80:3000"
 
-  node-api:
-    build: node-api
+  api:
+    build: api
     depends_on:
-      node-identity:
+      be-identity:
         condition: service_healthy
-      node-reader:
+      be-reader:
         condition: service_healthy
-      node-reviewer:
+      be-reviewer:
         condition: service_healthy
-      node-administrator:
+      be-administrator:
         condition: service_healthy
     ports:
       - "81:80" # this is how the front end talks to the api. port 80 is taken atm.
 
-  node-identity:
-    build: node-identity
+  be-identity:
+    build: be-identity
     restart: always
     environment: *common-environment
     volumes:
-      - './node-identity:/app'
-    depends_on: *node-database-dependency
-    healthcheck: *node-healthcheck
+      - './be-identity:/app'
+    depends_on: *be-database-dependency
+    healthcheck: *be-healthcheck
     ports:
       - "8003:8000" # for docs
 
-  node-reader:
-    build: node-reader
+  be-reader:
+    build: be-reader
     restart: always
     environment: *common-environment
     volumes:
-      - './node-reader:/app'
-    depends_on: *node-database-dependency
-    healthcheck: *node-healthcheck
+      - './be-reader:/app'
+    depends_on: *be-database-dependency
+    healthcheck: *be-healthcheck
     ports:
       - "8002:8000" # for docs
 
-  node-reviewer:
-    build: node-reviewer
+  be-reviewer:
+    build: be-reviewer
     restart: always
     environment: *common-environment
     volumes:
-      - './node-reviewer:/app'
-    depends_on: *node-database-dependency
-    healthcheck: *node-healthcheck
+      - './be-reviewer:/app'
+    depends_on: *be-database-dependency
+    healthcheck: *be-healthcheck
     ports:
       - "8001:8000" # for docs
 
-  node-administrator:
-    build: node-administrator
+  be-administrator:
+    build: be-administrator
     restart: always
     environment: *common-environment
     volumes:
-      - './node-administrator:/app'
-    depends_on: *node-database-dependency
-    healthcheck: *node-healthcheck
+      - './be-administrator:/app'
+    depends_on: *be-database-dependency
+    healthcheck: *be-healthcheck
     ports:
       - "8000:8000" # for docs
 
