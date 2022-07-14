@@ -1,4 +1,4 @@
-[arad](../../../../)/[documentation](../)
+[arad](../../../../) / [documentation](../)
 
 # Design
 
@@ -124,18 +124,24 @@ The `administrator` service will allow `Administrators` to modify information ab
 - users
 - users/:user_id
 
-# Infrastructure Layer
+## Infrastructure Layer
 
 The infrastructure is composed of the database, and a distributed memory cache (not pictured) to improve performance.
 
 By having only a single hard dependency, we can be assured of a higher uptime/downtime ratio.
 
-## Database
+### Database
 
 The most useful and understood database type in this scenario is likely a relational database, but we are evaluating
 alternatives. The current developer stack relies on PostgreSQL.
 
-## Cache
+### Cache
 
 To allow higher performance we can cache some database objects in memory (particularly, things like refresh tokens
 where only `identity` can access the cache).
+
+## Further reading
+
+- [Front-end Architecture](./front-end.md)
+- [The API nginx proxy](./api.md)
+- [How an Arad service node is architected](./service.md)
