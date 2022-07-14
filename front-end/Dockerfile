@@ -5,6 +5,6 @@ FROM node:slim
 WORKDIR /app
 COPY . .
 
-RUN npm install
+RUN yarn install
 
-CMD ["npm", "start"]
+CMD ["yarn", "start"]
