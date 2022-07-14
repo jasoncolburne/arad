@@ -4,17 +4,17 @@ NODES=(identity reader reviewer administrator)
 DIRECTORIES=(common database)
 FILES=(Dockerfile .dockerignore alembic.ini)
 
-for NODE in "${NODES[@]}"
+for BACKEND in "${BACKENDS[@]}"
 do
-  TARGET=node-${NODE}
+  TARGET=be-${BACKEND}
 
   for DIRECTORY in "${DIRECTORIES[@]}"
   do
-    rsync -v -r -d --delete --delete-excluded node-common/${DIRECTORY} ${TARGET}
+    rsync -v -r -d --delete --delete-excluded be-common/${DIRECTORY} ${TARGET}
   done
 
   for FILE in "${FILES[@]}"
   do
-    cp -v node-common/${FILE} ${TARGET}
+    cp -v be-common/${FILE} ${TARGET}
   done
 done

@@ -2,7 +2,7 @@
 
 set -eo pipefail
 
-NODES=(administrator reviewer reader identity)
+BACKENDS=(administrator reviewer reader identity)
 
 stack_up() {
   docker compose up
@@ -19,16 +19,16 @@ stack_build() {
 }
 
 poetry_relock() {
-  for NODE in "${NODES[@]}"; do
-    docker compose run --rm node-$NODE bash -c "rm -f poetry.lock && poetry lock -vv"
+  for BACKEND in "${BACKENDS[@]}"; do
+    docker compose run --rm be-$BACKEND bash -c "rm -f poetry.lock && poetry lock -vv"
   done
 }
 
-nodes_exec() {
+be_exec() {
   local ARGUMENTS=$1
 
-  for NODE in "${NODES[@]}"; do
-    docker compose run --rm node-$NODE bash -c "${ARGUMENTS}"
+  for BACKEND in "${BACKENDS[@]}"; do
+    docker compose run --rm be-$BACKEND bash -c "${ARGUMENTS}"
   done
 }
 
@@ -55,8 +55,8 @@ execute() {
     stack_build
   elif [[ "${COMMAND}" == "relock" ]]; then
     poetry_relock
-  elif [[ "${COMMAND}" == "nodes-exec" ]]; then
-    nodes_exec "${ARGUMENTS}"
+  elif [[ "${COMMAND}" == "be-exec" ]]; then
+    be_exec "${ARGUMENTS}"
   elif [[ "${COMMAND}" == "prune" ]]; then
     docker_image_prune
   elif [[ "${COMMAND}" == "rm" ]]; then
