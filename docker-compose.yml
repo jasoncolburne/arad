@@ -19,7 +19,8 @@ services:
     volumes:
       - './front-end:/app'
     depends_on:
-      - api
+      api:
+        condition: service_healthy
     ports:
       - "3000:3000" # for websockets
       - "80:3000"
@@ -35,6 +36,11 @@ services:
         condition: service_healthy
       be-administrator:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl http://localhost/health > /dev/null"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
     ports:
       - "81:80" # this is how the front end talks to the api. port 80 is taken atm.
 
