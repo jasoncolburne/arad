@@ -1,6 +1,6 @@
 # ARAD
 Accessible Research Article Database
 
-*This project is under construction and the design may not yet match reality*
+*This project is under construction and the reality may not yet match design.*
 
 - [Documentation](./documentation/)
