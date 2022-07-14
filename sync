@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-NODES=(identity reader reviewer administrator)
+BACKENDS=(identity reader reviewer administrator)
 DIRECTORIES=(common database)
 FILES=(Dockerfile .dockerignore alembic.ini)
 
