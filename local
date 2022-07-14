@@ -15,7 +15,7 @@ stack_down() {
 stack_build() {
   docker compose build
   echo "builing node_modules"
-  docker compose run --rm -v"$(pwd)/front-end:/app" front-end bash -c "npm install && chown -R $(id -u):$(id -g) node_modules"
+  docker compose run --rm -v"$(pwd)/front-end:/app" front-end bash -c "yarn install && chown -R $(id -u):$(id -g) node_modules"
 }
 
 poetry_relock() {
