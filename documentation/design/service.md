@@ -1,10 +1,10 @@
 [arad](../../../../) / [documentation](../)
 
-# A typical Arad service node
+# A typical Arad service
 
-Each `service` layer node is composed of multiple layers. The same rule applies here that applied to the distributed
-architecture. We should only call _down_ deeper into the stack, never up or sideways. this prevents circular stack
-traces and makes code easier to debug.
+Each `service` layer `service` is itself composed of multiple layers. The same rule applies here that applied to the
+distributed architecture. We should only call _down_ deeper into the stack, never up or sideways. this prevents
+circular stack traces and makes code easier to debug.
 
 ![Typical service stack](./assets/service-stack.png)
 
