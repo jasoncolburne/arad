@@ -58,6 +58,10 @@ workflows:
     jobs:
       - hold:
           type: approval
+          filters:
+            branches:
+              only:
+                - main
       - build_and_push:
           filters:
             branches:
