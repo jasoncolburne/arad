@@ -11,6 +11,7 @@ jobs:
       - checkout
       - setup_remote_docker:
           docker_layer_caching: true
+          version: 20.10.17
       - run:
           name: Build images from docker-compose.yml
           command: docker compose build
