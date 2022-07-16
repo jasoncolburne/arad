@@ -23,6 +23,9 @@ jobs:
             echo
             pwd
       - run:
+          name: Sync common code
+          command: ./sync
+      - run:
           name: Build images from docker-compose.yml
           command: docker compose build
       - run:
