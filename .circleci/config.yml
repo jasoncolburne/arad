@@ -56,12 +56,12 @@ jobs:
 workflows:
   build_test_push:
     jobs:
-      # - hold:
-      #     type: approval
-      - build_and_push
-          # filters:
-          #   branches:
-          #     only:
-          #       - main
-          # requires:
-          #   - hold
+      - hold:
+          type: approval
+      - build_and_push:
+          filters:
+            branches:
+              only:
+                - main
+          requires:
+            - hold
