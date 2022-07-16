@@ -39,7 +39,7 @@ jobs:
             done
       - run:
           name: Login to DockerHub
-          command: echo "${DOCKERHUB_ACCESS_TOKEN}" | docker login -u "${DOCKERHUB_USER}"
+          command: docker login -u "${DOCKERHUB_USER}" -p "${DOCKERHUB_ACCESS_TOKEN}"
       - run:
           name: Push images
           command: |
