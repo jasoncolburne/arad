@@ -4,9 +4,6 @@ jobs:
   build_and_push:
     docker:
       - image: cimg/base:stable
-        auth:
-          username: $DOCKER_USER
-          password: $DOCKER_PASSWORD
     steps:
       - checkout
       - setup_remote_docker:
@@ -40,6 +37,9 @@ jobs:
               echo $TAG
               docker tag "project_${IMAGE}:latest" "${DOCKER_USER}/${CIRCLE_PROJECT_REPONAME}:${TAG}"
             done
+      - run:
+          name: Login to DockerHub
+          command: echo $DOCKERHUB_ACCESS_TOKEN | docker login -u $DOCKERHUB_USER
       - run:
           name: Push images
           command: |
