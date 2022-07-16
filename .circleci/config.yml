@@ -11,7 +11,13 @@ jobs:
       - checkout
       - setup_remote_docker:
           docker_layer_caching: true
-          version: 20.10.17
+          version: 20.10.1
+      - run:
+          name: Echo system information
+          command: |
+            uname -a
+            echo
+            docker version
       - run:
           name: Build images from docker-compose.yml
           command: docker compose build
@@ -39,12 +45,12 @@ jobs:
 workflows:
   build_test_push:
     jobs:
-      - hold:
-          type: approval
-      - build_and_push:
-          filters:
-            branches:
-              only:
-                - main
-          requires:
-            - hold
+      # - hold:
+      #     type: approval
+      - build_and_push
+          # filters:
+          #   branches:
+          #     only:
+          #       - main
+          # requires:
+          #   - hold
