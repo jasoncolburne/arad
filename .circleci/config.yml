@@ -1,51 +1,49 @@
 version: 2.1
 
 jobs:
-  build:
+  build_and_push:
     docker:
-      image: cimg/base:stable
-      auth:
-        username: $DOCKER_USER
-        password: $DOCKER_PASSWORD
+      - image: cimg/base:stable
+        auth:
+          username: $DOCKER_USER
+          password: $DOCKER_PASSWORD
     steps:
       - checkout
-      setup_remote_docker:
-        docker_layer_caching: true
-      run:
-        name: Build images from docker-compose.yml
-        command: docker compose build
-      run:
-        name: Tag images
-        command: |
-          IMAGES=(front-end api be-identity be-reader be-reviewer be-administrator)
-          for IMAGE in "${IMAGES[@]}"; do
-            TAG="${IMAGE}-${CIRCLE_BRANCH}-${CIRCLE_SHA1}-${CIRCLE_BUILD_NUM}"
-            docker tag "arad_${IMAGE}:latest ${DOCKER_REPOSITORY}/${CIRCLE_PROJECT_REPONAME}:${TAG}"
-            TAG="${IMAGE}-${CIRCLE_BRANCH}-latest"
-            docker tag "arad_${IMAGE}:latest ${DOCKER_REPOSITORY}/${CIRCLE_PROJECT_REPONAME}:${TAG}"
-          done
-      run:
-        name: Push images
-        command: |
-          IMAGES=(front-end api be-identity be-reader be-reviewer be-administrator)
-          for IMAGE in "${IMAGES[@]}"; do
-            TAG="${IMAGE}-${CIRCLE_BRANCH}-${CIRCLE_SHA1}-${CIRCLE_BUILD_NUM}"
-            docker push "${DOCKER_REPOSITORY}/${CIRCLE_PROJECT_REPONAME}:${TAG}"
-            TAG="${IMAGE}-${CIRCLE_BRANCH}-latest"
-            docker push "${DOCKER_REPOSITORY}/${CIRCLE_PROJECT_REPONAME}:${TAG}"
-          done
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - run:
+          name: Build images from docker-compose.yml
+          command: docker compose build
+      - run:
+          name: Tag images
+          command: |
+            IMAGES=(front-end api be-identity be-reader be-reviewer be-administrator)
+            for IMAGE in "${IMAGES[@]}"; do
+              TAG="${IMAGE}-${CIRCLE_BRANCH}-${CIRCLE_SHA1}-${CIRCLE_BUILD_NUM}"
+              docker tag "arad_${IMAGE}:latest ${DOCKER_REPOSITORY}/${CIRCLE_PROJECT_REPONAME}:${TAG}"
+              TAG="${IMAGE}-${CIRCLE_BRANCH}-latest"
+              docker tag "arad_${IMAGE}:latest ${DOCKER_REPOSITORY}/${CIRCLE_PROJECT_REPONAME}:${TAG}"
+            done
+      - run:
+          name: Push images
+          command: |
+            IMAGES=(front-end api be-identity be-reader be-reviewer be-administrator)
+            for IMAGE in "${IMAGES[@]}"; do
+              TAG="${IMAGE}-${CIRCLE_BRANCH}-${CIRCLE_SHA1}-${CIRCLE_BUILD_NUM}"
+              docker push "${DOCKER_REPOSITORY}/${CIRCLE_PROJECT_REPONAME}:${TAG}"
+              TAG="${IMAGE}-${CIRCLE_BRANCH}-latest"
+              docker push "${DOCKER_REPOSITORY}/${CIRCLE_PROJECT_REPONAME}:${TAG}"
+            done
 
 workflows:
   build_test_push:
     jobs:
-      hold:
-        type: approval
-      build_and_push:
-        filters:
-          branches:
-            only:
-              - main
-        context:
-          - dockerhub
-        requires:
-          - hold
+      - hold:
+          type: approval
+      - build_and_push:
+          filters:
+            branches:
+              only:
+                - main
+          requires:
+            - hold
