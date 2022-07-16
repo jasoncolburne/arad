@@ -18,6 +18,10 @@ jobs:
             uname -a
             echo
             docker version
+            echo
+            ls
+            echo
+            pwd
       - run:
           name: Build images from docker-compose.yml
           command: docker compose build
