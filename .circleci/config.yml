@@ -34,9 +34,11 @@ jobs:
             IMAGES=(front-end api be-identity be-reader be-reviewer be-administrator)
             for IMAGE in "${IMAGES[@]}"; do
               TAG="${IMAGE}-${CIRCLE_BRANCH}-${CIRCLE_SHA1}-${CIRCLE_BUILD_NUM}"
-              docker tag "project_${IMAGE}:latest ${DOCKER_USER}/${CIRCLE_PROJECT_REPONAME}:${TAG}"
+              echo $TAG
+              docker tag "project_${IMAGE}:latest" "${DOCKER_USER}/${CIRCLE_PROJECT_REPONAME}:${TAG}"
               TAG="${IMAGE}-${CIRCLE_BRANCH}-latest"
-              docker tag "project_${IMAGE}:latest ${DOCKER_USER}/${CIRCLE_PROJECT_REPONAME}:${TAG}"
+              echo $TAG
+              docker tag "project_${IMAGE}:latest" "${DOCKER_USER}/${CIRCLE_PROJECT_REPONAME}:${TAG}"
             done
       - run:
           name: Push images
@@ -44,8 +46,10 @@ jobs:
             IMAGES=(front-end api be-identity be-reader be-reviewer be-administrator)
             for IMAGE in "${IMAGES[@]}"; do
               TAG="${IMAGE}-${CIRCLE_BRANCH}-${CIRCLE_SHA1}-${CIRCLE_BUILD_NUM}"
+              echo $TAG
               docker push "${DOCKER_USER}/${CIRCLE_PROJECT_REPONAME}:${TAG}"
               TAG="${IMAGE}-${CIRCLE_BRANCH}-latest"
+              echo $TAG
               docker push "${DOCKER_USER}/${CIRCLE_PROJECT_REPONAME}:${TAG}"
             done
 
