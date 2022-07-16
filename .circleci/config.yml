@@ -4,14 +4,24 @@ jobs:
   build_and_push:
     docker:
       - image: cimg/base:stable
-        auth:
-          username: $DOCKER_USER
-          password: $DOCKER_PASSWORD
     steps:
       - checkout
       - setup_remote_docker:
           docker_layer_caching: true
-          version: 20.10.17
+          version: 20.10.14
+      - run:
+          name: Echo system information
+          command: |
+            uname -a
+            echo
+            docker version
+            echo
+            ls
+            echo
+            pwd
+      - run:
+          name: Sync common code
+          command: ./sync
       - run:
           name: Build images from docker-compose.yml
           command: docker compose build
@@ -21,19 +31,26 @@ jobs:
             IMAGES=(front-end api be-identity be-reader be-reviewer be-administrator)
             for IMAGE in "${IMAGES[@]}"; do
               TAG="${IMAGE}-${CIRCLE_BRANCH}-${CIRCLE_SHA1}-${CIRCLE_BUILD_NUM}"
-              docker tag "arad_${IMAGE}:latest ${DOCKER_REPOSITORY}/${CIRCLE_PROJECT_REPONAME}:${TAG}"
+              echo $TAG
+              docker tag "project_${IMAGE}:latest" "${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:${TAG}"
               TAG="${IMAGE}-${CIRCLE_BRANCH}-latest"
-              docker tag "arad_${IMAGE}:latest ${DOCKER_REPOSITORY}/${CIRCLE_PROJECT_REPONAME}:${TAG}"
+              echo $TAG
+              docker tag "project_${IMAGE}:latest" "${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:${TAG}"
             done
+      - run:
+          name: Login to DockerHub
+          command: docker login -u "${DOCKERHUB_USER}" -p "${DOCKERHUB_ACCESS_TOKEN}"
       - run:
           name: Push images
           command: |
             IMAGES=(front-end api be-identity be-reader be-reviewer be-administrator)
             for IMAGE in "${IMAGES[@]}"; do
               TAG="${IMAGE}-${CIRCLE_BRANCH}-${CIRCLE_SHA1}-${CIRCLE_BUILD_NUM}"
-              docker push "${DOCKER_REPOSITORY}/${CIRCLE_PROJECT_REPONAME}:${TAG}"
+              echo $TAG
+              docker push "${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:${TAG}"
               TAG="${IMAGE}-${CIRCLE_BRANCH}-latest"
-              docker push "${DOCKER_REPOSITORY}/${CIRCLE_PROJECT_REPONAME}:${TAG}"
+              echo $TAG
+              docker push "${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:${TAG}"
             done
 
 workflows:
@@ -41,6 +58,10 @@ workflows:
     jobs:
       - hold:
           type: approval
+          filters:
+            branches:
+              only:
+                - main
       - build_and_push:
           filters:
             branches:
