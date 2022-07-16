@@ -16,7 +16,6 @@ from database.models import User
 app = FastAPI()
 
 origins = [
-    "http://arad.org",
     "http://localhost",
 ]
 

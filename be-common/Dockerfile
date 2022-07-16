@@ -18,18 +18,23 @@ RUN apt-get -y install --no-install-recommends \
   curl \
   ca-certificates
 
-WORKDIR /app
-COPY . .
-
+# TODO download this script and run it from our sources
 RUN curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/install-poetry.py | \
   python - --preview
 
 RUN poetry config virtualenvs.options.system-site-packages true
+
+WORKDIR /app
+COPY ./pyproject.toml ./pyproject.toml
+COPY ./poetry.lock ./poetry.lock
+
 RUN poetry check
 RUN poetry lock --check
 RUN poetry install --no-root
 
 RUN apt-get -y remove gcc libc-dev ca-certificates
 RUN apt-get -y autoremove
+
+COPY . .
 
 CMD ["poetry", "run", "start"]
