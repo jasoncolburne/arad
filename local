@@ -13,8 +13,18 @@ stack_down() {
 }
 
 stack_build() {
+  docker compose down
   docker compose build
-  docker compose run --rm -v"$(pwd)/front-end:/app" front-end bash -c "npm install && chown -R $(id -u):$(id -g) node_modules"
+
+  echo
+  echo "copying node_modules to host (this takes a bit)..."
+
+  # this is required since we mount the volume in the same directory, meaning that the node_modules
+  # directory on the container would be erased when it launched if we didn't do this
+  rm -rf front-end/node_modules
+  CONTAINER_ID=$(docker run --rm -d arad_front-end sleep 600)
+  docker cp $CONTAINER_ID:/app/node_modules front-end
+  docker kill $CONTAINER_ID
 }
 
 poetry_relock() {

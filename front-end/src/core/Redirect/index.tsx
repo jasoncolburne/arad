@@ -11,7 +11,7 @@ const Redirect = (props: RedirectProps) => {
 
   useEffect(() => {
     window.location.replace(url);
-  }, []);
+  }, [url]);
 
   return (
     <ChakraProvider theme={theme}>

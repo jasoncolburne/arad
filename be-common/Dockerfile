@@ -25,8 +25,8 @@ RUN curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/inst
 RUN poetry config virtualenvs.options.system-site-packages true
 
 WORKDIR /app
-COPY ./pyproject.toml ./pyproject.toml
-COPY ./poetry.lock ./poetry.lock
+COPY pyproject.toml .
+COPY poetry.lock .
 
 RUN poetry check
 RUN poetry lock --check
