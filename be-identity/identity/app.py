@@ -10,6 +10,7 @@ from database import get_session
 from database.models import User
 
 from .services.authentication import AuthenticationService
+from .types.request import LoginRequest, RegisterRequest
 from .types.response import LoginResponse, RegisterResponse
 
 
@@ -23,13 +24,13 @@ async def health():
 
 
 @app.post("/register", response_model=RegisterResponse)
-async def register(body: dict, database: Session = Depends(get_session)):
-    email = body['email']
-    passphrase = body['passphrase']
-
+async def register(request: RegisterRequest, database: Session = Depends(get_session)):
     authentication_service = AuthenticationService(database=database)
     try:
-        user = await authentication_service.create_user_with_passphrase(email=email, passphrase=passphrase)
+        user = await authentication_service.create_user_with_passphrase(
+            email=request.email,
+            passphrase=request.passphrase,
+        )
     except exc.IntegrityError:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -47,19 +48,19 @@ async def register(body: dict, database: Session = Depends(get_session)):
 
 
 @app.post("/login", response_model=LoginResponse)
-async def login(body: dict, database: Session = Depends(get_session)):
+async def login(request: LoginRequest, database: Session = Depends(get_session)):
     authentication_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Incorrect username or password",
         headers={"WWW-Authenticate": "Bearer"},
     )
 
-    email = body['email']
-    passphrase = body['passphrase']
-
     authentication_service = AuthenticationService(database=database)
     try:
-        user = await authentication_service.authenticate_by_passphrase(email=email, passphrase=passphrase)
+        user = await authentication_service.authenticate_by_passphrase(
+            email=request.email,
+            passphrase=request.passphrase,
+        )
     except (exc.NoResultFound, AradException):
         raise authentication_exception
 

@@ -14,7 +14,7 @@ from .types.response import UsersResponse
 
 
 app = get_application()
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/login")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/identify/login")
 
 
 @app.get("/health", include_in_schema=False)
@@ -29,6 +29,4 @@ async def users(
     database: Session = Depends(get_session),
 ):
     user_service = UserService(database)
-    page = request.page or 1
-
-    return await user_service.page(number=page)
+    return await user_service.page(number=request.page)
