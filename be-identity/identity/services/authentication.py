@@ -13,16 +13,19 @@ TOKEN_KEY = os.environ.get("TOKEN_KEY", "d2c4293024e14c0716fe2135d351ba718c06c70
 TOKEN_ALGORITHM = "HS256"
 
 
+# never remove any used schemes, or existing users won't be able to log in
+global_passphrase_context = CryptContext(schemes=["argon2"], deprecated="auto")
+
+
 class AuthenticationService:
     # one of database or user_repository must be defined
     def __init__(
         self,
-        database: Session | None,
-        user_repository: UserRepository | None,
-        # never remove any used schemes, or existing users won't be able to log in
-        passphrase_context: CryptContext | None,
+        database: Session | None = None,
+        user_repository: UserRepository | None = None,
+        passphrase_context: CryptContext = global_passphrase_context,
     ):
-        self.passphrase_context = passphrase_context or CryptContext(schemes=["argon2"], deprecated="auto"),
+        self.passphrase_context = passphrase_context
         self.user_repository = user_repository or UserRepository(database=database)
 
     async def create_user_with_passphrase(self, email: str, passphrase: str) -> UserType:

@@ -10,8 +10,8 @@ from database.models import User as UserModel
 class UserService:
     def __init__(
         self,
-        database: Session | None,
-        user_repository: UserRepository | None
+        database: Session | None = None,
+        user_repository: UserRepository | None = None,
     ):
         self.user_repository = user_repository or UserRepository(database=database)
 
