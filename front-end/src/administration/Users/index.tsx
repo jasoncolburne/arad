@@ -10,6 +10,7 @@ const Users = () => {
   const { state } = useGlobalState();
   const [users, setUsers] = useState<User[]>([]);
   const [errorMessage, setErrorMessage] = useState('');
+  const [page, setPage] = useState(1);
   const authorized = state.credentials!.token !== '' && state.roles!.includes(RoleEnum.Administrator);
 
   const handleErrors = (response: Response) => {
@@ -22,8 +23,8 @@ const Users = () => {
 
   useEffect(() => {
     const fetchUsers = async () => {
-      const payload: UsersRequest = { page: 1 };
-      const response: UsersResponse = await Api().post('administrate/users', state.credentials!.token, payload, handleErrors);
+      const request: UsersRequest = { page };
+      const response: UsersResponse = await Api().post('administrate/users', state.credentials!.token, request, handleErrors);
       setUsers(response.users)
     };
 
@@ -37,7 +38,7 @@ const Users = () => {
       <Center h="100%">
         <div className="Users">
           <ul>
-            {users.map((user, index) => { return <li key={index}>{user.id}: {user.email}</li>; })}
+            {users.map((user, index) => { return <li key={index}>{user.email} ({user.id})</li>; })}
           </ul>
         </div>
       </Center>

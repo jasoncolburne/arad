@@ -39,8 +39,8 @@ const Login = () => {
     if ([email, passphrase].includes('')) {
       setErrorMessage('cannot be blank');
     } else {
-      const payload: LoginRequest = { email, passphrase };
-      const response: LoginResponse = await Api().post('identify/login', null, payload, handleErrors);
+      const request: LoginRequest = { email, passphrase };
+      const response: LoginResponse = await Api().post('identify/login', null, request, handleErrors);
       const newState: ApplicationState = { ...state, ...response };
       setState(newState);
     }

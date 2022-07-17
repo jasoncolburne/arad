@@ -42,8 +42,8 @@ const Register = () => {
     } else if ([email, passphrase, verification].includes('')) {
       setErrorMessage('cannot be blank');
     } else {
-      const payload: RegisterRequest = { email, passphrase };
-      const response: RegisterResponse = await Api().post('identify/register', null, payload, handleErrors)
+      const request: RegisterRequest = { email, passphrase };
+      const response: RegisterResponse = await Api().post('identify/register', null, request, handleErrors)
       const newState: ApplicationState = { ...state, ...response };
       setState(newState);
     }
