@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
-import { User } from "../../datatypes/User";
+import { User } from "../../api/types/friendly";
 import { useGlobalState } from "../../GlobalState";
 
 import "./index.css"

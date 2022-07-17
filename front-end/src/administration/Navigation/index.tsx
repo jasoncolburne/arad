@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 
-import { Role } from "../../datatypes/Role";
+import { RoleEnum } from "../../api/types/friendly";
 import { useGlobalState } from "../../GlobalState";
 
 const adminLinks = (
@@ -12,7 +12,7 @@ const adminLinks = (
 
 const Navigation = () => {
   const { state } = useGlobalState();
-  const isAdmin = state.roles!.includes(Role.Administrator) || false;
+  const isAdmin = state.roles!.includes(RoleEnum.Administrator) || false;
 
   return (
     <header>

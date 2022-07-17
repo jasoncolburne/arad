@@ -1,23 +1,17 @@
 import { Center } from "@chakra-ui/layout";
 import { useEffect, useState } from "react";
-import { Api } from "../../api/Api";
-import { Role } from "../../datatypes/Role";
 
-import { User } from "../../datatypes/User";
+import { Api } from "../../api/Api";
+import { RoleEnum, User, UsersRequest, UsersResponse } from "../../api/types/friendly";
 import { useGlobalState } from "../../GlobalState";
 
-interface UsersResponse {
-  users: User[];
-  count: number;
-  page: number;
-  pages: number;
-};
 
 const Users = () => {
   const { state } = useGlobalState();
   const [users, setUsers] = useState<User[]>([]);
   const [errorMessage, setErrorMessage] = useState('');
-  const authorized = state.credentials!.token !== '' && state.roles!.includes(Role.Administrator);
+  const [page, setPage] = useState(1);
+  const authorized = state.credentials!.token !== '' && state.roles!.includes(RoleEnum.Administrator);
 
   const handleErrors = (response: Response) => {
     if ([401, 403].includes(response.status)) {
@@ -29,7 +23,8 @@ const Users = () => {
 
   useEffect(() => {
     const fetchUsers = async () => {
-      const response: UsersResponse = await Api().get('administrate/users', state.credentials!.token, null, handleErrors);
+      const request: UsersRequest = { page };
+      const response: UsersResponse = await Api().post('administrate/users', state.credentials!.token, request, handleErrors);
       setUsers(response.users)
     };
 
@@ -43,7 +38,7 @@ const Users = () => {
       <Center h="100%">
         <div className="Users">
           <ul>
-            {users.map((user, index) => { return <li key={index}>{user.id}: {user.email}</li>; })}
+            {users.map((user, index) => { return <li key={index}>{user.email} ({user.id})</li>; })}
           </ul>
         </div>
       </Center>
