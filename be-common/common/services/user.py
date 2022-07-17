@@ -25,13 +25,13 @@ class UserService:
 
         return self._sanitize_user(user)
 
-    async def get_by_id(self, user_id: UUID) -> UserType:
-        user = await self.user_repository.get_by_id(user_id=user_id)
-        return self._sanitize_user(user)
+    # async def get_by_id(self, user_id: UUID) -> UserType:
+    #     user = await self.user_repository.get_by_id(user_id=user_id)
+    #     return self._sanitize_user(user)
 
-    async def get_by_email(self, email: str) -> UserType:
-        user = await self.user_repository.get_by_email(email=email)
-        return self._sanitize_user(user)
+    # async def get_by_email(self, email: str) -> UserType:
+    #     user = await self.user_repository.get_by_email(email=email)
+    #     return self._sanitize_user(user)
 
     async def page(self, number: int = 1) -> UserPage:
         users = await self.user_repository.page(number=number)
@@ -49,25 +49,3 @@ class UserService:
     # here we remove passphrases
     def _sanitize_user(self, user: UserModel) -> UserType:
         return UserType(id=user.id, email=user.email)
-
-    # this is just a guide, authentication should not be done here
-    # 
-    # async def get_current(self, token: str) -> UserModel:
-    #     credentials_exception = HTTPException(
-    #         status_code=status.HTTP_401_UNAUTHORIZED,
-    #         detail="Could not validate credentials",
-    #         headers={"WWW-Authenticate": "Bearer"},
-    #     )
-
-    #     try:
-    #         payload = jwt.decode(token, TOKEN_KEY, algorithms=[TOKEN_ALGORITHM])
-    #         user_id = UUID(payload.get("sub"))
-    #         if user_id is None:
-    #             raise credentials_exception
-    #     except JWTError:
-    #         raise credentials_exception
-        
-    #     user = await self.get_by_id(user_id)
-    #     if user is None:
-    #         raise credentials_exception
-    #     return user

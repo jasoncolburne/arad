@@ -10,6 +10,7 @@ import { RegisterRequest, RegisterResponse } from "../../api/types/friendly";
 import { ApplicationState } from "../../datatypes/ApplicationState";
 import { useGlobalState } from "../../GlobalState";
 import { loggedIn } from "../../utility/authorization";
+import { emptyCredentials } from "../../datatypes/Credentials";
 
 
 const Register = () => {
@@ -44,7 +45,15 @@ const Register = () => {
     } else {
       const request: RegisterRequest = { email, passphrase };
       const response: RegisterResponse = await Api().post('identify/register', null, request, handleErrors)
-      const newState: ApplicationState = { ...state, ...response };
+      const newState: ApplicationState = {
+        ...state,
+        credentials: {
+          ...emptyCredentials,
+          refresh_token: response.refresh_token,
+        },
+        user: response.user,
+        roles: response.roles,
+      };
       setState(newState);
     }
   }

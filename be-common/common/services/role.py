@@ -1,22 +1,20 @@
-# from uuid import UUID
+from sqlmodel import Session
 
-# from sqlalchemy import select
-# from sqlmodel import Session
-
-from database.models import User
+from common.repositories.role import RoleRepository
+from common.types.response import User, Role
 
 
 class RoleService:
-    # def __init__(self, database: Session):
-    #     self.database = database      
+    def __init__(
+        self,
+        database: Session | None = None,
+        role_repository: RoleRepository | None = None,
+    ):
+        self.role_repository = role_repository or RoleRepository(database=database)
+    
+    def all():
+        self.role_repository.all()
 
-    def list_current(self, user: User):
-        # doesn't feel like this should live here
-        roles = ["READER"]
-        if "reviewer" in user.email or "admin" in user.email:
-            roles.append("REVIEWER")
-        if "admin" in user.email:
-            roles.append("ADMINISTRATOR")
-          
-        return roles
+    async def all_for_user(self, user: User) -> list[Role]:
+        return await self.role_repository.all_for_user_id(user_id=user.id)
 
