@@ -8,8 +8,12 @@ from database.models import User as UserModel
 
 
 class UserService:
-    def __init__(self, database: Session):
-        self.user_repository = UserRepository(database=database)
+    def __init__(
+        self,
+        database: Session | None,
+        user_repository: UserRepository | None
+    ):
+        self.user_repository = user_repository or UserRepository(database=database)
 
     async def create(self, email: str, hashed_passphrase: str) -> UserType:
         user = await self.user_repository.create(
