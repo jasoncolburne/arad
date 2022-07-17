@@ -15,9 +15,9 @@ from common.types.response import User as UserType, Role
 from identity.cache import Cache
 
 
-REFRESH_TOKEN_EXPIRATION_MINUTES = 30
+REFRESH_TOKEN_EXPIRATION_MINUTES = 5
 
-ACCESS_TOKEN_EXPIRATION_MINUTES = 15
+ACCESS_TOKEN_EXPIRATION_MINUTES = 1
 ACCESS_TOKEN_ALGORITHM = "ES256"
 ACCESS_TOKEN_PRIVATE_KEY_PEM = os.environ.get(
     "ACCESS_TOKEN_PRIVATE_KEY_PEM",
@@ -58,7 +58,7 @@ class AuthenticationService:
         if self._verify_passphrase(passphrase, user.hashed_passphrase):
             return UserType(id=user.id, email=user.email)
         else:
-            raise UnauthorizedException
+            raise UnauthorizedException()
 
     def create_access_token(self, user_id: UUID, scope: Role) -> str:
         payload = {"sub": str(user_id), "scope": str(scope)}

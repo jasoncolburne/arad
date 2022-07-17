@@ -3,8 +3,9 @@ import os
 from ecdsa import VerifyingKey
 from jose import jwt, JWTError
 
+from common.types.exception import UnauthorizedException
 
-TOKEN_EXPIRATION_MINUTES = 15
+
 TOKEN_ALGORITHM = "ES256"
 TOKEN_PUBLIC_KEY_PEM = os.environ.get(
     "TOKEN_PUBLIC_KEY_PEM",
@@ -23,6 +24,6 @@ class AuthenticationService:
         try:
             payload = jwt.decode(token, TOKEN_PUBLIC_KEY, algorithms=[TOKEN_ALGORITHM])
         except JWTError:
-            raise UnauthorizedException("Could not validate credentials")
+            raise UnauthorizedException()
         
         return payload

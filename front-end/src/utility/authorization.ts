@@ -1,15 +1,15 @@
 import jwt_decode from "jwt-decode";
 
 import { Role, Roles } from "../api/types/friendly";
-import { ApplicationState } from "../datatypes/ApplicationState";
+import { Credentials } from "../datatypes/Credentials";
 
 export const isAdministrator = (roles: Role[]) => roles.includes(Roles.Administrator);
 export const isReviewer = (roles: Role[]) => roles.includes(Roles.Reviewer);
 export const isReader = (roles: Role[]) => roles.includes(Roles.Reader);
 
 // we know that our application state is complete, this is by design
-export const loggedIn = (state: Partial<ApplicationState>) => {
-    return (/* state.credentials!.refreshToken !== '' && */ state.roles!.length > 0);
+export const loggedIn = (credentials: Credentials) => {
+    return credentials.refresh_token !== '';
 }
 
 interface Jwt {
@@ -17,15 +17,17 @@ interface Jwt {
     exp: number;
 };
 
-export const jwtValid = (access_token: string) => {
-    if (access_token === '') {
+export const jwtValid = (accessToken: string) => {
+    if (accessToken === '') {
         return false;
     }
 
-    const decoded_jwt = jwt_decode<Jwt>(access_token);
+    const decodedJWT = jwt_decode<Jwt>(accessToken);
     const unixTime = Math.floor(Date.now() / 1000);
 
-    if (decoded_jwt.exp < unixTime - 15) {
+    console.log(decodedJWT.exp - unixTime);
+
+    if (decodedJWT.exp < unixTime - 15) {
         return false;
     }
 

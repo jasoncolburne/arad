@@ -23,10 +23,10 @@ const Register = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (loggedIn(state)) {
+    if (loggedIn(state.credentials!)) {
       navigate("/");
     }
-  }, [state, navigate])
+  }, [state.credentials, navigate])
 
   const handleErrors = (response: Response) => {
     if (response.status === 400) {

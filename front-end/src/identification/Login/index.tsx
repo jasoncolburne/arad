@@ -22,10 +22,10 @@ const Login = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (loggedIn(state)) {
+    if (loggedIn(state.credentials!)) {
       navigate("/");
     }
-  }, [state, navigate])
+  }, [state.credentials, navigate])
 
   const handleErrors = (response: Response) => {
     if ([401, 403].includes(response.status)) {

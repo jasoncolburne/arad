@@ -4,6 +4,8 @@ import os
 
 import aioredis
 
+from common.types.exception import UnauthorizedException
+
 
 CACHE_URL = os.environ.get("CACHE_URL")
 

@@ -27,7 +27,7 @@ const Header = () => {
         <Navigation />
       </div>
       <div className="right">
-        {loggedIn(state) ? clickableEmail(state.user!.email) : authentication}
+        {loggedIn(state.credentials!) ? clickableEmail(state.user!.email) : authentication}
       </div>
     </header>
   )
