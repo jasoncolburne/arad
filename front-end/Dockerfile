@@ -3,11 +3,11 @@
 FROM node:slim
 
 WORKDIR /app
-COPY ./package.json ./package.json
-COPY ./package-lock.json ./package-lock.json
+COPY package.json .
+COPY yarn.lock .
 
-RUN npm install
+RUN yarn install
 
 COPY . .
 
-CMD ["npm", "start"]
+CMD ["yarn", "start"]
