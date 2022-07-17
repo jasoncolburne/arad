@@ -18,7 +18,7 @@ from .types.response import UsersResponse
 
 
 app = get_application()
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/identify/login")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/identify/token")
 authentication_service = AuthenticationService()
 
 
