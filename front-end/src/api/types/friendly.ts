@@ -4,7 +4,9 @@ import { components as administrate } from './administrate';
 export type Credentials = identify['schemas']['Credentials'];
 export type User = identify['schemas']['User'];
 export type Role = identify['schemas']['Role'];
-export enum RoleEnum {
+
+// this is fragile. if we ever update the roles in the back-end, we must adjust here
+export enum Roles {
   Administrator = "ADMINISTRATOR",
   Reviewer = "REVIEWER",
   Reader = "READER"

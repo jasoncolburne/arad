@@ -1,6 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import { User } from "../../api/types/friendly";
 import { useGlobalState } from "../../GlobalState";
+import { loggedIn } from "../../utility/authorization";
 
 import "./index.css"
 
@@ -13,11 +14,10 @@ const Footer = () => {
   const { state, setState } = useGlobalState();
   const navigate = useNavigate();
 
-  const loggedIn = state.roles!.length > 0;
-
   const logoutAction = (event: React.MouseEvent<HTMLAnchorElement>) => {
     event.preventDefault();
 
+    // wait do we actually need to have this ...state here?
     const newState = { ...state, user: emptyUser, roles: [] };
     setState(newState);
 
@@ -33,7 +33,7 @@ const Footer = () => {
           <Link to="/code">Accessible Research Article Database</Link>
         </div>
         <div className="right">
-          {loggedIn ? logoutLink : null}
+          {loggedIn(state) ? logoutLink : null}
         </div>
       </div>
     </footer>

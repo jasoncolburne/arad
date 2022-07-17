@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { Navigation } from "../../administration/Navigation";
 
 import { useGlobalState } from "../../GlobalState";
+import { loggedIn } from "../../utility/authorization";
 
 import "./index.css"
 
@@ -18,7 +19,6 @@ const clickableEmail = (email: string) => {
 
 const Header = () => {
   const { state } = useGlobalState();
-  const loggedIn = state.roles!.length > 0;
 
   return (
     <header className="header">
@@ -27,7 +27,7 @@ const Header = () => {
         <Navigation />
       </div>
       <div className="right">
-        {loggedIn ? clickableEmail(state.user!.email) : authentication}
+        {loggedIn(state) ? clickableEmail(state.user!.email) : authentication}
       </div>
     </header>
   )
