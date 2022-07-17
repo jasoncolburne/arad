@@ -1,6 +1,4 @@
-import { Role } from "./Role";
-import { User } from "./User";
-import { Credentials } from "./Credentials";
+import { User, Role, Credentials } from '../api/types/friendly';
 
 interface ApplicationState {
   credentials: Credentials;

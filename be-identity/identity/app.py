@@ -1,48 +1,35 @@
-from fastapi import Depends, FastAPI, HTTPException, status
-from fastapi.middleware.cors import CORSMiddleware
+from fastapi import Depends, HTTPException, status
 from sqlalchemy import exc
 from sqlmodel import Session
 
+from common.app import get_application
 from common.services.role import RoleService
 from common.services.user import UserService
-from identity.services.authentication import AuthenticationService
-
+from common.types.exception import AradException
 from database import get_session
 from database.models import User
 
-app = FastAPI()
+from .services.authentication import AuthenticationService
+from .types.response import LoginResponse, RegisterResponse
 
-origins = [
-    "http://localhost",
-]
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+app = get_application()
 
-@app.get("/health")
+
+@app.get("/health", include_in_schema=False)
 async def health():
     return {"status": "healthy?"}
 
 
-# endpoints can share this since it is stateless
-authentication_service = AuthenticationService()
 
-@app.post("/register")
+@app.post("/register", response_model=RegisterResponse)
 async def register(body: dict, database: Session = Depends(get_session)):
     email = body['email']
     passphrase = body['passphrase']
-    
-    hashed_passphrase = authentication_service.hash_passphrase(passphrase)
-    user = User(email=email, hashed_passphrase=hashed_passphrase)
 
-    user_service = UserService(database)
+    authentication_service = AuthenticationService(database=database)
     try:
-        await user_service.create(user)
+        user = await authentication_service.create_user_with_passphrase(email=email, passphrase=passphrase)
     except exc.IntegrityError:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -59,7 +46,7 @@ async def register(body: dict, database: Session = Depends(get_session)):
     }
 
 
-@app.post("/login")
+@app.post("/login", response_model=LoginResponse)
 async def login(body: dict, database: Session = Depends(get_session)):
     authentication_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
@@ -70,13 +57,10 @@ async def login(body: dict, database: Session = Depends(get_session)):
     email = body['email']
     passphrase = body['passphrase']
 
-    user_service = UserService(database)
+    authentication_service = AuthenticationService(database=database)
     try:
-        user = await user_service.get_by_email(email)
-    except exc.NoResultFound:
-        raise authentication_exception
-
-    if not authentication_service.authenticate_user(user, passphrase):
+        user = await authentication_service.authenticate_by_passphrase(email=email, passphrase=passphrase)
+    except (exc.NoResultFound, AradException):
         raise authentication_exception
 
     role_service = RoleService()

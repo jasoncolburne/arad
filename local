@@ -31,6 +31,10 @@ be_exec() {
   done
 }
 
+types() {
+  docker compose run --rm front-end ./build_types
+}
+
 docker_image_prune() {
   # prune dangling images
   docker image prune -f
@@ -60,6 +64,8 @@ execute() {
     docker_image_prune
   elif [[ "${COMMAND}" == "rm" ]]; then
     docker_compose_rm
+  elif [[ "${COMMAND}" == "types" ]]; then
+    types
   else
     echo "unknown command ${COMMAND}"
     exit 1

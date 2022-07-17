@@ -1,55 +1,34 @@
 import logging
-from typing import List
 
-from fastapi import Depends, FastAPI
-from fastapi.middleware.cors import CORSMiddleware
+from fastapi import Depends
 from fastapi.security import OAuth2PasswordBearer
-
 from sqlalchemy import select
 from sqlmodel import Session
 
+from common.app import get_application
 from common.services.user import UserService
 from database import get_session
-from database.models import User
+
+from .types.request import UsersRequest
+from .types.response import UsersResponse
 
 
-app = FastAPI()
-
-origins = [
-    "http://localhost",
-]
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
+app = get_application()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/login")
 
 
-@app.get("/health")
+@app.get("/health", include_in_schema=False)
 async def health():
     return {"status": "healthy?"}
 
 
-@app.get("/users")
+@app.post("/users", response_model=UsersResponse)
 async def users(
-    page: int = 1,
+    request: UsersRequest,
     token: str = Depends(oauth2_scheme),
     database: Session = Depends(get_session),
 ):
     user_service = UserService(database)
+    page = request.page or 1
 
-    user_count = await user_service.count()
-    users = await user_service.list_paginated()
-    pages = (user_count - 1) // 10 + 1
-
-    return {
-        "users": users,
-        "count": len(users),
-        "page": page,
-        "pages": pages,
-    }
+    return await user_service.page(number=page)

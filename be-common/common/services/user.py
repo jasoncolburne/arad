@@ -1,62 +1,69 @@
-from typing import List
 from uuid import UUID
 
-from sqlalchemy import func, select
 from sqlmodel import Session
 
-from database.models import User
+from common.repositories.user import UserRepository, PAGE_SIZE_USER
+from common.types.response import UserPage, User as UserType
+from database.models import User as UserModel
 
 
 class UserService:
     def __init__(self, database: Session):
-        self.database = database      
+        self.user_repository = UserRepository(database=database)
 
-    async def create(self, user: User) -> User:
-        self.database.add(user)
-        await self.database.commit()
-
-        return user
-
-    async def get_current(self, token: str) -> User:
-        credentials_exception = HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Could not validate credentials",
-            headers={"WWW-Authenticate": "Bearer"},
+    async def create(self, email: str, hashed_passphrase: str) -> UserType:
+        user = await self.user_repository.create(
+            UserModel(
+                email=email,
+                hashed_passphrase=hashed_passphrase
+            )
         )
 
-        try:
-            payload = jwt.decode(token, TOKEN_KEY, algorithms=[TOKEN_ALGORITHM])
-            user_id = UUID(payload.get("sub"))
-            if user_id is None:
-                raise credentials_exception
-        except JWTError:
-            raise credentials_exception
+        return self._sanitize_user(user)
+
+    async def get_by_id(self, user_id: UUID) -> UserType:
+        user = await self.user_repository.get_by_id(user_id=user_id)
+        return self._sanitize_user(user)
+
+    async def get_by_email(self, email: str) -> UserType:
+        user = await self.user_repository.get_by_email(email=email)
+        return self._sanitize_user(user)
+
+    async def page(self, number: int = 1) -> UserPage:
+        users = await self.user_repository.page(number=number)
+        total = await self.user_repository.count()
+
+        pages = (total - 1) // PAGE_SIZE_USER + 1
+
+        return {
+            "users": [self._sanitize_user(user) for user in users],
+            "count": len(users),
+            "page": number,
+            "pages": pages,
+        }
+
+    # here we remove passphrases
+    def _sanitize_user(self, user: UserModel) -> UserType:
+        return UserType(id=user.id, email=user.email)
+
+    # this is just a guide, authentication should not be done here
+    # 
+    # async def get_current(self, token: str) -> UserModel:
+    #     credentials_exception = HTTPException(
+    #         status_code=status.HTTP_401_UNAUTHORIZED,
+    #         detail="Could not validate credentials",
+    #         headers={"WWW-Authenticate": "Bearer"},
+    #     )
+
+    #     try:
+    #         payload = jwt.decode(token, TOKEN_KEY, algorithms=[TOKEN_ALGORITHM])
+    #         user_id = UUID(payload.get("sub"))
+    #         if user_id is None:
+    #             raise credentials_exception
+    #     except JWTError:
+    #         raise credentials_exception
         
-        user = await self.get_by_id(user_id)
-        if user is None:
-            raise credentials_exception
-        return user
-
-    async def get_by_id(self, user_id: UUID) -> User:
-        query = select(User).where(User.id == user_id)
-        result = await self.database.execute(query)
-        user = result.scalars().one()
-
-        return user
-
-    async def get_by_email(self, email: str) -> User:
-        query = select(User).where(User.email == email)
-        result = await self.database.execute(query)
-        user = result.scalars().one()
-
-        return user
-
-    async def list_paginated(self, page: int = 1) -> List[User]:
-        limit = 10
-        offset = (page - 1) * limit
-
-        query = await self.database.execute(select(User).order_by(User.email).limit(limit).offset(offset))
-        return list(query.scalars().all())
-
-    async def count(self) -> int:
-        return await self.database.scalar(select(func.count(User.id)))
+    #     user = await self.get_by_id(user_id)
+    #     if user is None:
+    #         raise credentials_exception
+    #     return user

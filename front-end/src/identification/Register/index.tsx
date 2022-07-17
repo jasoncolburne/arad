@@ -6,6 +6,7 @@ import { FormControl, Button } from '@chakra-ui/react';
 import { Input, InputGroup } from "@chakra-ui/input";
 
 import { Api } from "../../api/Api";
+import { RegisterResponse } from "../../api/types/friendly";
 import { ApplicationState } from "../../datatypes/ApplicationState";
 import { useGlobalState } from "../../GlobalState";
 
@@ -47,7 +48,7 @@ const Register = () => {
       setErrorMessage('cannot be blank');
     } else {
       const payload: RegistrationPayload = { email, passphrase };
-      const response: ApplicationState = await Api().post('identify/register', null, payload, handleErrors)
+      const response: RegisterResponse = await Api().post('identify/register', null, payload, handleErrors)
       const newState: ApplicationState = { ...state, ...response };
       setState(newState);
     }
