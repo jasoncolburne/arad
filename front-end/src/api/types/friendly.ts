@@ -10,7 +10,10 @@ export enum RoleEnum {
   Reader = "READER"
 };
 
+export type LoginRequest = identify['schemas']['LoginRequest'];
 export type LoginResponse = identify['schemas']['LoginResponse'];
+
+export type RegisterRequest = identify['schemas']['RegisterRequest'];
 export type RegisterResponse = identify['schemas']['RegisterResponse'];
 
 export type UsersRequest = administrate['schemas']['UsersRequest'];

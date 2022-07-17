@@ -26,11 +26,25 @@ export interface components {
       /** Detail */
       detail?: components["schemas"]["ValidationError"][];
     };
+    /** LoginRequest */
+    LoginRequest: {
+      /** Email */
+      email: string;
+      /** Passphrase */
+      passphrase: string;
+    };
     /** LoginResponse */
     LoginResponse: {
       credentials: components["schemas"]["Credentials"];
       user: components["schemas"]["User"];
       roles: components["schemas"]["Role"][];
+    };
+    /** RegisterRequest */
+    RegisterRequest: {
+      /** Email */
+      email: string;
+      /** Passphrase */
+      passphrase: string;
     };
     /** RegisterResponse */
     RegisterResponse: {
@@ -84,7 +98,7 @@ export interface operations {
     };
     requestBody: {
       content: {
-        "application/json": { [key: string]: unknown };
+        "application/json": components["schemas"]["RegisterRequest"];
       };
     };
   };
@@ -105,7 +119,7 @@ export interface operations {
     };
     requestBody: {
       content: {
-        "application/json": { [key: string]: unknown };
+        "application/json": components["schemas"]["LoginRequest"];
       };
     };
   };

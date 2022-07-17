@@ -6,14 +6,10 @@ import { FormControl, Button } from '@chakra-ui/react';
 import { Input, InputGroup } from "@chakra-ui/input";
 
 import { Api } from "../../api/Api";
-import { LoginResponse } from "../../api/types/friendly";
+import { LoginRequest, LoginResponse } from "../../api/types/friendly";
 import { ApplicationState } from "../../datatypes/ApplicationState";
 import { useGlobalState } from "../../GlobalState";
 
-interface LoginPayload {
-  email: String;
-  passphrase: String;
-}
 
 const Login = () => {
   const { state, setState } = useGlobalState();
@@ -43,7 +39,7 @@ const Login = () => {
     if ([email, passphrase].includes('')) {
       setErrorMessage('cannot be blank');
     } else {
-      const payload: LoginPayload = { email, passphrase };
+      const payload: LoginRequest = { email, passphrase };
       const response: LoginResponse = await Api().post('identify/login', null, payload, handleErrors);
       const newState: ApplicationState = { ...state, ...response };
       setState(newState);

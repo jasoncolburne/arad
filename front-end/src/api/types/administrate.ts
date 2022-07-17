@@ -5,7 +5,7 @@
 
 export interface paths {
   "/users": {
-    get: operations["users_users_get"];
+    post: operations["users_users_post"];
   };
 }
 
@@ -55,7 +55,7 @@ export interface components {
 }
 
 export interface operations {
-  users_users_get: {
+  users_users_post: {
     responses: {
       /** Successful Response */
       200: {
