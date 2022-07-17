@@ -9,6 +9,7 @@ import { Api } from "../../api/Api";
 import { LoginRequest, LoginResponse } from "../../api/types/friendly";
 import { ApplicationState } from "../../datatypes/ApplicationState";
 import { useGlobalState } from "../../GlobalState";
+import { loggedIn } from "../../utility/authorization";
 
 
 const Login = () => {
@@ -18,13 +19,12 @@ const Login = () => {
   const [errorMessage, setErrorMessage] = useState('');
 
   const navigate = useNavigate();
-  const loggedIn = state.roles!.length > 0;
 
   useEffect(() => {
-    if (loggedIn) {
+    if (loggedIn(state)) {
       navigate("/");
     }
-  }, [loggedIn, navigate])
+  }, [state, navigate])
 
   const handleErrors = (response: Response) => {
     if ([401, 403].includes(response.status)) {

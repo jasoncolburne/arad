@@ -2,8 +2,9 @@ import { Center } from "@chakra-ui/layout";
 import { useEffect, useState } from "react";
 
 import { Api } from "../../api/Api";
-import { RoleEnum, User, UsersRequest, UsersResponse } from "../../api/types/friendly";
+import { User, UsersRequest, UsersResponse } from "../../api/types/friendly";
 import { useGlobalState } from "../../GlobalState";
+import { isAdministrator } from "../../utility/authorization";
 
 
 const Users = () => {
@@ -11,7 +12,7 @@ const Users = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [errorMessage, setErrorMessage] = useState('');
   const [page, setPage] = useState(1);
-  const authorized = state.credentials!.token !== '' && state.roles!.includes(RoleEnum.Administrator);
+  const authorized = state.credentials!.token !== '' && isAdministrator(state.roles!);
 
   const handleErrors = (response: Response) => {
     if ([401, 403].includes(response.status)) {
@@ -31,7 +32,7 @@ const Users = () => {
     if (authorized) {
       fetchUsers();
     }
-  }, [authorized, state.credentials]);
+  }, [authorized, page, state.credentials]);
 
   if (authorized && errorMessage === '') {
       return (
