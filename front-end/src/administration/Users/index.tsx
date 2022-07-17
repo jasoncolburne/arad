@@ -41,14 +41,12 @@ const Users = () => {
         user: state.user!,
         roles: state.roles!,
       };
-      console.log({newState});
       setState(newState);
       setFetchingAccessToken(false);
     }
 
     if (authorized && !accessTokenValid && !fetchingAccessToken) {
       const request: TokenRequest = { refresh_token: state.credentials!.refresh_token, scope: Roles.Administrator }
-      console.log('fetching access token');
       setFetchingAccessToken(true);
       fetchAccessToken(request);
     }
