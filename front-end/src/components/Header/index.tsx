@@ -28,6 +28,8 @@ const Header = () => {
       const state: ApplicationState = JSON.parse(encoded_state);
       setState(state);
     }
+  // we only want this to run once
+  // eslint-disable-next-line
   }, []);
 
   return (

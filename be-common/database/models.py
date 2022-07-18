@@ -6,24 +6,42 @@ from uuid import UUID, uuid4
 
 from pydantic import EmailStr
 from sqlalchemy import String
-from sqlalchemy.sql.schema import Column
+from sqlalchemy.sql.schema import Column, ForeignKey
 from sqlmodel import Field, SQLModel
-from sqlmodel.sql.sqltypes import AutoString, GUID
-
+from sqlmodel.sql.sqltypes import AutoString
+from fastapi_utils.guid_type import GUID, GUID_SERVER_DEFAULT_POSTGRESQL
 
 class User(SQLModel, table=True):
-    id: UUID | None = Field(default_factory=uuid4, sa_column=Column("id", GUID, primary_key=True, nullable=False))
-    email: EmailStr = Field(index=True, sa_column=Column("email", AutoString, unique=True, nullable=False))
+    id: UUID | None = Field(sa_column=Column(
+        "id",
+        GUID,
+        primary_key=True,
+        server_default=GUID_SERVER_DEFAULT_POSTGRESQL,
+        nullable=False
+    ))
+    email: EmailStr = Field(sa_column=Column("email", AutoString, unique=True, nullable=False, index=True))
     hashed_passphrase: str
 
-# class Role(SQLModel, table=True):
-#     id: int | None = Field(default=None, primary_key=True, nullable=False)
-#     name: str = Field(index=True, sa_column=Column("name", String, unique=True))
+class Role(SQLModel, table=True):
+    id: UUID | None = Field(sa_column=Column(
+        "id",
+        GUID,
+        primary_key=True,
+        server_default=GUID_SERVER_DEFAULT_POSTGRESQL,
+        nullable=False
+    ))
+    name: str = Field(sa_column=Column("name", AutoString, unique=True, nullable=False, index=True))
 
-# class UserRole(SQLModel, table=True):
-#     id: int | None = Field(default=None, primary_key=True, nullable=False)
-#     user_id: int = Field(foreign_key="user.id", index=True)
-#     role_id: int = Field(foreign_key="role.id")
+class UserRole(SQLModel, table=True):
+    id: UUID | None = Field(sa_column=Column(
+        "id",
+        GUID,
+        primary_key=True,
+        server_default=GUID_SERVER_DEFAULT_POSTGRESQL,
+        nullable=False
+    ))
+    user_id: int = Field(sa_column=Column("user_id", GUID, ForeignKey("user.id"), nullable=False, index=True))
+    role_id: int = Field(sa_column=Column("role_id", GUID, ForeignKey("role.id"), nullable=False))
 
 # class Article(SQLModel, table=True):
 #     id: int | None = Field(default=None, primary_key=True, nullable=False)

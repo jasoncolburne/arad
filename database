@@ -12,6 +12,9 @@ create() {
   read -r -d '' CREATE_SCRIPT << EOS
 apt-get -y install postgresql-client
 echo "SELECT 'CREATE DATABASE ${DATABASE_NAME}' WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = '${DATABASE_NAME}')\gexec" | PGPASSWORD=${DATABASE_PASSPHRASE} psql -U${DATABASE_USER} -h${DATABASE_HOST}
+(echo "create extension pgcrypto;" | PGPASSWORD=${DATABASE_PASSPHRASE} psql -U${DATABASE_USER} -h${DATABASE_HOST}) || true
+echo
+echo "please ignore any extension error above"
 EOS
 
   docker compose run --rm be-identity bash -c "${CREATE_SCRIPT}"
@@ -60,6 +63,29 @@ EOS
   ./sync
 }
 
+empty_migration() {
+  local ARGUMENTS=$1
+
+  if [[ -z "${ARGUMENTS}" ]]
+  then
+    echo "please supply a name for the migration"
+    exit 1
+  fi
+
+  read -r -d '' GENERATION_SCRIPT << EOS
+BASE_PATH=\$(poetry env info | grep '^Path' | head -n1 | cut -d':' -f2 | sed 's/\s*//')
+ACTIVATE="\${BASE_PATH}/bin/activate"
+. \${ACTIVATE}
+alembic revision -m "${ARGUMENTS}"
+chown $(id -u):$(id -g) database/migrations/versions/*
+EOS
+
+  docker compose run --rm be-identity bash -c "${GENERATION_SCRIPT}"
+
+  rsync -v -r -d be-identity/database/migrations/versions be-common/database/migrations
+  ./sync
+}
+
 # we can probably do the rest in a single line by eval or something
 execute() {
   local COMMAND=$1
@@ -73,6 +99,8 @@ execute() {
     migrate
   elif [[ "${COMMAND}" == "generate-migrations" ]]; then
     generate_migrations "${ARGUMENTS}"
+  elif [[ "${COMMAND}" == "empty-migration" ]]; then
+    empty_migration "${ARGUMENTS}"
   else
     echo "unknown command ${COMMAND}"
     exit 1
