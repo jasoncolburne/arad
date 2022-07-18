@@ -13,6 +13,8 @@ const Users = () => {
   const { state, setState } = useGlobalState();
   const [users, setUsers] = useState<User[]>([]);
   const [errorMessage, setErrorMessage] = useState('');
+  // TODO: remove this disable once we are using pagination on the front end
+  // eslint-disable-next-line
   const [page, setPage] = useState(1);
   const [fetchingAccessToken, setFetchingAccessToken] = useState(false);
   const navigate = useNavigate();
