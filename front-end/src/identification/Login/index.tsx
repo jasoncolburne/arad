@@ -10,6 +10,7 @@ import { LoginRequest, LoginResponse } from "../../api/types/friendly";
 import { ApplicationState } from "../../datatypes/ApplicationState";
 import { useGlobalState } from "../../GlobalState";
 import { loggedIn } from "../../utility/authorization";
+import { emptyCredentials } from "../../datatypes/Credentials";
 
 
 const Login = () => {
@@ -21,10 +22,10 @@ const Login = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (loggedIn(state)) {
+    if (loggedIn(state.credentials!)) {
       navigate("/");
     }
-  }, [state, navigate])
+  }, [state.credentials, navigate])
 
   const handleErrors = (response: Response) => {
     if ([401, 403].includes(response.status)) {
@@ -41,7 +42,15 @@ const Login = () => {
     } else {
       const request: LoginRequest = { email, passphrase };
       const response: LoginResponse = await Api().post('identify/login', null, request, handleErrors);
-      const newState: ApplicationState = { ...state, ...response };
+      const newState: ApplicationState = {
+        ...state,
+        credentials: {
+          ...emptyCredentials,
+          refresh_token: response.refresh_token,
+        },
+        user: response.user,
+        roles: response.roles,
+      };
       setState(newState);
     }
   }

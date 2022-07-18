@@ -48,10 +48,15 @@ services:
   be-identity:
     build: be-identity
     restart: always
-    environment: *common-environment
+    environment:
+      <<: *common-environment
+      CACHE_URL: redis://cache:6379/0
     volumes:
       - './be-identity:/app'
-    depends_on: *database-dependency
+    depends_on:
+      <<: *database-dependency
+      cache:
+        condition: service_healthy
     healthcheck: *be-healthcheck
     ports:
       - "8003:8000" # for docs
@@ -89,6 +94,17 @@ services:
     ports:
       - "8000:8000" # for docs
 
+  cache:
+    image: "redis:bullseye"
+    restart: always
+    volumes:
+      - 'cache:/bitnami/redis/data'
+    healthcheck:
+      test: [ "CMD", "redis-cli", "--raw", "incr", "ping" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
   database:
     image: "postgres:bullseye"
     restart: always
@@ -103,4 +119,5 @@ services:
       retries: 5
 
 volumes:
+  cache:
   database:

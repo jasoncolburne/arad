@@ -1,20 +1,40 @@
 from datetime import datetime, timedelta
+from secrets import token_urlsafe
+from uuid import UUID
 import os
 
+from ecdsa import SigningKey
 from jose import jwt
 from passlib.context import CryptContext
 from sqlmodel import Session
 
 from common.repositories.user import UserRepository
-from common.types.response import User as UserType
+from common.types.exception import UnauthorizedException
+from common.types.response import User as UserType, Role
 
-TOKEN_EXPIRATION_MINUTES = 15
-TOKEN_KEY = os.environ.get("TOKEN_KEY", "d2c4293024e14c0716fe2135d351ba718c06c70d0d30af4b59752176e2a34152")
-TOKEN_ALGORITHM = "HS256"
+from identity.cache import Cache
+
+
+REFRESH_TOKEN_EXPIRATION_MINUTES = 5
+
+ACCESS_TOKEN_EXPIRATION_MINUTES = 1
+ACCESS_TOKEN_ALGORITHM = "ES256"
+ACCESS_TOKEN_PRIVATE_KEY_PEM = os.environ.get(
+    "ACCESS_TOKEN_PRIVATE_KEY_PEM",
+"""
+-----BEGIN EC PRIVATE KEY-----
+MHcCAQEEIPDn6E30e3lwXXnW1GyYYH942x0OiU/lRhYKYh9IJReaoAoGCCqGSM49
+AwEHoUQDQgAEnoH4lyjW4T0uUFbAYRL1G/3dxF1Mkak4CYTwDU8lSubpkIKXFqo7
+KtsWIycbTKbfLm2IdwNXDOO346u4OhCaBg==
+-----END EC PRIVATE KEY-----
+""",
+)
+ACCESS_TOKEN_PRIVATE_KEY = SigningKey.from_pem(ACCESS_TOKEN_PRIVATE_KEY_PEM)
 
 
 # never remove any used schemes, or existing users won't be able to log in
 global_passphrase_context = CryptContext(schemes=["argon2"], deprecated="auto")
+token_cache = Cache()
 
 
 class AuthenticationService:
@@ -38,15 +58,29 @@ class AuthenticationService:
         if self._verify_passphrase(passphrase, user.hashed_passphrase):
             return UserType(id=user.id, email=user.email)
         else:
-            raise Exception("Invalid username or passphrase")
+            raise UnauthorizedException()
 
-    def create_access_token(self, user: UserType) -> str:
-        payload = {"sub": str(user.id)}
-        expires = datetime.utcnow() + timedelta(minutes=TOKEN_EXPIRATION_MINUTES)
+    def create_access_token(self, user_id: UUID, scope: Role) -> str:
+        payload = {"sub": str(user_id), "scope": str(scope)}
+        expires = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRATION_MINUTES)
         payload.update({"exp": expires})
-        encoded_jwt = jwt.encode(payload, TOKEN_KEY, algorithm=TOKEN_ALGORITHM)
+        encoded_jwt = jwt.encode(payload, ACCESS_TOKEN_PRIVATE_KEY, algorithm=ACCESS_TOKEN_ALGORITHM)
 
         return encoded_jwt
+    
+    async def create_refresh_token(self, user: UserType) -> str:
+        refresh_token = token_urlsafe(48)
+
+        await token_cache.store_refresh_token(
+            refresh_token=refresh_token,
+            user_id=user.id,
+            expiration=(datetime.utcnow() + timedelta(minutes=REFRESH_TOKEN_EXPIRATION_MINUTES)),
+        )
+
+        return refresh_token
+    
+    async def verify_and_extract_uuid_from_refresh_token(self, refresh_token: str) -> UUID:
+        return await token_cache.fetch_user_id_from_valid_refresh_token(refresh_token=refresh_token)
     
     def _hash_passphrase(self, passphrase: str) -> str:
         return self.passphrase_context.hash(passphrase)

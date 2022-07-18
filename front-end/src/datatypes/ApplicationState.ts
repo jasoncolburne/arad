@@ -1,4 +1,5 @@
-import { User, Role, Credentials } from '../api/types/friendly';
+import { User, Role } from '../api/types/friendly';
+import { Credentials, emptyCredentials } from './Credentials';
 
 interface ApplicationState {
   credentials: Credentials;
@@ -7,10 +8,7 @@ interface ApplicationState {
 };
 
 const emptyState: ApplicationState = {
-  credentials: {
-    token: '',
-    token_type: '',
-  },
+  credentials: emptyCredentials,
   user: {
     id: '',
     email: '',
@@ -18,5 +16,5 @@ const emptyState: ApplicationState = {
   roles: [],
 }
 
-export { emptyState };
 export type { ApplicationState };
+export { emptyState };

@@ -10,17 +10,13 @@ export interface paths {
   "/login": {
     post: operations["login_login_post"];
   };
+  "/token": {
+    post: operations["token_token_post"];
+  };
 }
 
 export interface components {
   schemas: {
-    /** Credentials */
-    Credentials: {
-      /** Token */
-      token: string;
-      /** Token Type */
-      token_type: string;
-    };
     /** HTTPValidationError */
     HTTPValidationError: {
       /** Detail */
@@ -35,7 +31,8 @@ export interface components {
     };
     /** LoginResponse */
     LoginResponse: {
-      credentials: components["schemas"]["Credentials"];
+      /** Refresh Token */
+      refresh_token: string;
       user: components["schemas"]["User"];
       roles: components["schemas"]["Role"][];
     };
@@ -48,7 +45,8 @@ export interface components {
     };
     /** RegisterResponse */
     RegisterResponse: {
-      credentials: components["schemas"]["Credentials"];
+      /** Refresh Token */
+      refresh_token: string;
       user: components["schemas"]["User"];
       roles: components["schemas"]["Role"][];
     };
@@ -58,6 +56,17 @@ export interface components {
      * @enum {undefined}
      */
     Role: "READER" | "REVIEWER" | "ADMINISTRATOR";
+    /** TokenRequest */
+    TokenRequest: {
+      /** Refresh Token */
+      refresh_token: string;
+      scope: components["schemas"]["Role"];
+    };
+    /** TokenResponse */
+    TokenResponse: {
+      /** Access Token */
+      access_token: string;
+    };
     /** User */
     User: {
       /**
@@ -120,6 +129,27 @@ export interface operations {
     requestBody: {
       content: {
         "application/json": components["schemas"]["LoginRequest"];
+      };
+    };
+  };
+  token_token_post: {
+    responses: {
+      /** Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["TokenResponse"];
+        };
+      };
+      /** Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["TokenRequest"];
       };
     };
   };

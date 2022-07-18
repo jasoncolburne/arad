@@ -14,6 +14,7 @@ asyncpg = "^0.26.0"
 sqlmodel = "^0.0.6"
 alembic = "^1.8.0"
 pydantic = {extras = ["email"], version = "^1.9.1"}
+aioredis = "^2.0.1"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"

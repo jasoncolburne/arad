@@ -5,13 +5,14 @@ from sqlmodel import Session
 from common.app import get_application
 from common.services.role import RoleService
 from common.services.user import UserService
-from common.types.exception import AradException
+from common.types.exception import UnauthorizedException
+from common.types.response import User as UserType
 from database import get_session
 from database.models import User
 
 from .services.authentication import AuthenticationService
-from .types.request import LoginRequest, RegisterRequest
-from .types.response import LoginResponse, RegisterResponse
+from .types.request import LoginRequest, RegisterRequest, TokenRequest
+from .types.response import LoginResponse, RegisterResponse, TokenResponse
 
 
 app = get_application()
@@ -37,13 +38,15 @@ async def register(request: RegisterRequest, database: Session = Depends(get_ses
             detail="Invalid email address",
         )
 
-    role_service = RoleService()
-    roles = role_service.list_current(user)
-    access_token = authentication_service.create_access_token(user)
+    refresh_token = await authentication_service.create_refresh_token(user=user)
+
+    role_service = RoleService(database=database)
+    roles = await role_service.all_for_user(user=user)
+    
     return {
-        "credentials": {"token": access_token, "token_type": "bearer"},
-        "user": {"id": user.id, "email": user.email},
-        "roles": roles,
+        "refresh_token": refresh_token,
+        "user": user,
+        "roles": roles
     }
 
 
@@ -61,14 +64,41 @@ async def login(request: LoginRequest, database: Session = Depends(get_session))
             email=request.email,
             passphrase=request.passphrase,
         )
-    except (exc.NoResultFound, AradException):
+    except (exc.NoResultFound, UnauthorizedException):
         raise authentication_exception
 
-    role_service = RoleService()
-    roles = role_service.list_current(user)
-    access_token = authentication_service.create_access_token(user)
+    refresh_token = await authentication_service.create_refresh_token(user=user)
+
+    role_service = RoleService(database=database)
+    roles = await role_service.all_for_user(user=user)
+    
     return {
-        "credentials": {"token": access_token, "token_type": "bearer"},
-        "user": {"id": user.id, "email": user.email},
-        "roles": roles,
+        "refresh_token": refresh_token,
+        "user": user,
+        "roles": roles
     }
+
+
+@app.post("/token", response_model=TokenResponse)
+async def token(request: TokenRequest, database: Session = Depends(get_session)):
+    unauthorized_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Not authorized",
+    )
+    
+    authentication_service = AuthenticationService(database=database)
+    try:
+        user_id = await authentication_service.verify_and_extract_uuid_from_refresh_token(
+            refresh_token=request.refresh_token
+        )
+    except UnauthorizedException:
+        raise unauthorized_exception
+
+    role_service = RoleService(database=database)
+    # this is pretty nasty, constructing a user without an email because we know we won't be using it
+    roles = await role_service.all_for_user(user=UserType(id=user_id, email=''))
+    if request.scope not in roles:
+        raise unauthorized_exception
+
+    access_token = authentication_service.create_access_token(user_id=user_id, scope=request.scope)
+    return {"access_token": access_token}
