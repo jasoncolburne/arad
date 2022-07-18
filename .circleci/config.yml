@@ -36,7 +36,7 @@ jobs:
           command: |
             IMAGES=(front-end api be-identity be-reader be-reviewer be-administrator)
             for IMAGE in "${IMAGES[@]}"; do
-              TAG="${IMAGE}-${CIRCLE_BRANCH}-${CIRCLE_SHA1}-${CIRCLE_BUILD_NUM}"
+              TAG="${IMAGE}-${CIRCLE_BRANCH}-$(git rev-parse --short HEAD)"
               echo $TAG
               docker tag "project_${IMAGE}:latest" "${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:${TAG}"
               TAG="${IMAGE}-${CIRCLE_BRANCH}-latest"
