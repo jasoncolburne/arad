@@ -1,15 +1,25 @@
+import logging
 import os
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 
-ENVIRONMENT = os.environ.get("DEPLOYMENT_ENVIRONMENT")
+DEPLOYMENT_ENVIRONMENT = os.environ.get("DEPLOYMENT_ENVIRONMENT")
+LOCAL = DEPLOYMENT_ENVIRONMENT == "development"
+
+
+class HealthCheckFilter(logging.Filter):
+    def filter(self, record: logging.LogRecord) -> bool:
+        return record.args[2] != "/health"
+
+logging.getLogger("uvicorn.access").addFilter(HealthCheckFilter())
+
 
 def get_application():
     app = FastAPI(
-        openapi_url="/openapi.json" if ENVIRONMENT == "development" else None,
-        docs_url="/docs" if ENVIRONMENT == "development" else None,
+        openapi_url="/openapi.json" if LOCAL else None,
+        docs_url="/docs" if LOCAL else None,
         redoc_url=None,   
     )
 
