@@ -31,7 +31,7 @@ class Cache:
         if expiration_timestamp >= int(datetime.utcnow().timestamp()):
             return UUID(value["user_id"])
         else:
-            raise UnauthorizedException
+            raise UnauthorizedException()
 
     def _key(self, refresh_token: str) -> str:
         return f"refresh-token-{refresh_token}"

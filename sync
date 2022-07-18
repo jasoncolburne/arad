@@ -21,3 +21,4 @@ done
 
 echo
 rm -v be-reader/common/services/authentication.py
+rm -v be-identity/common/services/authentication.py
