@@ -17,7 +17,7 @@ kak4CYTwDU8lSubpkIKXFqo7KtsWIycbTKbfLm2IdwNXDOO346u4OhCaBg==
 -----END PUBLIC KEY-----
 """,
 )
-ACCESS_TOKEN_PUBLIC_KEY = VerifyingKey.from_pem(TOKEN_PUBLIC_KEY_PEM)
+ACCESS_TOKEN_PUBLIC_KEY = VerifyingKey.from_pem(ACCESS_TOKEN_PUBLIC_KEY_PEM)
 
 
 class AuthenticationService:
