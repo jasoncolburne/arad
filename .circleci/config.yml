@@ -20,6 +20,9 @@ jobs:
             echo
             pwd
       - run:
+          name: Install dependencies
+          command: apt-get install rsync
+      - run:
           name: Sync common code
           command: ./sync
       - run:
