@@ -102,4 +102,3 @@ async def token(request: TokenRequest, database: Session = Depends(get_session))
 
     access_token = authentication_service.create_access_token(user_id=user_id, scope=request.scope)
     return {"access_token": access_token}
-
