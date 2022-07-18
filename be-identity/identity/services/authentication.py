@@ -15,9 +15,9 @@ from common.types.response import User as UserType, Role
 from identity.cache import Cache
 
 
-REFRESH_TOKEN_EXPIRATION_MINUTES = 5
+REFRESH_TOKEN_EXPIRATION_DAYS = 7
 
-ACCESS_TOKEN_EXPIRATION_MINUTES = 1
+ACCESS_TOKEN_EXPIRATION_MINUTES = 10
 ACCESS_TOKEN_ALGORITHM = "ES256"
 ACCESS_TOKEN_PRIVATE_KEY_PEM = os.environ.get(
     "ACCESS_TOKEN_PRIVATE_KEY_PEM",
@@ -74,7 +74,7 @@ class AuthenticationService:
         await token_cache.store_refresh_token(
             refresh_token=refresh_token,
             user_id=user.id,
-            expiration=(datetime.utcnow() + timedelta(minutes=REFRESH_TOKEN_EXPIRATION_MINUTES)),
+            expiration=(datetime.utcnow() + timedelta(days=REFRESH_TOKEN_EXPIRATION_DAYS)),
         )
 
         return refresh_token
