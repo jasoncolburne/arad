@@ -20,8 +20,11 @@ jobs:
             echo
             pwd
       - run:
+          name: Update package manager
+          command: sudo apt-get update
+      - run:
           name: Install dependencies
-          command: sudo apt-get install rsync
+          command: sudo apt-get -y install rsync
       - run:
           name: Sync common code
           command: ./sync
