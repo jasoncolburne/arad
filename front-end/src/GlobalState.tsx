@@ -15,7 +15,11 @@ const GlobalState = ({
   children: React.ReactNode;
   value?: Partial<ApplicationState>;
 }) => {
-  const [state, setState] = useState(value);
+  const [state, setStateCore] = useState(value);
+  const setState: Dispatch<SetStateAction<Partial<ApplicationState>>> = (new_state) => {
+    localStorage.setItem('state', JSON.stringify(new_state));
+    setStateCore(new_state);
+  };
 
   return (
     <GlobalContext.Provider value={{ state, setState }}>

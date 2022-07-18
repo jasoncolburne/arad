@@ -1,5 +1,7 @@
+import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Navigation } from "../../administration/Navigation";
+import { ApplicationState } from "../../datatypes/ApplicationState";
 
 import { useGlobalState } from "../../GlobalState";
 import { loggedIn } from "../../utility/authorization";
@@ -18,12 +20,19 @@ const clickableEmail = (email: string) => {
 }
 
 const Header = () => {
-  const { state } = useGlobalState();
+  const { state, setState } = useGlobalState();
+
+  useEffect(() => {
+    const encoded_state: string | null = localStorage.getItem('state');
+    if (encoded_state) {
+      const state: ApplicationState = JSON.parse(encoded_state);
+      setState(state);
+    }
+  }, []);
 
   return (
     <header className="header">
       <div className="left">
-        {/* TODO: when not an admin, don't display this */}
         <Navigation />
       </div>
       <div className="right">
