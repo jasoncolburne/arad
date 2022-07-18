@@ -1,6 +1,7 @@
-from fastapi import FastAPI
+from common.app import get_application
 
-app = FastAPI()
+
+app = get_application()
 
 
 @app.get("/health", include_in_schema=False)
