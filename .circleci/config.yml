@@ -21,7 +21,7 @@ jobs:
             pwd
       - run:
           name: Install dependencies
-          command: apt-get install rsync
+          command: sudo apt-get install rsync
       - run:
           name: Sync common code
           command: ./sync
