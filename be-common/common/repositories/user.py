@@ -13,7 +13,8 @@ class UserRepository:
     def __init__(self, database: Session):
         self.database = database
 
-    async def create(self, user: User) -> User:
+    async def create(self, email: str, hashed_passphrase: str) -> User:
+        user = User(email=email, hashed_passphrase=hashed_passphrase)
         self.database.add(user)
         await self.database.commit()
         return user
