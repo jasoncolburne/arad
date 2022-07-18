@@ -1,3 +1,4 @@
+from datetime import datetime
 import os
 
 from ecdsa import VerifyingKey
@@ -26,4 +27,7 @@ class AuthenticationService:
         except JWTError:
             raise UnauthorizedException()
         
+        if (payload["exp"] - int(datetime.utcnow().timestamp()) < 0):
+            raise UnauthorizedException()
+
         return payload

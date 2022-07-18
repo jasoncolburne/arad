@@ -25,9 +25,7 @@ export const jwtValid = (accessToken: string) => {
     const decodedJWT = jwt_decode<Jwt>(accessToken);
     const unixTime = Math.floor(Date.now() / 1000);
 
-    console.log(decodedJWT.exp - unixTime);
-
-    if (decodedJWT.exp < unixTime - 15) {
+    if (decodedJWT.exp - unixTime < 15) {
         return false;
     }
 
