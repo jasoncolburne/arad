@@ -6,10 +6,8 @@
 
 **Status**: decided
 
-We would like to minimie our impact in case of a breach.
-
-It is proposed that by not collecting personally identifying information (PII), we protect our users and minimize our
-risk.
+We would like to minimize the impact in case of a breach. Personally identifying information is a target in most
+breaches.
 
 
 ## Considered Options
@@ -19,7 +17,7 @@ risk.
 
 ## Decision Outcome
 
-**Chosen Option**: Forbid collecting PII, for reasons below.
+**Chosen Option**: Forbid collecting PII to increase security posture at the expense of questionably valuable analytics.
 
 **Positive Consequences**:
 - Reduces risk to users in case of breach
