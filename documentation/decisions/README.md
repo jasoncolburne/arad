@@ -1,4 +1,4 @@
-[arad](../../../../)/[documentation](../)
+[arad](../../../../) / [documentation](../)
 
 # Decisions
 
