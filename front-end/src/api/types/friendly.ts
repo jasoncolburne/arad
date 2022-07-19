@@ -22,3 +22,5 @@ export type TokenResponse = identify['schemas']['TokenResponse'];
 
 export type UsersRequest = administrate['schemas']['UsersRequest'];
 export type UsersResponse = administrate['schemas']['UsersResponse'];
+
+export type RolesResponse = administrate['schemas']['RolesResponse'];

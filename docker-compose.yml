@@ -51,6 +51,7 @@ services:
     environment:
       <<: *common-environment
       CACHE_URL: redis://cache:6379/0
+      DEFAULT_ADMIN_EMAIL: admin@arad.org
     volumes:
       - './be-identity:/app'
     depends_on:

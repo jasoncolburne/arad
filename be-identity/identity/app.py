@@ -1,3 +1,5 @@
+import os
+
 from fastapi import Depends, HTTPException, status
 from sqlalchemy import exc
 from sqlmodel import Session
@@ -6,7 +8,7 @@ from common.app import get_application
 from common.services.role import RoleService
 from common.services.user import UserService
 from common.types.exception import UnauthorizedException
-from common.types.response import User as UserType
+from common.types.response import User as UserType, Role
 from database import get_session
 from database.models import User
 
@@ -14,6 +16,8 @@ from .services.authentication import AuthenticationService
 from .types.request import LoginRequest, RegisterRequest, TokenRequest
 from .types.response import LoginResponse, RegisterResponse, TokenResponse
 
+
+DEFAULT_ADMIN_EMAIL = os.environ.get("DEFAULT_ADMIN_EMAIL")
 
 app = get_application()
 
@@ -38,16 +42,14 @@ async def register(request: RegisterRequest, database: Session = Depends(get_ses
             detail="Invalid email address",
         )
 
-    refresh_token = await authentication_service.create_refresh_token(user=user)
-
     role_service = RoleService(database=database)
-    roles = await role_service.all_for_user(user=user)
-    
-    return {
-        "refresh_token": refresh_token,
-        "user": user,
-        "roles": roles
-    }
+    await role_service.assign_to_user(user=user, role=Role.READER)
+
+    if DEFAULT_ADMIN_EMAIL and request.email == DEFAULT_ADMIN_EMAIL:
+        await role_service.assign_to_user(user=user, role=Role.REVIEWER)
+        await role_service.assign_to_user(user=user, role=Role.ADMINISTRATOR)
+
+    return await _authentication_response(database=database, user=user, authentication_service=authentication_service)
 
 
 @app.post("/login", response_model=LoginResponse)
@@ -67,6 +69,10 @@ async def login(request: LoginRequest, database: Session = Depends(get_session))
     except (exc.NoResultFound, UnauthorizedException):
         raise authentication_exception
 
+    return await _authentication_response(database=database, user=user, authentication_service=authentication_service)
+
+
+async def _authentication_response(database: Session, user: UserType, authentication_service: AuthenticationService):
     refresh_token = await authentication_service.create_refresh_token(user=user)
 
     role_service = RoleService(database=database)
@@ -94,11 +100,9 @@ async def token(request: TokenRequest, database: Session = Depends(get_session))
     except UnauthorizedException:
         raise unauthorized_exception
 
-    role_service = RoleService(database=database)
-    # this is pretty nasty, constructing a user without an email because we know we won't be using it
-    roles = await role_service.all_for_user(user=UserType(id=user_id, email=''))
-    if request.scope not in roles:
+    try:
+        access_token = await authentication_service.create_access_token(user_id=user_id, scope=request.scope)
+    except UnauthorizedException:
         raise unauthorized_exception
 
-    access_token = authentication_service.create_access_token(user_id=user_id, scope=request.scope)
     return {"access_token": access_token}

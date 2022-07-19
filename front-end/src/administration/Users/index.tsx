@@ -1,17 +1,19 @@
-import { Center } from "@chakra-ui/layout";
+import { Box, Center } from "@chakra-ui/layout";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { Api } from "../../api/Api";
-import { Roles, TokenRequest, TokenResponse, User, UsersRequest, UsersResponse } from "../../api/types/friendly";
+import { Role, Roles, RolesResponse, TokenRequest, TokenResponse, User, UsersRequest, UsersResponse } from "../../api/types/friendly";
 import { ApplicationState, emptyState } from "../../datatypes/ApplicationState";
 import { useGlobalState } from "../../GlobalState";
 import { isAdministrator, jwtValid, loggedIn } from "../../utility/authorization";
+import { UserList } from "./components/UserList";
 
 
 const Users = () => {
   const { state, setState } = useGlobalState();
   const [users, setUsers] = useState<User[]>([]);
+  const [roles, setRoles] = useState<Role[]>([]);
   const [errorMessage, setErrorMessage] = useState('');
   // TODO: remove this disable once we are using pagination on the front end
   // eslint-disable-next-line
@@ -108,14 +110,52 @@ const Users = () => {
     setState,
   ]);
 
+  useEffect(() => {
+    const handleErrors = (response: Response) => {
+      if ([401, 403].includes(response.status)) {
+        const newState: ApplicationState = {
+          credentials: {
+            refresh_token: state.credentials!.refresh_token,
+            access_tokens: {
+              reader: state.credentials!.access_tokens.reader,
+              reviewer: state.credentials!.access_tokens.reviewer,
+              administrator: '',
+            },
+          },
+          user: state.user!,
+          roles: state.roles!,
+        };
+        setState(newState);
+        setErrorMessage('not authorized');
+      } else {
+        setErrorMessage('something went wrong');
+      }
+    };
+
+    const fetchRoles = async (access_token: string) => {
+      const response: RolesResponse = await Api().get('administrate/roles', access_token, null, handleErrors);
+      setRoles(response.roles);
+      // this can't be good, we're doing it twice in parallel
+      setErrorMessage('');
+    };
+  
+    if (accessTokenValid) {
+      fetchRoles(state.credentials!.access_tokens.administrator);
+    }
+  }, [
+    accessTokenValid,
+    state.credentials,
+    state.roles,
+    state.user,
+    setState,
+  ]);
+
   if (authorized && errorMessage === '') {
       return (
       <Center h="100%">
-        <div className="Users">
-          <ul>
-            {users.map((user, index) => { return <li key={index}>{user.email} ({user.id})</li>; })}
-          </ul>
-        </div>
+        <Box w="container.lg">
+          <UserList users={users} roles={roles} />
+        </Box>
       </Center>
     );
   } else {

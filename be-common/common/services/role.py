@@ -12,9 +12,14 @@ class RoleService:
     ):
         self.role_repository = role_repository or RoleRepository(database=database)
     
-    def all():
-        self.role_repository.all()
+    async def all(self) -> list[Role]:
+        role_models = await self.role_repository.all()
+        return [Role(role_model.name) for role_model in role_models]
 
     async def all_for_user(self, user: User) -> list[Role]:
-        return await self.role_repository.all_for_user_id(user_id=user.id)
+        role_models = await self.role_repository.all_for_user_id(user_id=user.id)
+        return [Role(role_model.name) for role_model in role_models]
 
+    async def assign_to_user(self, user: User, role: Role) -> Role:
+        await self.role_repository.assign_to_user_id(user_id=user.id, role_name=role.value)
+        return role
