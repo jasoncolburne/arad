@@ -1,8 +1,8 @@
-# Maximum Line Length for Source Files
+# 120 Character Maximum Line Length for Source Files
 
 **Date**: 2022-07-04
 
-**Deciders**: @jasoncolburne
+**Decider**: [@jasoncolburne](https://github.com/jasoncolburne)
 
 **Status**: decided
 

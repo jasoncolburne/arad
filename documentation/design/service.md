@@ -1,6 +1,6 @@
-[arad](../../../../) / [documentation](../)
+[arad](../../../../) / [documentation](../) / [design](./)
 
-# A typical Arad service
+# A typical Arad back-end service
 
 Each `service` layer `service` is itself composed of multiple layers. The same rule applies here that applied to the
 distributed architecture. We should only call _down_ deeper into the stack, never up or sideways. this prevents
@@ -15,8 +15,8 @@ orchestration layer between the endpoints and services to decouple them and dele
 decoding alone to the endpoint layer. In this case, however, we do not plan to produce features that will change the
 requirements and force us to orchestrate the same actions in multiple scenarios - for example, we won't need another
 api. It is also highly unlikely we'll ever need inter-service communication outside the storage layer (application
-state) - JWT access tokens solve the need for queries during authorization and there is no other known case that
-requires it (to be confirmed).
+state) - JWT for access solves the need for queries during authorization and there is no other known case that requires
+it (to be confirmed).
 
 If the need _does_ arise, do not hesitate to add an orchestration layer to decouple services and endpoints.
 
