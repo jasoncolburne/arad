@@ -36,5 +36,6 @@ class UserRepository:
         limit = PAGE_SIZE_USER
         offset = (number - 1) * limit
 
-        result = await self.database.execute(select(User).order_by(User.email).limit(limit).offset(offset))
+        query = select(User).order_by(User.email).limit(limit).offset(offset)
+        result = await self.database.execute(query)
         return list(result.scalars().all())

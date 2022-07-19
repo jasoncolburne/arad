@@ -40,8 +40,8 @@ class UserRole(SQLModel, table=True):
         server_default=GUID_SERVER_DEFAULT_POSTGRESQL,
         nullable=False
     ))
-    user_id: int = Field(sa_column=Column("user_id", GUID, ForeignKey("user.id"), nullable=False, index=True))
-    role_id: int = Field(sa_column=Column("role_id", GUID, ForeignKey("role.id"), nullable=False))
+    user_id: UUID = Field(sa_column=Column("user_id", GUID, ForeignKey("user.id"), nullable=False, index=True))
+    role_id: UUID = Field(sa_column=Column("role_id", GUID, ForeignKey("role.id"), nullable=False))
 
 # class Article(SQLModel, table=True):
 #     id: int | None = Field(default=None, primary_key=True, nullable=False)

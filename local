@@ -55,6 +55,20 @@ docker_compose_rm() {
   docker compose rm
 }
 
+# fapi_shell() {
+#   local SERVICE=$1
+
+#   echo hello
+#   read -r -d '' SHELL_SCRIPT << EOS
+# BASE_PATH=\$(poetry env info | grep '^Path' | head -n1 | cut -d':' -f2 | sed 's/\s*//')
+# ACTIVATE="\${BASE_PATH}/bin/activate"
+# . \${ACTIVATE}
+# python -i /app/common/main.py
+# EOS
+
+#   docker compose run --rm -it be-$SERVICE bash -c "${SHELL_SCRIPT}"
+# }
+
 # we can probably do the rest in a single line by eval or something
 execute() {
   local COMMAND=$1
@@ -76,6 +90,8 @@ execute() {
     docker_compose_rm
   elif [[ "${COMMAND}" == "types" ]]; then
     types
+  # elif [[ "${COMMAND}" == "fapi-shell" ]]; then
+  #   fapi_shell "${ARGUMENTS}"
   else
     echo "unknown command ${COMMAND}"
     exit 1

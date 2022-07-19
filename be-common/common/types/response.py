@@ -13,6 +13,7 @@ class Role(Enum):
 class User(BaseModel):
     id: UUID
     email: str
+    roles: list[Role] | None
 
 
 class UserPage(BaseModel):

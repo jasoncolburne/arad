@@ -12,9 +12,7 @@ create() {
   read -r -d '' CREATE_SCRIPT << EOS
 apt-get -y install postgresql-client
 echo "SELECT 'CREATE DATABASE ${DATABASE_NAME}' WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = '${DATABASE_NAME}')\gexec" | PGPASSWORD=${DATABASE_PASSPHRASE} psql -U${DATABASE_USER} -h${DATABASE_HOST}
-(echo "create extension pgcrypto;" | PGPASSWORD=${DATABASE_PASSPHRASE} psql -U${DATABASE_USER} -h${DATABASE_HOST}) || true
-echo
-echo "please ignore any extension error above"
+(echo "create EXTENSION if not EXISTS pgcrypto;" | PGPASSWORD=${DATABASE_PASSPHRASE} psql -U${DATABASE_USER} -h${DATABASE_HOST}) || true
 EOS
 
   docker compose run --rm be-identity bash -c "${CREATE_SCRIPT}"

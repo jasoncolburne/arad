@@ -76,6 +76,7 @@ export interface components {
       id: string;
       /** Email */
       email: string;
+      roles?: components["schemas"]["Role"][];
     };
     /** ValidationError */
     ValidationError: {

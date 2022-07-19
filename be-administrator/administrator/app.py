@@ -9,12 +9,13 @@ from sqlmodel import Session
 from common.app import get_application
 from common.services.authentication import AuthenticationService
 from common.services.user import UserService
+from common.services.role import RoleService
 from common.types.response import Role
 from common.types.exception import UnauthorizedException
 from database import get_session
 
 from .types.request import UsersRequest
-from .types.response import UsersResponse
+from .types.response import UsersResponse, RolesResponse
 
 
 app = get_application()
@@ -37,7 +38,7 @@ def require_authorization(func):
         except UnauthorizedException:
             raise credentials_exception
 
-        if token_contents.get("scope") != str(Role.ADMINISTRATOR):
+        if token_contents.get("scope") != Role.ADMINISTRATOR.value:
             raise credentials_exception
 
         return await func(*args, **kwargs)
@@ -59,3 +60,14 @@ async def users(
 ):
     user_service = UserService(database=database)
     return await user_service.page(number=request.page)
+
+
+@app.get("/roles", response_model=RolesResponse)
+@require_authorization
+async def roles(
+    token: str = Depends(oauth2_scheme),
+    database: Session = Depends(get_session),
+):
+    role_service = RoleService(database=database)
+    roles = await role_service.all()
+    return {"roles": roles}

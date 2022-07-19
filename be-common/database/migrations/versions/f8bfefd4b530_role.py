@@ -30,9 +30,9 @@ def upgrade() -> None:
     # ### end Alembic commands ###
     op.bulk_insert(table,
         [
-            {"name": str(Role.READER)},
-            {"name": str(Role.REVIEWER)},
-            {"name": str(Role.ADMINISTRATOR)},
+            {"name": Role.READER.value},
+            {"name": Role.REVIEWER.value},
+            {"name": Role.ADMINISTRATOR.value},
         ]
     )
 
