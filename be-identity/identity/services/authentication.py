@@ -8,8 +8,8 @@ from jose import jwt
 from passlib.context import CryptContext
 from sqlmodel import Session
 
-from common.repositories.user import UserRepository
 from common.repositories.role import RoleRepository
+from common.repositories.user import UserRepository
 from common.types.exception import UnauthorizedException
 from common.types.response import User as UserType, Role
 

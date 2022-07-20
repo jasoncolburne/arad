@@ -7,13 +7,13 @@ from sqlmodel import Session
 
 from common.app import get_application
 from common.services.authentication import require_authorization
-from common.services.role import RoleService
 from common.services.user import UserService
 from common.types.exception import UnauthorizedException
 from common.types.response import User, Role
 from database import get_session
 
 from .services.authentication import AuthenticationService
+from .services.role import RoleService
 from .types.request import LoginRequest, RegisterRequest, TokenRequest, RoleRequest, RoleAction
 from .types.response import LoginResponse, RegisterResponse, TokenResponse, RolesResponse, RoleResponse
 
