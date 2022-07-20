@@ -45,6 +45,6 @@ asynchronous and service calls typically require an `await` if they end up pokin
 An OpenAPI Spec is generated as part of FastAPI (disabled outside development). To find it, simply make a GET request to
 http://localhost:800x/openapi.json, where the port is defined in `docker-compose.yml`.
 
-# Live Documentation
+## Live Documentation
 
 Live documentation is available at http://localhost:800x/docs/, where the port is defined in `docker-compose.yml`.
