@@ -19,8 +19,6 @@ do
   done
 done
 
-# identity doesn't need to authenticate JWT tokens, it creates them
 # reader is unauthenticated
 echo
 rm -v be-reader/common/services/authentication.py
-rm -v be-identity/common/services/authentication.py

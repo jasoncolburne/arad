@@ -27,7 +27,11 @@ class Cache:
         key = self._key(refresh_token=refresh_token)
         value = await self.redis.hgetall(key)
 
-        expiration_timestamp = int(value["expiration"])
+        try:
+            expiration_timestamp = int(value["expiration"])
+        except KeyError:
+            raise UnauthorizedException()
+
         if expiration_timestamp >= int(datetime.utcnow().timestamp()):
             return UUID(value["user_id"])
         else:
