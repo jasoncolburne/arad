@@ -33,7 +33,7 @@ correctly in the production environment.
 ## Observability Integrations
 
 Observability tooling allows a production application to be monitored as it runs. Without it, the analogy is similar to
-that of flying an airplane or automobile blindfolded.
+that of flying an airplane or driving an automobile blindfolded.
 
 The term aggregation is used because the software runs multiple instances of a given service simultaneously to respond
 to load, meaning that logs for a single service will be produced from many sources.
