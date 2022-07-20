@@ -133,7 +133,7 @@ const Users = () => {
     };
 
     const fetchRoles = async (access_token: string) => {
-      const response: RolesResponse = await Api().get('administrate/roles', access_token, null, handleErrors);
+      const response: RolesResponse = await Api().get('identify/roles', access_token, null, handleErrors);
       setRoles(response.roles);
       // this can't be good, we're doing it twice in parallel
       setErrorMessage('');

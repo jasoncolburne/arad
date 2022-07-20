@@ -1,25 +1,27 @@
 import os
 
 from fastapi import Depends, HTTPException, status
+from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy import exc
 from sqlmodel import Session
 
 from common.app import get_application
+from common.services.authentication import require_authorization
 from common.services.role import RoleService
 from common.services.user import UserService
 from common.types.exception import UnauthorizedException
-from common.types.response import User as UserType, Role
+from common.types.response import User, Role
 from database import get_session
-from database.models import User
 
 from .services.authentication import AuthenticationService
 from .types.request import LoginRequest, RegisterRequest, TokenRequest
-from .types.response import LoginResponse, RegisterResponse, TokenResponse
+from .types.response import LoginResponse, RegisterResponse, TokenResponse, RolesResponse
 
 
 DEFAULT_ADMIN_EMAIL = os.environ.get("DEFAULT_ADMIN_EMAIL")
 
 app = get_application()
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/identify/token")
 
 
 @app.get("/health", include_in_schema=False)
@@ -72,7 +74,7 @@ async def login(request: LoginRequest, database: Session = Depends(get_session))
     return await _authentication_response(database=database, user=user, authentication_service=authentication_service)
 
 
-async def _authentication_response(database: Session, user: UserType, authentication_service: AuthenticationService):
+async def _authentication_response(database: Session, user: User, authentication_service: AuthenticationService):
     refresh_token = await authentication_service.create_refresh_token(user=user)
 
     role_service = RoleService(database=database)
@@ -106,3 +108,14 @@ async def token(request: TokenRequest, database: Session = Depends(get_session))
         raise unauthorized_exception
 
     return {"access_token": access_token}
+
+
+@app.get("/roles", response_model=RolesResponse)
+@require_authorization(Role.ADMINISTRATOR)
+async def roles(
+    token: str = Depends(oauth2_scheme),
+    database: Session = Depends(get_session),
+):
+    role_service = RoleService(database=database)
+    roles = await role_service.all()
+    return {"roles": roles}
