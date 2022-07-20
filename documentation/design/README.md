@@ -18,6 +18,7 @@
 ### Further reading
 
 - [The Anatomy of an Arad Production Deployment](./deployment.md)
+- [Domain and Data Model](./domain-data.md)
 - [Project Structure](./project.md)
 - [Front-end Architecture](./front-end.md)
 - [The API nginx proxy](./api.md)
