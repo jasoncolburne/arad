@@ -18,6 +18,12 @@ class UserService:
         self.role_repository = role_repository or RoleRepository(database=database)
         self.user_repository = user_repository or UserRepository(database=database)
 
+    async def get(self, user_id: UUID) -> UserType:
+        user_model = await self.user_repository.get_by_id(user_id=user_id)
+        role_models = await self.role_repository.all_for_user_id(user_id=user_id)
+        
+        return self._sanitize_user(user_model=user_model, role_models=role_models)
+
     # TODO make this fast with a single query after figuring out sqlalchemy
     async def page(self, number: int = 1) -> UserPage:
         user_models = await self.user_repository.page(number=number)

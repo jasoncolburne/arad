@@ -20,6 +20,10 @@ class RoleService:
         role_models = await self.role_repository.all_for_user_id(user_id=user.id)
         return [Role(role_model.name) for role_model in role_models]
 
-    async def assign_to_user(self, user: User, role: Role) -> Role:
-        await self.role_repository.assign_to_user_id(user_id=user.id, role_name=role.value)
+    async def assign_for_user(self, user: User, role: Role) -> Role:
+        await self.role_repository.assign_for_user_id(user_id=user.id, role_name=role.value)
+        return role
+
+    async def revoke_for_user(self, user: User, role: Role) -> Role:
+        await self.role_repository.revoke_for_user_id(user_id=user.id, role_name=role.value)
         return role

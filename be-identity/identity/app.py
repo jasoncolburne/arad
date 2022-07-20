@@ -14,8 +14,8 @@ from common.types.response import User, Role
 from database import get_session
 
 from .services.authentication import AuthenticationService
-from .types.request import LoginRequest, RegisterRequest, TokenRequest
-from .types.response import LoginResponse, RegisterResponse, TokenResponse, RolesResponse
+from .types.request import LoginRequest, RegisterRequest, TokenRequest, RoleRequest, RoleAction
+from .types.response import LoginResponse, RegisterResponse, TokenResponse, RolesResponse, RoleResponse
 
 
 DEFAULT_ADMIN_EMAIL = os.environ.get("DEFAULT_ADMIN_EMAIL")
@@ -45,11 +45,11 @@ async def register(request: RegisterRequest, database: Session = Depends(get_ses
         )
 
     role_service = RoleService(database=database)
-    await role_service.assign_to_user(user=user, role=Role.READER)
+    await role_service.assign_for_user(user=user, role=Role.READER)
 
     if DEFAULT_ADMIN_EMAIL and request.email == DEFAULT_ADMIN_EMAIL:
-        await role_service.assign_to_user(user=user, role=Role.REVIEWER)
-        await role_service.assign_to_user(user=user, role=Role.ADMINISTRATOR)
+        await role_service.assign_for_user(user=user, role=Role.REVIEWER)
+        await role_service.assign_for_user(user=user, role=Role.ADMINISTRATOR)
 
     return await _authentication_response(database=database, user=user, authentication_service=authentication_service)
 
@@ -119,3 +119,30 @@ async def roles(
     role_service = RoleService(database=database)
     roles = await role_service.all()
     return {"roles": roles}
+
+
+@app.put("/role", response_model=RoleResponse)
+@require_authorization(Role.ADMINISTRATOR)
+async def assign_role(
+    request: RoleRequest,
+    token: str = Depends(oauth2_scheme),
+    database: Session = Depends(get_session),
+):
+    role_service = RoleService(database=database)
+    user_service = UserService(database=database)
+
+    user = await user_service.get(user_id=request.user_id)
+
+    # this admin function isn't critical and the ui should protect us from most edge cases so we'll just let these
+    # calls explode if for instance the role has already been assigned to the user (possible with two tabs open)
+    if request.action == RoleAction.ASSIGN:
+        role = await role_service.assign_for_user(user=user, role=request.role)
+    elif request.action == RoleAction.REVOKE:
+        role = await role_service.revoke_for_user(user=user, role=request.role)
+    else:
+        # this code should be unreachable
+        raise Exception()
+
+    # TODO: log user out by removing refresh tokens
+
+    return {"role": role}

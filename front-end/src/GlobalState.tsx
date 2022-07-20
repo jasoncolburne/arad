@@ -1,4 +1,5 @@
 import { useState, createContext, useContext, SetStateAction, Dispatch } from "react"
+import { Role, Roles } from "./api/types/friendly";
 
 import { ApplicationState } from "./datatypes/ApplicationState"
 
@@ -38,4 +39,42 @@ const useGlobalState = () => {
   return context;
 };
 
-export { GlobalState, useGlobalState };
+const removeAccessTokenFromState = (state: Partial<ApplicationState>, scope: Role): ApplicationState => {
+  if (scope === Roles.Administrator) {
+    return {
+      credentials: {
+        refresh_token: state.credentials!.refresh_token,
+        access_tokens: {
+          reader: state.credentials!.access_tokens.reader,
+          reviewer: state.credentials!.access_tokens.reviewer,
+          administrator: '',
+        },
+      },
+      user: state.user!,
+      roles: state.roles!,
+    };
+  }
+
+  if (scope === Roles.Reviewer) {
+    return {
+      credentials: {
+        refresh_token: state.credentials!.refresh_token,
+        access_tokens: {
+          reader: state.credentials!.access_tokens.reader,
+          reviewer: '',
+          administrator: state.credentials!.access_tokens.administrator,
+        },
+      },
+      user: state.user!,
+      roles: state.roles!,
+    };
+  }
+
+  return {
+    credentials: state.credentials!,
+    user: state.user!,
+    roles: state.roles!,
+  };
+};
+
+export { GlobalState, useGlobalState, removeAccessTokenFromState };

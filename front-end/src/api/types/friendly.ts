@@ -4,12 +4,17 @@ import { components as administrate } from './administrate';
 export type User = identify['schemas']['User'];
 export type Role = identify['schemas']['Role'];
 
-// this is fragile. if we ever update the roles in the back-end, we must adjust here
+// these is fragile. if we ever update the back-end, we must adjust here
 export enum Roles {
   Administrator = "ADMINISTRATOR",
   Reviewer = "REVIEWER",
-  Reader = "READER"
+  Reader = "READER",
 };
+
+export enum RoleActions {
+  Assign = "ASSIGN",
+  Revoke = "REVOKE",
+}
 
 export type LoginRequest = identify['schemas']['LoginRequest'];
 export type LoginResponse = identify['schemas']['LoginResponse'];
@@ -22,6 +27,8 @@ export type TokenResponse = identify['schemas']['TokenResponse'];
 
 export type RolesResponse = identify['schemas']['RolesResponse'];
 
+export type RoleRequest = identify['schemas']['RoleRequest'];
+export type RoleResponse = identify['schemas']['RoleResponse'];
 
 export type UsersRequest = administrate['schemas']['UsersRequest'];
 export type UsersResponse = administrate['schemas']['UsersResponse'];

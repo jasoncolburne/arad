@@ -1,4 +1,4 @@
-import { Table, Tbody, Td, Th, Tr } from '@chakra-ui/react';
+import { Table, Tbody, Td, Tr } from '@chakra-ui/react';
 import { Role, User } from '../../../api/types/friendly';
 
 import { UserListRow } from "./UserListRow";
@@ -21,7 +21,7 @@ const UserList = (props: UserListProps) => {
                     })}
                 </Tr>
                 {users.map((user, index) => {
-                    return <UserListRow index={index} user={user} roles={roles} />;
+                    return <UserListRow user={user} roles={roles} />;
                 })}
             </Tbody>
         </Table>

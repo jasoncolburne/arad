@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from sqlalchemy import func, select
+from sqlalchemy import func, select, delete
 from sqlmodel import Session
 
 from database.models import Role, UserRole
@@ -28,7 +28,7 @@ class RoleRepository:
         
         return roles
 
-    async def assign_to_user_id(self, user_id: UUID, role_name: str) -> UserRole:
+    async def assign_for_user_id(self, user_id: UUID, role_name: str) -> UserRole:
         query = select(Role.id).where(Role.name == role_name)
         result = await self.database.execute(query)
         role_id = result.scalars().one()
@@ -38,3 +38,13 @@ class RoleRepository:
         await self.database.commit()
 
         return user_role
+
+    async def revoke_for_user_id(self, user_id: UUID, role_name: str):
+        query = select(Role.id).where(Role.name == role_name)
+        result = await self.database.execute(query)
+        role_id = result.scalars().one()
+
+        statement = delete(UserRole).where(UserRole.user_id == user_id).where(UserRole.role_id == role_id)
+        
+        await self.database.execute(statement)
+        await self.database.commit()
