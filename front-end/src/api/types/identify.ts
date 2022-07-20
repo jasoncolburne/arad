@@ -13,6 +13,9 @@ export interface paths {
   "/token": {
     post: operations["token_token_post"];
   };
+  "/roles": {
+    get: operations["roles_roles_get"];
+  };
 }
 
 export interface components {
@@ -56,6 +59,10 @@ export interface components {
      * @enum {undefined}
      */
     Role: "READER" | "REVIEWER" | "ADMINISTRATOR";
+    /** RolesResponse */
+    RolesResponse: {
+      roles: components["schemas"]["Role"][];
+    };
     /** TokenRequest */
     TokenRequest: {
       /** Refresh Token */
@@ -151,6 +158,16 @@ export interface operations {
     requestBody: {
       content: {
         "application/json": components["schemas"]["TokenRequest"];
+      };
+    };
+  };
+  roles_roles_get: {
+    responses: {
+      /** Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["RolesResponse"];
+        };
       };
     };
   };

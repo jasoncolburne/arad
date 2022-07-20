@@ -7,9 +7,6 @@ export interface paths {
   "/users": {
     post: operations["users_users_post"];
   };
-  "/roles": {
-    get: operations["roles_roles_get"];
-  };
 }
 
 export interface components {
@@ -25,10 +22,6 @@ export interface components {
      * @enum {undefined}
      */
     Role: "READER" | "REVIEWER" | "ADMINISTRATOR";
-    /** RolesResponse */
-    RolesResponse: {
-      roles: components["schemas"]["Role"][];
-    };
     /** User */
     User: {
       /**
@@ -87,16 +80,6 @@ export interface operations {
     requestBody: {
       content: {
         "application/json": components["schemas"]["UsersRequest"];
-      };
-    };
-  };
-  roles_roles_get: {
-    responses: {
-      /** Successful Response */
-      200: {
-        content: {
-          "application/json": components["schemas"]["RolesResponse"];
-        };
       };
     };
   };

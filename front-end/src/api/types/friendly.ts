@@ -20,7 +20,8 @@ export type RegisterResponse = identify['schemas']['RegisterResponse'];
 export type TokenRequest = identify['schemas']['TokenRequest'];
 export type TokenResponse = identify['schemas']['TokenResponse'];
 
+export type RolesResponse = identify['schemas']['RolesResponse'];
+
+
 export type UsersRequest = administrate['schemas']['UsersRequest'];
 export type UsersResponse = administrate['schemas']['UsersResponse'];
-
-export type RolesResponse = administrate['schemas']['RolesResponse'];
