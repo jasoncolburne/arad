@@ -20,3 +20,10 @@ class LoginResponse(AuthenticationResponse):
 
 class TokenResponse(BaseModel):
     access_token: str
+
+
+class RolesResponse(BaseModel):
+    roles: list[Role]
+
+class RoleResponse(BaseModel):
+    role: Role

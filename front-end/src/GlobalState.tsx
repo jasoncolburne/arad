@@ -1,6 +1,8 @@
 import { useState, createContext, useContext, SetStateAction, Dispatch } from "react"
+import { LoginResponse, Role, Roles } from "./api/types/friendly";
 
 import { ApplicationState } from "./datatypes/ApplicationState"
+import { emptyCredentials } from "./datatypes/Credentials";
 
 const GlobalContext = createContext({
   state: {} as Partial<ApplicationState>,
@@ -38,4 +40,57 @@ const useGlobalState = () => {
   return context;
 };
 
-export { GlobalState, useGlobalState };
+const modifyAccessToken = (state: Partial<ApplicationState>, scope: Role, token_value: string): ApplicationState => {
+  if (scope === Roles.Administrator) {
+    return {
+      credentials: {
+        refresh_token: state.credentials!.refresh_token,
+        access_tokens: {
+          reader: state.credentials!.access_tokens.reader,
+          reviewer: state.credentials!.access_tokens.reviewer,
+          administrator: token_value,
+        },
+      },
+      user: state.user!,
+      roles: state.roles!,
+    };
+  }
+
+  if (scope === Roles.Reviewer) {
+    return {
+      credentials: {
+        refresh_token: state.credentials!.refresh_token,
+        access_tokens: {
+          reader: state.credentials!.access_tokens.reader,
+          reviewer: token_value,
+          administrator: state.credentials!.access_tokens.administrator,
+        },
+      },
+      user: state.user!,
+      roles: state.roles!,
+    };
+  }
+
+  return {
+    credentials: state.credentials!,
+    user: state.user!,
+    roles: state.roles!,
+  };
+};
+
+// we are using LoginResponse as a type here and really we sometimes pass an identical RegisterResponse
+// this isn't great and should be fixed
+const stateFromAuthenticationResponseData = (response: LoginResponse): ApplicationState => {
+  return {
+    credentials: {
+      ...emptyCredentials,
+      refresh_token: response.refresh_token,
+    },
+    user: response.user,
+    roles: response.roles,
+  };
+};
+
+
+
+export { GlobalState, useGlobalState, modifyAccessToken, stateFromAuthenticationResponseData };

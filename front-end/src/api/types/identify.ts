@@ -13,6 +13,12 @@ export interface paths {
   "/token": {
     post: operations["token_token_post"];
   };
+  "/roles": {
+    get: operations["roles_roles_get"];
+  };
+  "/role": {
+    put: operations["assign_role_role_put"];
+  };
 }
 
 export interface components {
@@ -56,6 +62,30 @@ export interface components {
      * @enum {undefined}
      */
     Role: "READER" | "REVIEWER" | "ADMINISTRATOR";
+    /**
+     * RoleAction
+     * @description An enumeration.
+     * @enum {undefined}
+     */
+    RoleAction: "ASSIGN" | "REVOKE";
+    /** RoleRequest */
+    RoleRequest: {
+      /**
+       * User Id
+       * Format: uuid
+       */
+      user_id: string;
+      role: components["schemas"]["Role"];
+      action: components["schemas"]["RoleAction"];
+    };
+    /** RoleResponse */
+    RoleResponse: {
+      role: components["schemas"]["Role"];
+    };
+    /** RolesResponse */
+    RolesResponse: {
+      roles: components["schemas"]["Role"][];
+    };
     /** TokenRequest */
     TokenRequest: {
       /** Refresh Token */
@@ -151,6 +181,37 @@ export interface operations {
     requestBody: {
       content: {
         "application/json": components["schemas"]["TokenRequest"];
+      };
+    };
+  };
+  roles_roles_get: {
+    responses: {
+      /** Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["RolesResponse"];
+        };
+      };
+    };
+  };
+  assign_role_role_put: {
+    responses: {
+      /** Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["RoleResponse"];
+        };
+      };
+      /** Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["RoleRequest"];
       };
     };
   };

@@ -1,11 +1,7 @@
 from pydantic import BaseModel
 
-from common.types.response import UserPage, Role
+from common.types.response import UserPage
 
 
 class UsersResponse(UserPage):
     pass
-
-
-class RolesResponse(BaseModel):
-    roles: list[Role]

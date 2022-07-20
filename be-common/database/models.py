@@ -6,7 +6,7 @@ from uuid import UUID, uuid4
 
 from pydantic import EmailStr
 from sqlalchemy import String
-from sqlalchemy.sql.schema import Column, ForeignKey
+from sqlalchemy.sql.schema import Column, ForeignKey, UniqueConstraint
 from sqlmodel import Field, SQLModel
 from sqlmodel.sql.sqltypes import AutoString
 from fastapi_utils.guid_type import GUID, GUID_SERVER_DEFAULT_POSTGRESQL
@@ -33,6 +33,7 @@ class Role(SQLModel, table=True):
     name: str = Field(sa_column=Column("name", AutoString, unique=True, nullable=False, index=True))
 
 class UserRole(SQLModel, table=True):
+    __table_args__ = (UniqueConstraint('user_id', 'role_id'),)
     id: UUID | None = Field(sa_column=Column(
         "id",
         GUID,

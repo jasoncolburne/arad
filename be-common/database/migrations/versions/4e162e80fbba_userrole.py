@@ -1,8 +1,8 @@
 """UserRole
 
-Revision ID: 25625d3e8eea
+Revision ID: 4e162e80fbba
 Revises: f8bfefd4b530
-Create Date: 2022-07-18 14:20:10.379971
+Create Date: 2022-07-20 10:27:09.711761
 
 """
 from alembic import op
@@ -12,7 +12,7 @@ import fastapi_utils
 
 
 # revision identifiers, used by Alembic.
-revision = '25625d3e8eea'
+revision = '4e162e80fbba'
 down_revision = 'f8bfefd4b530'
 branch_labels = None
 depends_on = None
@@ -26,7 +26,8 @@ def upgrade() -> None:
     sa.Column('role_id', fastapi_utils.guid_type.GUID(), nullable=False),
     sa.ForeignKeyConstraint(['role_id'], ['role.id'], ),
     sa.ForeignKeyConstraint(['user_id'], ['user.id'], ),
-    sa.PrimaryKeyConstraint('id')
+    sa.PrimaryKeyConstraint('id'),
+    sa.UniqueConstraint('user_id', 'role_id')
     )
     op.create_index(op.f('ix_userrole_user_id'), 'userrole', ['user_id'], unique=False)
     # ### end Alembic commands ###
