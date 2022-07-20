@@ -45,6 +45,19 @@ types() {
   docker compose run --rm front-end ./build_types
 }
 
+nuke() {
+  ./local down
+  ./sync
+  ./database drop || true
+  ./database create
+  ./database migrate
+  ./local build
+
+  echo
+  echo "Arad database wiped. Set or use the configured DEFAULT_ADMIN_EMAIL to create an admin account."
+  echo "In production, DEFAULT_ADMIN_EMAIL should be unset after it is used."
+}
+
 docker_image_prune() {
   # prune dangling images
   docker image prune -f
@@ -90,6 +103,8 @@ execute() {
     docker_compose_rm
   elif [[ "${COMMAND}" == "types" ]]; then
     types
+  elif [[ "${COMMAND}" == "nuke" ]]; then
+    nuke
   # elif [[ "${COMMAND}" == "fapi-shell" ]]; then
   #   fapi_shell "${ARGUMENTS}"
   else
