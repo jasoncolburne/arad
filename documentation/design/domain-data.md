@@ -31,7 +31,7 @@ through the provided `front-end` UX, but this is not a hard requirement.
 #### Attributes
 
 - id: UUID
-- email: EmailAddress
+- email: string
 - roles: Role[]
 
 ### Role
@@ -46,11 +46,19 @@ An Arad `Role` domain entity is an enumeration, and represents one of three poss
 
 ### Article
 
+An Arad `Article` is a domain entity that represents a real world research article. It is referenced by DOI (Digital
+Object Identifier - [more details](https://en.wikipedia.org/wiki/Digital_object_identifier)).
+
+#### Attributes
+
 - id: UUID
 - doi: string
 - title: string
 - author: string
-- ...
+- journal: string
+- year: string
+- volume: string | null
+- pages: string | null
 - duration: float
 - difficulty: float
 - jargon: string[]
@@ -58,19 +66,105 @@ An Arad `Role` domain entity is an enumeration, and represents one of three poss
 
 ### Review
 
+An Arad `Review` is a domain entity that represents a review created in the system by a reviewer. A reviewer may review
+an article at most once.
+
+#### Attributes
+
 - id: UUID
 - article_id: UUID
 - user_id: UUID
 - duration: int
 - difficulty: int
+- comment: string
 - jargon: string[]
 
 ## Data Model
 
+The data model is composed of entities that represent abstract concepts and concerns related to the real world objects
+in the domain model. In this case, our data model is best described by the database schema used in our underlying
+relational database.
+
 ### User
+
+#### Fields
+
+- id: UUID
+- email: email [indexed]
+- hashed_passphrase: string
 
 ### Role
 
+#### Fields
+
+- id: UUID
+- name: string [indexed]
+
 ### UserRole
 
+#### Fields
 
+- id: UUID
+- user_id: UUID [indexed]
+- role_id: UUID
+
+#### Constraints
+
+- foreign_key(user_id, User.id)
+- foreign_key(role_id, Role.id)
+- unique(user_id, role_id)
+
+### Article
+
+#### Fields
+
+- id: UUID
+- doi: string [indexed]
+- title: string [indexed]
+- author: string [indexed]
+- journal: string [indexed]
+- year: string [indexed]
+- volume: string [nullable]
+- pages: string [nullable]
+
+#### Constraints
+
+- unique(doi)
+
+### Jargon
+
+#### Fields
+
+- id: UUID
+- article_id: UUID [indexed]
+- term: string [indexed]
+
+#### Constraints
+
+- foreign_key(article_id, Article.id)
+- unique(article_id, term)
+
+### Tag
+
+#### Fields
+
+- id: UUID
+- name: string [indexed]
+
+#### Constraints
+
+- unique(name)
+
+### ArticleTag
+
+#### Fields
+
+- id: UUID
+- article_id: UUID [indexed]
+- tag_id: UUID [indexed]
+
+#### Constraints
+
+- foreign_key(article_id, Article.id)
+- foreign_key(tag_id, Tag.id)
+- unique(atricle_id, tag_id)
