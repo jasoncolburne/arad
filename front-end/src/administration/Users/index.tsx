@@ -4,8 +4,8 @@ import { useNavigate } from "react-router-dom";
 
 import { Api } from "../../api/Api";
 import { Role, Roles, RolesResponse, TokenRequest, TokenResponse, User, UsersRequest, UsersResponse } from "../../api/types/friendly";
-import { ApplicationState, emptyState } from "../../datatypes/ApplicationState";
-import { removeAccessTokenFromState, useGlobalState } from "../../GlobalState";
+import { emptyState } from "../../datatypes/ApplicationState";
+import { useGlobalState, modifyAccessToken } from "../../GlobalState";
 import { isAdministrator, jwtValid, loggedIn } from "../../utility/authorization";
 import { UserList } from "./components/UserList";
 
@@ -37,18 +37,7 @@ const Users = () => {
 
     const fetchAccessToken = async (request: TokenRequest) => {
       const response: TokenResponse = await Api().post('identify/token', null, request, handleAccessErrors);
-      const newState: ApplicationState = {
-        credentials: {
-          refresh_token: state.credentials!.refresh_token,
-          access_tokens: {
-            reader: state.credentials!.access_tokens.reader,
-            reviewer: state.credentials!.access_tokens.reviewer,
-            administrator: response.access_token,
-          },
-        },
-        user: state.user!,
-        roles: state.roles!,
-      };
+      const newState = modifyAccessToken(state, Roles.Administrator, response.access_token);
       setState(newState);
       setFetchingAccessToken(false);
     }
@@ -62,9 +51,7 @@ const Users = () => {
     authorized,
     accessTokenValid,
     fetchingAccessToken,
-    state.credentials,
-    state.user,
-    state.roles,
+    state,
     setState,
     navigate,
   ]);
@@ -72,7 +59,7 @@ const Users = () => {
   useEffect(() => {
     const handleErrors = (response: Response) => {
       if ([401, 403].includes(response.status)) {
-        const newState = removeAccessTokenFromState(state, Roles.Administrator);
+        const newState = modifyAccessToken(state, Roles.Administrator, '');
         setState(newState);
         setErrorMessage('not authorized');
       } else {
@@ -100,7 +87,7 @@ const Users = () => {
   useEffect(() => {
     const handleErrors = (response: Response) => {
       if ([401, 403].includes(response.status)) {
-        const newState = removeAccessTokenFromState(state, Roles.Administrator);
+        const newState = modifyAccessToken(state, Roles.Administrator, '');
         setState(newState);
         setErrorMessage('not authorized');
       } else {

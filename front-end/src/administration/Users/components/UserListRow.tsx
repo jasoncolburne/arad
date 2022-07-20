@@ -1,7 +1,7 @@
 import { Checkbox, Td, Tr } from "@chakra-ui/react";
 import { Api } from "../../../api/Api";
 import { Role, RoleActions, RoleRequest, Roles, User } from "../../../api/types/friendly";
-import { removeAccessTokenFromState, useGlobalState } from "../../../GlobalState";
+import { modifyAccessToken, useGlobalState } from "../../../GlobalState";
 
 interface UserListRowProps {
     user: User;
@@ -14,9 +14,9 @@ const UserListRow = (props: UserListRowProps) => {
 
     const handleErrors = (response: Response) => {
         if ([401, 403].includes(response.status)) {
-          const newState = removeAccessTokenFromState(state, Roles.Administrator);
+          const newState = modifyAccessToken(state, Roles.Administrator, '');
           setState(newState);
-          // TODO: display errors
+          // TODO: display errors I suppose
         //   setErrorMessage('not authorized');
         } else {
         //   setErrorMessage('something went wrong');

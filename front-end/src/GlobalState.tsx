@@ -1,7 +1,8 @@
 import { useState, createContext, useContext, SetStateAction, Dispatch } from "react"
-import { Role, Roles } from "./api/types/friendly";
+import { LoginResponse, Role, Roles } from "./api/types/friendly";
 
 import { ApplicationState } from "./datatypes/ApplicationState"
+import { emptyCredentials } from "./datatypes/Credentials";
 
 const GlobalContext = createContext({
   state: {} as Partial<ApplicationState>,
@@ -39,7 +40,7 @@ const useGlobalState = () => {
   return context;
 };
 
-const removeAccessTokenFromState = (state: Partial<ApplicationState>, scope: Role): ApplicationState => {
+const modifyAccessToken = (state: Partial<ApplicationState>, scope: Role, token_value: string): ApplicationState => {
   if (scope === Roles.Administrator) {
     return {
       credentials: {
@@ -47,7 +48,7 @@ const removeAccessTokenFromState = (state: Partial<ApplicationState>, scope: Rol
         access_tokens: {
           reader: state.credentials!.access_tokens.reader,
           reviewer: state.credentials!.access_tokens.reviewer,
-          administrator: '',
+          administrator: token_value,
         },
       },
       user: state.user!,
@@ -61,7 +62,7 @@ const removeAccessTokenFromState = (state: Partial<ApplicationState>, scope: Rol
         refresh_token: state.credentials!.refresh_token,
         access_tokens: {
           reader: state.credentials!.access_tokens.reader,
-          reviewer: '',
+          reviewer: token_value,
           administrator: state.credentials!.access_tokens.administrator,
         },
       },
@@ -77,4 +78,19 @@ const removeAccessTokenFromState = (state: Partial<ApplicationState>, scope: Rol
   };
 };
 
-export { GlobalState, useGlobalState, removeAccessTokenFromState };
+// we are using LoginResponse as a type here and really we sometimes pass an identical RegisterResponse
+// this isn't great and should be fixed
+const stateFromAuthenticationResponseData = (response: LoginResponse): ApplicationState => {
+  return {
+    credentials: {
+      ...emptyCredentials,
+      refresh_token: response.refresh_token,
+    },
+    user: response.user,
+    roles: response.roles,
+  };
+};
+
+
+
+export { GlobalState, useGlobalState, modifyAccessToken, stateFromAuthenticationResponseData };

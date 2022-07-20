@@ -7,10 +7,8 @@ import { Input, InputGroup } from "@chakra-ui/input";
 
 import { Api } from "../../api/Api";
 import { LoginRequest, LoginResponse } from "../../api/types/friendly";
-import { ApplicationState } from "../../datatypes/ApplicationState";
-import { useGlobalState } from "../../GlobalState";
+import { stateFromAuthenticationResponseData, useGlobalState } from "../../GlobalState";
 import { loggedIn } from "../../utility/authorization";
-import { emptyCredentials } from "../../datatypes/Credentials";
 
 
 const Login = () => {
@@ -42,15 +40,7 @@ const Login = () => {
     } else {
       const request: LoginRequest = { email, passphrase };
       const response: LoginResponse = await Api().post('identify/login', null, request, handleErrors);
-      const newState: ApplicationState = {
-        ...state,
-        credentials: {
-          ...emptyCredentials,
-          refresh_token: response.refresh_token,
-        },
-        user: response.user,
-        roles: response.roles,
-      };
+      const newState = stateFromAuthenticationResponseData(response);
       setState(newState);
     }
   }
