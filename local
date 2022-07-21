@@ -48,9 +48,9 @@ types() {
 nuke() {
   ./local down
   ./sync
+  ./local build
   ./database drop || true
   ./database create
-  ./local build
   ./database migrate
 
   echo
