@@ -98,7 +98,6 @@ use as a common frame of reference during feature design.
 - Administration
 - Incident Response
 
-
 ## Third Party Audits
 
 In addition to the team working directly on the software and deployment plan, third parties will be engaged to audit
