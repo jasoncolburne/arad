@@ -48,7 +48,7 @@ class Cache:
         user_key = self._user_key(user_id)
         await self.redis.hdel(user_key, token_key)
 
-    async def purge_all_refresh_tokens_for_user(self, user_id: UUID):
+    async def purge_all_refresh_tokens_for_user_id(self, user_id: UUID):
         user_key = self._user_key(user_id=user_id)
         token_keys = await self.redis.hkeys(user_key)
 

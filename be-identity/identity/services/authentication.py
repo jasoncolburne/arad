@@ -80,6 +80,9 @@ class AuthenticationService:
     async def destroy_refresh_token(self, refresh_token: str):
         await self.token_cache.purge_refresh_token(refresh_token=refresh_token)
 
+    async def destroy_all_refresh_tokens_for_user_id(self, user_id: UUID):
+        await self.token_cache.purge_all_refresh_tokens_for_user_id(user_id=user_id)
+
     async def verify_and_extract_uuid_from_refresh_token(self, refresh_token: str) -> UUID:
         return await self.token_cache.fetch_user_id_from_valid_refresh_token(refresh_token=refresh_token)
     
