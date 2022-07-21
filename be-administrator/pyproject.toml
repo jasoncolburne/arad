@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "administrator"
 version = "0.1.0"
-description = "Administrator node"
+description = "Administrator Service"
 authors = ["Jason Colburne <j.colburne@gmail.com>"]
 
 [tool.poetry.dependencies]
