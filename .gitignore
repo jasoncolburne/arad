@@ -20,9 +20,4 @@ be-reviewer/.dockerignore
 be-reader/.dockerignore
 be-identity/.dockerignore
 
-be-administrator/alembic.ini
-be-reviewer/alembic.ini
-be-reader/alembic.ini
-be-identity/alembic.ini
-
 __pycache__

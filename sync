@@ -26,6 +26,3 @@ rm -fv be-reader/common/services/authorization.py
 rm -rfv be-reader/database/migrations
 rm -rfv be-reviewer/database/migrations
 rm -rfv be-administrator/database/migrations
-rm -fv be-reader/alembic.ini
-rm -fv be-reviewer/alembic.ini
-rm -fv be-administrator/alembic.ini
