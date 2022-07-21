@@ -2,7 +2,7 @@
 
 BACKENDS=(identity reader reviewer administrator)
 DIRECTORIES=(common database)
-FILES=(Dockerfile .dockerignore alembic.ini)
+FILES=(Dockerfile .dockerignore)
 
 for BACKEND in "${BACKENDS[@]}"
 do
