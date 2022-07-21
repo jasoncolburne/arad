@@ -14,7 +14,7 @@ ACCESS_TOKEN_PUBLIC_KEY_PEM = os.environ.get("ACCESS_TOKEN_PUBLIC_KEY_PEM")
 ACCESS_TOKEN_PUBLIC_KEY = VerifyingKey.from_pem(ACCESS_TOKEN_PUBLIC_KEY_PEM)
 
 
-class AuthenticationService:
+class AuthorizationService:
     def verify_and_parse_token(self, token: str) -> dict:
         try:
             payload = jwt.decode(token, ACCESS_TOKEN_PUBLIC_KEY, algorithms=[ACCESS_TOKEN_ALGORITHM])
@@ -27,7 +27,7 @@ class AuthenticationService:
         return payload
 
 
-global_authentication_service = AuthenticationService()
+global_authorization_service = AuthorizationService()
 credentials_exception = HTTPException(
     status_code=status.HTTP_401_UNAUTHORIZED,
     detail="Could not validate credentials",
@@ -40,7 +40,7 @@ def require_authorization(role):
         async def wrapped(*args, **kwargs):
             try:
                 token = kwargs["token"]
-                token_contents = global_authentication_service.verify_and_parse_token(token=token)
+                token_contents = global_authorization_service.verify_and_parse_token(token=token)
             except UnauthorizedException:
                 raise credentials_exception
 

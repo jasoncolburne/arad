@@ -21,4 +21,4 @@ done
 
 # reader is unauthenticated
 echo
-rm -v be-reader/common/services/authentication.py
+rm -v be-reader/common/services/authorization.py
