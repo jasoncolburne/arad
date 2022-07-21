@@ -4,7 +4,7 @@ Accessible Research Article Database
 *This project is under construction and reality may not yet match design.*
 
 The Accessible Research Article Database is, as the name implies, designed to be accessible in every way. The UI employs
-a high contract colour theme, large font without serifs and minimal controls. The code is permissively licensed and
+a high contract colour theme and large font without serifs and minimal controls. The code is permissively licensed and
 well documented. It is designed to be discoverable, and the developer experience has been tuned for rapid iteration.
 
 For more details, dig into the documentation.
