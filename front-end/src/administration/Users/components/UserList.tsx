@@ -1,37 +1,56 @@
-import { Table, Tbody, Td, Tr } from '@chakra-ui/react';
+import { Input, Table, Tbody, Td, Tr } from '@chakra-ui/react';
 import { Role, User } from '../../../api/types/friendly';
 
 import { UserListRow } from "./UserListRow";
 
 import { Paginator } from '../../../components/Paginator';
+import { ChangeEvent, useState } from 'react';
 
 interface UserListProps {
     users: User[];
     roles: Role[];
+    setFilterText: Function;
     page: number;
-    totalPages: number;
     setPage: Function;
+    totalPages: number;
 };
 
 const UserList = (props: UserListProps) => {
-    const { users, roles, page, totalPages, setPage } = props;
+    const { users, roles, setFilterText, page, setPage, totalPages } = props;
+    const [currentTimer, setCurrentTimer] = useState<NodeJS.Timeout | null>(null);
+
+    const delayFilterChange = (event: ChangeEvent<HTMLInputElement>) => {
+        if (currentTimer) {
+            clearTimeout(currentTimer);
+        }
+
+        const timer = setTimeout(() => {
+            setFilterText(event.target.value);
+            setPage(1);
+            setCurrentTimer(null);
+        }, 666);
+
+        setCurrentTimer(timer);
+    }
 
     return (
-        <Table>
-            <Paginator page={page} total={totalPages} setPage={setPage}>
+        <Paginator page={page} totalPages={totalPages} setPage={setPage}>
+            <Table>
                 <Tbody>
                     <Tr>
-                        <Td>email</Td>
+                        <Td key='email-filter'>
+                            <Input placeholder='email filter' onChange={delayFilterChange}/>
+                        </Td>
                         {roles.map((role) => {
-                            return <Td>{role}</Td>;
+                            return <Td key={role}>{role}</Td>;
                         })}
                     </Tr>
-                    {users.map((user, index) => {
-                        return <UserListRow user={user} roles={roles} />;
+                    {users.map((user) => {
+                        return <UserListRow key={user.id} user={user} roles={roles} />;
                     })}
                 </Tbody>
-            </Paginator>
-        </Table>
+            </Table>
+        </Paginator>
     )
 };
 

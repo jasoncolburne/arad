@@ -35,12 +35,12 @@ jobs:
           name: Tag images
           command: |
             IMAGES=(api be-identity be-reader be-reviewer be-administrator)
+
             for IMAGE in "${IMAGES[@]}"; do
               TAG="${IMAGE}-${CIRCLE_BRANCH}-$(git rev-parse --short HEAD)"
-              echo $TAG
               docker tag "project_${IMAGE}:latest" "${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:${TAG}"
+
               TAG="${IMAGE}-${CIRCLE_BRANCH}-latest"
-              echo $TAG
               docker tag "project_${IMAGE}:latest" "${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:${TAG}"
             done
       - run:
@@ -50,12 +50,12 @@ jobs:
           name: Push images
           command: |
             IMAGES=(api be-identity be-reader be-reviewer be-administrator)
+
             for IMAGE in "${IMAGES[@]}"; do
               TAG="${IMAGE}-${CIRCLE_BRANCH}-$(git rev-parse --short HEAD)"
-              echo $TAG
               docker push "${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:${TAG}"
+
               TAG="${IMAGE}-${CIRCLE_BRANCH}-latest"
-              echo $TAG
               docker push "${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:${TAG}"
             done
 

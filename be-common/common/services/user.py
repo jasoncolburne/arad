@@ -25,9 +25,9 @@ class UserService:
         return self._sanitize_user(user_model=user_model, role_models=role_models)
 
     # TODO make this fast with a single query after figuring out sqlalchemy
-    async def page(self, number: int = 1) -> UserPage:
-        user_models = await self.user_repository.page(number=number)
-        total = await self.user_repository.count()
+    async def page(self, email_filter: str, number: int = 1) -> UserPage:
+        user_models = await self.user_repository.page(email_filter=email_filter, number=number)
+        total = await self.user_repository.count(email_filter=email_filter)
 
         users = []
         for user_model in user_models:
@@ -35,6 +35,7 @@ class UserService:
             user = self._sanitize_user(user_model=user_model, role_models=role_models)
             users.append(user)
 
+        print(f"total: {total}")
         pages = (total - 1) // PAGE_SIZE_USER + 1
 
         return {

@@ -29,13 +29,22 @@ class UserRepository:
         result = await self.database.execute(query)
         return result.scalars().one()
 
-    async def count(self) -> int:
-        return await self.database.scalar(select(func.count(User.id)))
+    async def count(self, email_filter: str | None) -> int:
+        if email_filter:
+            query = select(func.count(User.id)).where(User.email.contains(email_filter))
+        else:
+            query = select(func.count(User.id))
+        return await self.database.scalar(query)
 
-    async def page(self, number: int = 1) -> list[User]:
+    async def page(self, email_filter: str, number: int = 1) -> list[User]:
         limit = PAGE_SIZE_USER
         offset = (number - 1) * limit
 
-        query = select(User).order_by(User.email).limit(limit).offset(offset)
+        if email_filter:
+            query = select(User).where(User.email.contains(email_filter))
+        else:
+            query = select(User)
+        query = query.order_by(User.email).limit(limit).offset(offset)
+
         result = await self.database.execute(query)
         return list(result.scalars().all())
