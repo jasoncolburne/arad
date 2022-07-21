@@ -62,16 +62,16 @@ jobs:
 workflows:
   build_test_push:
     jobs:
-      - hold:
-          type: approval
-          filters:
-            branches:
-              only:
-                - main
+      # - hold:
+      #     type: approval
+      #     filters:
+      #       branches:
+      #         only:
+      #           - main
       - build_and_push:
-          filters:
-            branches:
-              only:
-                - main
-          requires:
-            - hold
+          # filters:
+          #   branches:
+          #     only:
+          #       - main
+          # requires:
+          #   - hold
