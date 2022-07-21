@@ -15,7 +15,7 @@ hiredis = ["hiredis (>=1.0)"]
 
 [[package]]
 name = "alembic"
-version = "1.8.0"
+version = "1.8.1"
 description = "A database migration tool for SQLAlchemy."
 category = "main"
 optional = false
@@ -612,7 +612,7 @@ python-versions = "*"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.10"
-content-hash = "b5ffe3f228655a0683081b1d1552c12ee0aa8ca78cba679138d8ca66b9594aad"
+content-hash = "0ad51a060c54f37acba1df359b1795e82f5abfa38415ed75139f203a28e06959"
 
 [metadata.files]
 aioredis = [
@@ -620,8 +620,8 @@ aioredis = [
     {file = "aioredis-2.0.1.tar.gz", hash = "sha256:eaa51aaf993f2d71f54b70527c440437ba65340588afeb786cd87c55c89cd98e"},
 ]
 alembic = [
-    {file = "alembic-1.8.0-py3-none-any.whl", hash = "sha256:b5ae4bbfc7d1302ed413989d39474d102e7cfa158f6d5969d2497955ffe85a30"},
-    {file = "alembic-1.8.0.tar.gz", hash = "sha256:a2d4d90da70b30e70352cd9455e35873a255a31402a438fe24815758d7a0e5e1"},
+    {file = "alembic-1.8.1-py3-none-any.whl", hash = "sha256:0a024d7f2de88d738d7395ff866997314c837be6104e90c5724350313dee4da4"},
+    {file = "alembic-1.8.1.tar.gz", hash = "sha256:cd0b5e45b14b706426b833f06369b9a6d5ee03f826ec3238723ce8caaf6e5ffa"},
 ]
 anyio = [
     {file = "anyio-3.6.1-py3-none-any.whl", hash = "sha256:cb29b9c70620506a9a8f87a309591713446953302d7d995344d0d7c6c0c9a7be"},

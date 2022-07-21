@@ -12,13 +12,13 @@ gunicorn = "^20.1.0"
 toml = "^0.10.2"
 asyncpg = "^0.26.0"
 sqlmodel = "^0.0.6"
-alembic = "^1.8.0"
 python-multipart = "^0.0.5"
 python-jose = {extras = ["cryptography"], version = "^3.3.0"}
 passlib = {extras = ["argon2"], version = "^1.7.4"}
 pydantic = {extras = ["email"], version = "^1.9.1"}
 aioredis = "^2.0.1"
 fastapi-utils = "^0.2.1"
+alembic = "^1.8.1"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"

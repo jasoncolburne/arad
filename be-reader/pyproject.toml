@@ -12,7 +12,6 @@ gunicorn = "^20.1.0"
 toml = "^0.10.2"
 asyncpg = "^0.26.0"
 sqlmodel = "^0.0.6"
-alembic = "^1.8.0"
 pydantic = {extras = ["email"], version = "^1.9.1"}
 aioredis = "^2.0.1"
 fastapi-utils = "^0.2.1"
