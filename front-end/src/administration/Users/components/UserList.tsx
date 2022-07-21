@@ -39,7 +39,12 @@ const UserList = (props: UserListProps) => {
                 <Tbody>
                     <Tr>
                         <Td key='email-filter'>
-                            <Input placeholder='email filter' onChange={delayFilterChange}/>
+                            <Input
+                                borderRadius="lg"
+                                focusBorderColor="black"
+                                placeholder='email filter'
+                                onChange={delayFilterChange}
+                            />
                         </Td>
                         {roles.map((role) => {
                             return <Td key={role}>{role}</Td>;
