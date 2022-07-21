@@ -143,6 +143,6 @@ async def assign_role(
         # this code should be unreachable
         raise Exception()
 
-    # TODO: log user out by removing refresh tokens
+    # TODO: log user out by removing/denylisting refresh tokens
 
     return {"role": role}
