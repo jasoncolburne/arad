@@ -18,6 +18,7 @@ const Users = () => {
   // TODO: remove this disable once we are using pagination on the front end
   // eslint-disable-next-line
   const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
   const [fetchingAccessToken, setFetchingAccessToken] = useState(false);
   const navigate = useNavigate();
 
@@ -70,6 +71,7 @@ const Users = () => {
     const fetchUsers = async (request: UsersRequest, access_token: string) => {
       const response: UsersResponse = await Api().post('administrate/users', access_token, request, handleErrors);
       setUsers(response.users);
+      setTotalPages(response.count);
       setErrorMessage('');
     };
   
@@ -115,7 +117,7 @@ const Users = () => {
       return (
       <Center h="100%">
         <Box w="container.lg">
-          <UserList users={users} roles={roles} />
+          <UserList users={users} roles={roles} page={page} totalPages={totalPages} setPage={setPage} />
         </Box>
       </Center>
     );
