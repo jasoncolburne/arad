@@ -6,7 +6,7 @@ from sqlalchemy import exc
 from sqlmodel import Session
 
 from common.app import get_application
-from common.services.authentication import require_authorization
+from common.services.authorization import require_authorization
 from common.services.user import UserService
 from common.types.exception import UnauthorizedException
 from common.types.response import User, Role
