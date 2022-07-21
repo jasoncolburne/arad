@@ -1,0 +1,17 @@
+version: "3.9"
+
+services:
+  api:
+    build: api
+
+  be-identity:
+    build: be-identity
+
+  be-reader:
+    build: be-reader
+
+  be-reviewer:
+    build: be-reviewer
+
+  be-administrator:
+    build: be-administrator
