@@ -5,7 +5,7 @@
 
 ## Software
 
-This is the main deliverable. It is scalable and secure by [design](../design/). The software is intended to be licensed
+This is the main component. It is scalable and secure by [design](../design/). The software is intended to be licensed
 permissively and written in a clear and accessible way. It should serve as a template for anyone to learn concepts
 required to develop software at scale, and the compromises made in this design due to problem constraints will be
 identified clearly to provide direction to those with differing requirements on how to modify the design.
