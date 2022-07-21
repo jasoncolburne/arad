@@ -13,7 +13,7 @@ identified clearly to provide direction to those with differing requirements on 
 ## Tooling
 
 This is supporting software that helps developers write and deploy the primary software. It is critical to provide a
-good developer experience to reduce overall complexity and time cost of modifications.
+good developer experience to reduce overall cost of modifications.
 
 ## Infrastructure (and Staging)
 
