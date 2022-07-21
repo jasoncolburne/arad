@@ -19,6 +19,7 @@ const Users = () => {
   // eslint-disable-next-line
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [filterText, setFilterText] = useState('');
   const [fetchingAccessToken, setFetchingAccessToken] = useState(false);
   const navigate = useNavigate();
 
@@ -68,19 +69,20 @@ const Users = () => {
       }
     };
 
-    const fetchUsers = async (request: UsersRequest, access_token: string) => {
-      const response: UsersResponse = await Api().post('administrate/users', access_token, request, handleErrors);
+    const fetchUsers = async (request: UsersRequest, accessToken: string) => {
+      const response: UsersResponse = await Api().post('administrate/users', accessToken, request, handleErrors);
       setUsers(response.users);
-      setTotalPages(response.count);
+      setTotalPages(response.pages);
       setErrorMessage('');
     };
   
     if (accessTokenValid) {
-      const request: UsersRequest = { page };
+      const request: UsersRequest = { email_filter: filterText, page };
       fetchUsers(request, state.credentials!.access_tokens.administrator);
     }
   }, [
     page,
+    filterText,
     accessTokenValid,
     state,
     setState,
@@ -117,7 +119,14 @@ const Users = () => {
       return (
       <Center h="100%">
         <Box w="container.lg">
-          <UserList users={users} roles={roles} page={page} totalPages={totalPages} setPage={setPage} />
+          <UserList
+            users={users}
+            roles={roles}
+            setFilterText={setFilterText}
+            page={page}
+            setPage={setPage}
+            totalPages={totalPages}
+          />
         </Box>
       </Center>
     );

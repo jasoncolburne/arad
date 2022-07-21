@@ -36,14 +36,13 @@ const UserListRow = (props: UserListRowProps) => {
 
     return (
         <Tr>
-            <Td>{user.email}</Td>
+            <Td key={user.id + '-email'}>{user.email}</Td>
             {roles.map((role) => {
                 const assigned = user.roles!.includes(role);
 
                 return (
-                    <Td>
+                    <Td key={user.id + '-' + role}>
                         <Checkbox
-                            key={user.id + '-' + role}
                             colorScheme='gray'
                             size='lg'
                             defaultChecked={assigned}

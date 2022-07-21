@@ -29,4 +29,4 @@ async def users(
     database: Session = Depends(get_session),
 ):
     user_service = UserService(database=database)
-    return await user_service.page(number=request.page)
+    return await user_service.page(email_filter=request.email_filter, number=request.page)

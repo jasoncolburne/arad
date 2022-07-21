@@ -37,6 +37,8 @@ export interface components {
     UsersRequest: {
       /** Page */
       page?: number;
+      /** Email Filter */
+      email_filter: string;
     };
     /** UsersResponse */
     UsersResponse: {
