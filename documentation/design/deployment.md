@@ -5,7 +5,7 @@
 
 ## Software
 
-This is the main deliverable. It is scalable and secure by [design](../design/). The software is intended to be licensed
+This is the main component. It is scalable and secure by [design](../design/). The software is intended to be licensed
 permissively and written in a clear and accessible way. It should serve as a template for anyone to learn concepts
 required to develop software at scale, and the compromises made in this design due to problem constraints will be
 identified clearly to provide direction to those with differing requirements on how to modify the design.
@@ -13,7 +13,7 @@ identified clearly to provide direction to those with differing requirements on 
 ## Tooling
 
 This is supporting software that helps developers write and deploy the primary software. It is critical to provide a
-good developer experience to reduce overall complexity and time cost of modifications.
+good developer experience to reduce overall cost of modifications.
 
 ## Infrastructure (and Staging)
 
@@ -97,7 +97,6 @@ use as a common frame of reference during feature design.
 - Configuration
 - Administration
 - Incident Response
-
 
 ## Third Party Audits
 
