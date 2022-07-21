@@ -31,7 +31,7 @@ class UserRepository:
 
     async def count(self, email_filter: str | None) -> int:
         if email_filter:
-            query = select(func.count(User.id)).where(User.email.contains(email_filter))
+            query = select(func.count(User.id)).where(func.lower(User.email).contains(func.lower(email_filter)))
         else:
             query = select(func.count(User.id))
         return await self.database.scalar(query)
@@ -41,7 +41,7 @@ class UserRepository:
         offset = (number - 1) * limit
 
         if email_filter:
-            query = select(User).where(User.email.contains(email_filter))
+            query = select(User).where(func.lower(User.email).contains(func.lower(email_filter)))
         else:
             query = select(User)
         query = query.order_by(User.email).limit(limit).offset(offset)
