@@ -10,6 +10,9 @@ export interface paths {
   "/login": {
     post: operations["login_login_post"];
   };
+  "/logout": {
+    post: operations["logout_logout_post"];
+  };
   "/token": {
     post: operations["token_token_post"];
   };
@@ -41,6 +44,16 @@ export interface components {
       refresh_token: string;
       user: components["schemas"]["User"];
       roles: components["schemas"]["Role"][];
+    };
+    /** LogoutRequest */
+    LogoutRequest: {
+      /** Refresh Token */
+      refresh_token: string;
+    };
+    /** LogoutResponse */
+    LogoutResponse: {
+      /** Status */
+      status: string;
     };
     /** RegisterRequest */
     RegisterRequest: {
@@ -160,6 +173,27 @@ export interface operations {
     requestBody: {
       content: {
         "application/json": components["schemas"]["LoginRequest"];
+      };
+    };
+  };
+  logout_logout_post: {
+    responses: {
+      /** Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["LogoutResponse"];
+        };
+      };
+      /** Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["LogoutRequest"];
       };
     };
   };

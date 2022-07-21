@@ -19,6 +19,9 @@ export enum RoleActions {
 export type LoginRequest = identify['schemas']['LoginRequest'];
 export type LoginResponse = identify['schemas']['LoginResponse'];
 
+export type LogoutRequest = identify['schemas']['LogoutRequest'];
+export type LogoutResponse = identify['schemas']['LoginResponse'];
+
 export type RegisterRequest = identify['schemas']['RegisterRequest'];
 export type RegisterResponse = identify['schemas']['RegisterResponse'];
 

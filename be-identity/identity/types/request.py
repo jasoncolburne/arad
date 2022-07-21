@@ -19,6 +19,10 @@ class LoginRequest(AuthenticationRequest):
     pass
 
 
+class LogoutRequest(BaseModel):
+    refresh_token: str
+
+
 class TokenRequest(BaseModel):
     refresh_token: str
     scope: Role

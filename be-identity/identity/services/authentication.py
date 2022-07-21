@@ -13,10 +13,8 @@ from common.repositories.user import UserRepository
 from common.types.exception import UnauthorizedException
 from common.types.response import User as UserType, Role
 
-from identity.cache import Cache
+from identity.cache import Cache, REFRESH_TOKEN_EXPIRATION_DAYS
 
-
-REFRESH_TOKEN_EXPIRATION_DAYS = 7
 
 ACCESS_TOKEN_EXPIRATION_MINUTES = 10
 ACCESS_TOKEN_ALGORITHM = "ES256"
@@ -79,6 +77,9 @@ class AuthenticationService:
 
         return refresh_token
     
+    async def destroy_refresh_token(self, refresh_token: str):
+        await self.token_cache.purge_refresh_token(refresh_token=refresh_token)
+
     async def verify_and_extract_uuid_from_refresh_token(self, refresh_token: str) -> UUID:
         return await self.token_cache.fetch_user_id_from_valid_refresh_token(refresh_token=refresh_token)
     

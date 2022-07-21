@@ -14,8 +14,22 @@ from database import get_session
 
 from .services.authentication import AuthenticationService
 from .services.role import RoleService
-from .types.request import LoginRequest, RegisterRequest, TokenRequest, RoleRequest, RoleAction
-from .types.response import LoginResponse, RegisterResponse, TokenResponse, RolesResponse, RoleResponse
+from .types.request import (
+    LoginRequest,
+    RegisterRequest,
+    TokenRequest,
+    RoleRequest,
+    RoleAction,
+    LogoutRequest,
+)
+from .types.response import (
+    LoginResponse,
+    RegisterResponse,
+    TokenResponse,
+    RolesResponse,
+    RoleResponse,
+    LogoutResponse,
+)
 
 
 DEFAULT_ADMIN_EMAIL = os.environ.get("DEFAULT_ADMIN_EMAIL")
@@ -85,6 +99,19 @@ async def _authentication_response(database: Session, user: User, authentication
         "user": user,
         "roles": roles
     }
+
+
+@app.post("/logout", response_model=LogoutResponse)
+async def logout(
+    request: LogoutRequest,
+    database: Session = Depends(get_session),
+):
+    refresh_token = request.refresh_token
+    
+    authentication_service = AuthenticationService(database=database)
+    await authentication_service.destroy_refresh_token(refresh_token)
+
+    return {"status": "ok"}
 
 
 @app.post("/token", response_model=TokenResponse)

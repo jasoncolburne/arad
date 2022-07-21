@@ -7,7 +7,12 @@ import aioredis
 from common.types.exception import UnauthorizedException
 
 
+# TODO move all this stuff into a settings file
+REFRESH_TOKEN_EXPIRATION_DAYS = 7
+SECONDS_IN_ONE_DAY = 86400 # 24 * 60 * 60
+REFRESH_TOKEN_EXPIRATION_SECONDS = REFRESH_TOKEN_EXPIRATION_DAYS * SECONDS_IN_ONE_DAY
 CACHE_URL = os.environ.get("CACHE_URL")
+
 
 class Cache:
     def __init__(
@@ -16,26 +21,60 @@ class Cache:
         self.redis = aioredis.from_url(CACHE_URL, decode_responses=True)
 
     async def store_refresh_token(self, refresh_token: str, user_id: UUID, expiration: datetime):
-        key = self._key(refresh_token=refresh_token)
-        value = {
+        token_key = self._token_key(refresh_token=refresh_token)
+        token_data = {
             "user_id": str(user_id),
             "expiration": str(int(expiration.timestamp()))
         }
-        await self.redis.hset(key, mapping=value)
 
+        await self.redis.hset(token_key, mapping=token_data)
+        await self.redis.expire(token_key, REFRESH_TOKEN_EXPIRATION_SECONDS)
+
+        user_key = self._user_key(user_id=user_id)
+        await self.redis.hset(user_key, token_key, str(int(expiration.timestamp())))
+        await self.redis.expire(user_key, REFRESH_TOKEN_EXPIRATION_SECONDS)
+
+    async def purge_refresh_token(self, refresh_token: str):
+        token_key = self._token_key(refresh_token=refresh_token)
+
+        user_id_string = await self.redis.hget(token_key, "user_id")
+        if not user_id_string:
+            return
+
+        user_id = UUID(user_id_string)
+
+        await self.redis.delete(token_key)
+
+        user_key = self._user_key(user_id)
+        await self.redis.hdel(user_key, token_key)
+
+    async def purge_all_refresh_tokens_for_user(self, user_id: UUID):
+        user_key = self._user_key(user_id=user_id)
+        token_keys = await self.redis.hkeys(user_key)
+
+        await self.redis.delete(user_key)
+        if not token_keys:
+            return
+
+        for token_key in token_keys:
+            await self.redis.delete(token_key)
+        
     async def fetch_user_id_from_valid_refresh_token(self, refresh_token: str) -> UUID:
-        key = self._key(refresh_token=refresh_token)
-        value = await self.redis.hgetall(key)
+        token_key = self._token_key(refresh_token=refresh_token)
+        token_data = await self.redis.hgetall(token_key)
 
         try:
-            expiration_timestamp = int(value["expiration"])
+            expiration_timestamp = int(token_data["expiration"])
         except KeyError:
             raise UnauthorizedException()
 
         if expiration_timestamp >= int(datetime.utcnow().timestamp()):
-            return UUID(value["user_id"])
+            return UUID(token_data["user_id"])
         else:
             raise UnauthorizedException()
 
-    def _key(self, refresh_token: str) -> str:
+    def _token_key(self, refresh_token: str) -> str:
         return f"refresh-token-{refresh_token}"
+
+    def _user_key(self, user_id: UUID) -> str:
+        return f"user_tokens-{str(user_id)}"
