@@ -30,11 +30,11 @@ jobs:
           command: ./sync
       - run:
           name: Build images from docker-compose.yml
-          command: docker compose build
+          command: docker compose -f production-build-compose.yml build
       - run:
           name: Tag images
           command: |
-            IMAGES=(front-end api be-identity be-reader be-reviewer be-administrator)
+            IMAGES=(api be-identity be-reader be-reviewer be-administrator)
             for IMAGE in "${IMAGES[@]}"; do
               TAG="${IMAGE}-${CIRCLE_BRANCH}-$(git rev-parse --short HEAD)"
               echo $TAG
@@ -49,7 +49,7 @@ jobs:
       - run:
           name: Push images
           command: |
-            IMAGES=(front-end api be-identity be-reader be-reviewer be-administrator)
+            IMAGES=(api be-identity be-reader be-reviewer be-administrator)
             for IMAGE in "${IMAGES[@]}"; do
               TAG="${IMAGE}-${CIRCLE_BRANCH}-$(git rev-parse --short HEAD)"
               echo $TAG
