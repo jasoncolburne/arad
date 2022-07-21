@@ -18,6 +18,10 @@ class LoginResponse(AuthenticationResponse):
     pass
 
 
+class LogoutResponse(BaseModel):
+    status: str
+
+
 class TokenResponse(BaseModel):
     access_token: str
 
