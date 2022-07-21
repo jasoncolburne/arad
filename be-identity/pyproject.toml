@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "identity"
 version = "0.1.0"
-description = "Identity node"
+description = "Identity Service"
 authors = ["Jason Colburne <j.colburne@gmail.com>"]
 
 [tool.poetry.dependencies]

@@ -48,10 +48,10 @@ types() {
 nuke() {
   ./local down
   ./sync
+  ./local build
   ./database drop || true
   ./database create
   ./database migrate
-  ./local build
 
   echo
   echo "Arad database wiped. Set or use the configured DEFAULT_ADMIN_EMAIL to create an admin account."
