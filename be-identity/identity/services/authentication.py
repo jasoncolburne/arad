@@ -42,9 +42,13 @@ class AuthenticationService:
         self.user_repository = user_repository or UserRepository(database=database)
         self.role_repository = role_repository or RoleRepository(database=database)
 
-    async def create_user_with_passphrase(self, email: str, passphrase: str) -> UserType:
+    async def create_user_with_passphrase(
+        self, email: str, passphrase: str
+    ) -> UserType:
         hashed_passphrase = self._hash_passphrase(passphrase=passphrase)
-        user = await self.user_repository.create(email=email, hashed_passphrase=hashed_passphrase)
+        user = await self.user_repository.create(
+            email=email, hashed_passphrase=hashed_passphrase
+        )
         return UserType(id=user.id, email=user.email)
 
     async def authenticate_by_passphrase(self, email: str, passphrase: str) -> UserType:
@@ -62,30 +66,38 @@ class AuthenticationService:
         payload = {"sub": str(user_id), "scope": scope.value}
         expires = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRATION_MINUTES)
         payload.update({"exp": expires})
-        encoded_jwt = jwt.encode(payload, ACCESS_TOKEN_PRIVATE_KEY, algorithm=ACCESS_TOKEN_ALGORITHM)
+        encoded_jwt = jwt.encode(
+            payload, ACCESS_TOKEN_PRIVATE_KEY, algorithm=ACCESS_TOKEN_ALGORITHM
+        )
 
         return encoded_jwt
-    
+
     async def create_refresh_token(self, user: UserType) -> str:
         refresh_token = token_urlsafe(48)
 
         await self.token_cache.store_refresh_token(
             refresh_token=refresh_token,
             user_id=user.id,
-            expiration=(datetime.utcnow() + timedelta(days=REFRESH_TOKEN_EXPIRATION_DAYS)),
+            expiration=(
+                datetime.utcnow() + timedelta(days=REFRESH_TOKEN_EXPIRATION_DAYS)
+            ),
         )
 
         return refresh_token
-    
+
     async def destroy_refresh_token(self, refresh_token: str):
         await self.token_cache.purge_refresh_token(refresh_token=refresh_token)
 
     async def destroy_all_refresh_tokens_for_user_id(self, user_id: UUID):
         await self.token_cache.purge_all_refresh_tokens_for_user_id(user_id=user_id)
 
-    async def verify_and_extract_uuid_from_refresh_token(self, refresh_token: str) -> UUID:
-        return await self.token_cache.fetch_user_id_from_valid_refresh_token(refresh_token=refresh_token)
-    
+    async def verify_and_extract_uuid_from_refresh_token(
+        self, refresh_token: str
+    ) -> UUID:
+        return await self.token_cache.fetch_user_id_from_valid_refresh_token(
+            refresh_token=refresh_token
+        )
+
     def _hash_passphrase(self, passphrase: str) -> str:
         return self.passphrase_context.hash(passphrase)
 

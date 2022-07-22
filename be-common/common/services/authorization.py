@@ -17,11 +17,13 @@ ACCESS_TOKEN_PUBLIC_KEY = VerifyingKey.from_pem(ACCESS_TOKEN_PUBLIC_KEY_PEM)
 class AuthorizationService:
     def verify_and_parse_token(self, token: str) -> dict:
         try:
-            payload = jwt.decode(token, ACCESS_TOKEN_PUBLIC_KEY, algorithms=[ACCESS_TOKEN_ALGORITHM])
+            payload = jwt.decode(
+                token, ACCESS_TOKEN_PUBLIC_KEY, algorithms=[ACCESS_TOKEN_ALGORITHM]
+            )
         except JWTError:
             raise UnauthorizedException()
-        
-        if (payload["exp"] - int(datetime.utcnow().timestamp()) < 0):
+
+        if payload["exp"] - int(datetime.utcnow().timestamp()) < 0:
             raise UnauthorizedException()
 
         return payload
@@ -34,13 +36,16 @@ credentials_exception = HTTPException(
     headers={"WWW-Authenticate": "Bearer"},
 )
 
+
 def require_authorization(role):
     def callable(func):
         @wraps(func)
         async def wrapped(*args, **kwargs):
             try:
                 token = kwargs["token"]
-                token_contents = global_authorization_service.verify_and_parse_token(token=token)
+                token_contents = global_authorization_service.verify_and_parse_token(
+                    token=token
+                )
             except UnauthorizedException:
                 raise credentials_exception
 
@@ -52,4 +57,3 @@ def require_authorization(role):
         return wrapped
 
     return callable
-

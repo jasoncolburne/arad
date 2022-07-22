@@ -11,12 +11,12 @@
 The `nuke` command can be leveraged to setup your local environment.
 
 ```
-./local nuke
+arad $ scripts/local nuke
 ```
 
 ## Running
 ```
-./local up
+arad $ scripts/local up
 ```
 
 With your docker-compose services running, try navigating to `http://localhost`. We'll turn TLS 1.3 on before moving to

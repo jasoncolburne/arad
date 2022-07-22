@@ -1,0 +1,59 @@
+#!/usr/bin/env bash
+
+set -o pipefail
+
+BACKENDS=(administrator reviewer reader identity)
+read -r -d '' ACTIVATE_SCRIPT << EOS
+BASE_PATH=\$(poetry env info | grep '^Path' | head -n1 | cut -d':' -f2 | sed 's/\s*//')
+ACTIVATE="\${BASE_PATH}/bin/activate"
+. \${ACTIVATE}
+EOS
+
+pytest() {
+  local SERVICE=$1
+
+  read -r -d '' SHELL_SCRIPT << EOS
+${ACTIVATE_SCRIPT}
+pytest .
+EOS
+
+  echo "${SHELL_SCRIPT}"
+  docker compose run --rm -it "be-${SERVICE}" bash -c "${SHELL_SCRIPT}"
+}
+
+black() {
+  local SERVICE=$1
+
+  read -r -d '' SHELL_SCRIPT << EOS
+${ACTIVATE_SCRIPT}
+black .
+EOS
+
+  echo "${SHELL_SCRIPT}"
+  docker compose run --rm -it "be-${SERVICE}" bash -c "${SHELL_SCRIPT}"
+}
+
+all() {
+  for BACKEND in "${BACKENDS[@]}"; do
+    ./scripts/test black "${BACKEND}"
+  done
+}
+
+# we can probably do the rest in a single line by eval or something
+execute() {
+  local COMMAND=$1
+  local ARGUMENTS=$(echo $2 | sed "s/^ *//" | sed "s/ *\$//")
+
+  if [[ "${COMMAND}" == "pytest" ]]; then
+    pytest "${ARGUMENTS}"
+  elif [[ "${COMMAND}" == "black" ]]; then
+    black "${ARGUMENTS}"
+  elif [[ "${COMMAND}" == "all" ]]; then
+    all
+  else
+    echo "unknown command ${COMMAND}"
+    exit 1
+  fi
+}
+
+execute "$1" "$2 $3 $4 $5 $6 $7 $8 $9"

@@ -11,38 +11,58 @@ from sqlmodel import Field, SQLModel
 from sqlmodel.sql.sqltypes import AutoString
 from fastapi_utils.guid_type import GUID, GUID_SERVER_DEFAULT_POSTGRESQL
 
+
 class User(SQLModel, table=True):
-    id: UUID | None = Field(sa_column=Column(
-        "id",
-        GUID,
-        primary_key=True,
-        server_default=GUID_SERVER_DEFAULT_POSTGRESQL,
-        nullable=False
-    ))
-    email: EmailStr = Field(sa_column=Column("email", AutoString, unique=True, nullable=False, index=True))
+    id: UUID | None = Field(
+        sa_column=Column(
+            "id",
+            GUID,
+            primary_key=True,
+            server_default=GUID_SERVER_DEFAULT_POSTGRESQL,
+            nullable=False,
+        )
+    )
+    email: EmailStr = Field(
+        sa_column=Column("email", AutoString, unique=True, nullable=False, index=True)
+    )
     hashed_passphrase: str
 
+
 class Role(SQLModel, table=True):
-    id: UUID | None = Field(sa_column=Column(
-        "id",
-        GUID,
-        primary_key=True,
-        server_default=GUID_SERVER_DEFAULT_POSTGRESQL,
-        nullable=False
-    ))
-    name: str = Field(sa_column=Column("name", AutoString, unique=True, nullable=False, index=True))
+    id: UUID | None = Field(
+        sa_column=Column(
+            "id",
+            GUID,
+            primary_key=True,
+            server_default=GUID_SERVER_DEFAULT_POSTGRESQL,
+            nullable=False,
+        )
+    )
+    name: str = Field(
+        sa_column=Column("name", AutoString, unique=True, nullable=False, index=True)
+    )
+
 
 class UserRole(SQLModel, table=True):
-    __table_args__ = (UniqueConstraint('user_id', 'role_id'),)
-    id: UUID | None = Field(sa_column=Column(
-        "id",
-        GUID,
-        primary_key=True,
-        server_default=GUID_SERVER_DEFAULT_POSTGRESQL,
-        nullable=False
-    ))
-    user_id: UUID = Field(sa_column=Column("user_id", GUID, ForeignKey("user.id"), nullable=False, index=True))
-    role_id: UUID = Field(sa_column=Column("role_id", GUID, ForeignKey("role.id"), nullable=False))
+    __table_args__ = (UniqueConstraint("user_id", "role_id"),)
+    id: UUID | None = Field(
+        sa_column=Column(
+            "id",
+            GUID,
+            primary_key=True,
+            server_default=GUID_SERVER_DEFAULT_POSTGRESQL,
+            nullable=False,
+        )
+    )
+    user_id: UUID = Field(
+        sa_column=Column(
+            "user_id", GUID, ForeignKey("user.id"), nullable=False, index=True
+        )
+    )
+    role_id: UUID = Field(
+        sa_column=Column("role_id", GUID, ForeignKey("role.id"), nullable=False)
+    )
+
 
 # class Article(SQLModel, table=True):
 #     id: int | None = Field(default=None, primary_key=True, nullable=False)

@@ -21,9 +21,9 @@ class RoleRepository:
         query = select(UserRole.role_id).where(UserRole.user_id == user_id)
         result = await self.database.execute(query)
         role_ids = list(result.scalars().all())
-        
+
         query = select(Role).where(Role.id.in_(role_ids))
         result = await self.database.execute(query)
         roles = list(result.scalars().all())
-        
+
         return roles

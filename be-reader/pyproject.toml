@@ -19,6 +19,7 @@ ipython = "^8.4.0"
 
 [tool.poetry.group.test.dependencies]
 pytest = "^5.2"
+black = "^22.6.0"
 
 [tool.poetry.scripts]
 start = "common.main:start"

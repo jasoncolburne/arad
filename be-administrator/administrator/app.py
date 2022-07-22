@@ -28,4 +28,6 @@ async def users(
     token: str = Depends(oauth2_scheme),
     database: Session = Depends(get_session),
 ):
-    return await arad_users(email_filter=request.email_filter, page=request.page, database=database)
+    return await arad_users(
+        email_filter=request.email_filter, page=request.page, database=database
+    )

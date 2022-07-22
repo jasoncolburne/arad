@@ -47,7 +47,6 @@ async def health():
     return {"status": "healthy?"}
 
 
-
 @app.post("/register", response_model=RegisterResponse)
 async def register(request: RegisterRequest, database: Session = Depends(get_session)):
     try:
@@ -61,13 +60,13 @@ async def register(request: RegisterRequest, database: Session = Depends(get_ses
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Invalid email address",
         )
-        
+
 
 @app.post("/login", response_model=LoginResponse)
 async def login(request: LoginRequest, database: Session = Depends(get_session)):
     try:
         return await arad_login(
-            email=request.email, 
+            email=request.email,
             passphrase=request.passphrase,
             database=database,
         )
@@ -121,5 +120,5 @@ async def assign_role(
         user_id=request.user_id,
         role=request.role,
         action=request.action,
-        database=database
+        database=database,
     )

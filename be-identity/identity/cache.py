@@ -9,7 +9,7 @@ from common.datatypes.exception import UnauthorizedException
 
 # TODO move all this stuff into a settings file
 REFRESH_TOKEN_EXPIRATION_DAYS = 7
-SECONDS_IN_ONE_DAY = 86400 # 24 * 60 * 60
+SECONDS_IN_ONE_DAY = 86400  # 24 * 60 * 60
 REFRESH_TOKEN_EXPIRATION_SECONDS = REFRESH_TOKEN_EXPIRATION_DAYS * SECONDS_IN_ONE_DAY
 CACHE_URL = os.environ.get("CACHE_URL")
 
@@ -20,11 +20,13 @@ class Cache:
     ):
         self.redis = aioredis.from_url(CACHE_URL, decode_responses=True)
 
-    async def store_refresh_token(self, refresh_token: str, user_id: UUID, expiration: datetime):
+    async def store_refresh_token(
+        self, refresh_token: str, user_id: UUID, expiration: datetime
+    ):
         token_key = self._token_key(refresh_token=refresh_token)
         token_data = {
             "user_id": str(user_id),
-            "expiration": str(int(expiration.timestamp()))
+            "expiration": str(int(expiration.timestamp())),
         }
 
         await self.redis.hset(token_key, mapping=token_data)
@@ -58,7 +60,7 @@ class Cache:
 
         for token_key in token_keys:
             await self.redis.delete(token_key)
-        
+
     async def fetch_user_id_from_valid_refresh_token(self, refresh_token: str) -> UUID:
         token_key = self._token_key(refresh_token=refresh_token)
         token_data = await self.redis.hgetall(token_key)
