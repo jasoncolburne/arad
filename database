@@ -7,6 +7,11 @@ DATABASE_HOST=database
 DATABASE_NAME=arad
 DATABASE_USER=postgres
 DATABASE_PASSPHRASE=postgres
+read -r -d '' ACTIVATE_SCRIPT << EOS
+BASE_PATH=\$(poetry env info | grep '^Path' | head -n1 | cut -d':' -f2 | sed 's/\s*//')
+ACTIVATE="\${BASE_PATH}/bin/activate"
+. \${ACTIVATE}
+EOS
 
 create() {
   read -r -d '' CREATE_SCRIPT << EOS
@@ -29,9 +34,7 @@ EOS
 
 migrate() {
   read -r -d '' MIGRATE_SCRIPT << EOS
-BASE_PATH=\$(poetry env info | grep '^Path' | head -n1 | cut -d':' -f2 | sed 's/\s*//')
-ACTIVATE="\${BASE_PATH}/bin/activate"
-. \${ACTIVATE}
+${ACTIVATE_SCRIPT}
 alembic upgrade head
 EOS
 
@@ -48,9 +51,7 @@ generate_migrations() {
   fi
 
   read -r -d '' GENERATION_SCRIPT << EOS
-BASE_PATH=\$(poetry env info | grep '^Path' | head -n1 | cut -d':' -f2 | sed 's/\s*//')
-ACTIVATE="\${BASE_PATH}/bin/activate"
-. \${ACTIVATE}
+${ACTIVATE_SCRIPT}
 alembic revision --autogenerate -m "${ARGUMENTS}"
 chown $(id -u):$(id -g) database/migrations/versions/*
 EOS
@@ -71,9 +72,7 @@ empty_migration() {
   fi
 
   read -r -d '' GENERATION_SCRIPT << EOS
-BASE_PATH=\$(poetry env info | grep '^Path' | head -n1 | cut -d':' -f2 | sed 's/\s*//')
-ACTIVATE="\${BASE_PATH}/bin/activate"
-. \${ACTIVATE}
+${ACTIVATE_SCRIPT}
 alembic revision -m "${ARGUMENTS}"
 chown $(id -u):$(id -g) database/migrations/versions/*
 EOS

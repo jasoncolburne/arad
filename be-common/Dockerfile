@@ -30,7 +30,7 @@ COPY poetry.lock .
 
 RUN poetry check
 RUN poetry lock --check
-RUN poetry install --no-root
+RUN poetry install --no-root --with dev
 
 RUN apt-get -y remove gcc libc-dev ca-certificates
 RUN apt-get -y autoremove

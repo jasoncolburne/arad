@@ -20,8 +20,9 @@ aioredis = "^2.0.1"
 fastapi-utils = "^0.2.1"
 alembic = "^1.8.1"
 
-[tool.poetry.dev-dependencies]
+[tool.poetry.group.dev.dependencies]
 pytest = "^5.2"
+ipython = "^8.4.0"
 
 [tool.poetry.scripts]
 start = "common.main:start"
