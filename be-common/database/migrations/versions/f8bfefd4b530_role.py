@@ -9,7 +9,7 @@ from alembic import op
 import sqlalchemy as sa
 import sqlmodel
 import fastapi_utils
-from common.types.response import Role
+from common.datatypes.response import Role
 
 
 # revision identifiers, used by Alembic.

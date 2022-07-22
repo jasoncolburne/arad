@@ -4,11 +4,11 @@ from sqlmodel import Session
 
 from common.app import get_application
 from common.services.authorization import require_authorization
-from common.types.response import Role
+from common.datatypes.response import Role
 from database import get_session
 
-from .types.request import UsersRequest
-from .types.response import UsersResponse
+from .datatypes.request import UsersRequest
+from .datatypes.response import UsersResponse
 from .orchestrations import arad_users
 
 

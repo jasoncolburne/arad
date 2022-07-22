@@ -6,11 +6,11 @@ from sqlmodel import Session
 
 from common.app import get_application
 from common.services.authorization import require_authorization
-from common.types.exception import UnauthorizedException
-from common.types.response import Role
+from common.datatypes.exception import UnauthorizedException
+from common.datatypes.response import Role
 from database import get_session
 
-from .types.request import (
+from .datatypes.request import (
     LoginRequest,
     RegisterRequest,
     TokenRequest,
@@ -18,7 +18,7 @@ from .types.request import (
     RoleAction,
     LogoutRequest,
 )
-from .types.response import (
+from .datatypes.response import (
     LoginResponse,
     RegisterResponse,
     TokenResponse,

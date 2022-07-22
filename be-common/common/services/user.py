@@ -4,7 +4,7 @@ from sqlmodel import Session
 
 from common.repositories.role import RoleRepository
 from common.repositories.user import UserRepository, PAGE_SIZE_USER
-from common.types.response import UserPage, User as UserType, Role as RoleType
+from common.datatypes.response import UserPage, User as UserType, Role as RoleType
 from database.models import User as UserModel, Role as RoleModel
 
 

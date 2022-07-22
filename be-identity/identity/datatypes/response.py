@@ -1,7 +1,7 @@
 from enum import Enum
 from pydantic import BaseModel
 
-from common.types.response import User, Role
+from common.datatypes.response import User, Role
 
 
 class AuthenticationResponse(BaseModel):

@@ -4,7 +4,7 @@ import os
 
 import aioredis
 
-from common.types.exception import UnauthorizedException
+from common.datatypes.exception import UnauthorizedException
 
 
 # TODO move all this stuff into a settings file
