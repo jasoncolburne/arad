@@ -69,7 +69,7 @@ eliminates several operational problems and should work well for this simple, re
 #### Identity
 [identity](./services/identity.md) is the foundational piece of the service layer, providing authentication and
 authorization capabilities to permit [RBAC](https://en.wikipedia.org/wiki/Role-based_access_control). As there is no
-inter-service communication, we rely on other mechanisms to authorize user actions.
+inter-service communication, we rely on other mechanisms (JWTs) to authorize user actions.
 
 #### Reader
 
@@ -88,7 +88,7 @@ articles and users.
 
 ### Authentication in the Service Layer
 Two forms of authentication exist in identity. Short-lived and long-lived. Access is controlled by short-lived tokens
-that are generated using a long-lived refresh token that is aquired through user authentication (password, sso, etc).
+that are generated using a long-lived refresh token that is acquired through user authentication (password, sso, etc).
 
 [Here](https://www.oauth.com/oauth2-servers/making-authenticated-requests/refreshing-an-access-token/) is an example of
 such a scheme.
