@@ -27,7 +27,7 @@ jobs:
           command: sudo apt-get -y install rsync
       - run:
           name: Sync common code
-          command: ./sync
+          command: ./scripts/sync
       - run:
           name: Build images from docker-compose.yml
           command: docker compose -f production-build-compose.yml build
