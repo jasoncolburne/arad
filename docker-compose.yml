@@ -12,7 +12,7 @@ x-common-environment: &common-environment
   DATABASE_URL: postgresql+asyncpg://postgres:postgres@database:5432/arad
 
 x-be-healthcheck: &be-healthcheck
-  test: ["CMD-SHELL", "curl http://localhost:8000/health > /dev/null"]
+  test: ["CMD-SHELL", "curl http://localhost/health > /dev/null"]
   interval: 5s
   timeout: 5s
   retries: 5
@@ -77,7 +77,7 @@ services:
         condition: service_healthy
     healthcheck: *be-healthcheck
     ports:
-      - "8003:8000" # for docs
+      - "8003:80" # for docs
 
   be-reader:
     build:
@@ -90,7 +90,7 @@ services:
     depends_on: *database-dependency
     healthcheck: *be-healthcheck
     ports:
-      - "8002:8000" # for docs
+      - "8002:80" # for docs
 
   be-reviewer:
     build:
@@ -103,7 +103,7 @@ services:
     depends_on: *database-dependency
     healthcheck: *be-healthcheck
     ports:
-      - "8001:8000" # for docs
+      - "8001:80" # for docs
 
   be-administrator:
     build:
@@ -116,7 +116,7 @@ services:
     depends_on: *database-dependency
     healthcheck: *be-healthcheck
     ports:
-      - "8000:8000" # for docs
+      - "8000:80" # for docs
 
   cache:
     image: "redis:bullseye"
