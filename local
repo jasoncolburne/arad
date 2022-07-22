@@ -78,11 +78,11 @@ repl() {
 
   read -r -d '' SHELL_SCRIPT << EOS
 ${ACTIVATE_SCRIPT}
-PYTHONSTARTUP=common/repl.py ipython
+PYTHONSTARTUP=${SERVICE}/repl.py ipython
 EOS
 
   echo "${SHELL_SCRIPT}"
-  docker compose run --rm -it be-$SERVICE bash -c "${SHELL_SCRIPT}"
+  docker compose run --rm -it "be-${SERVICE}" bash -c "${SHELL_SCRIPT}"
 }
 
 # we can probably do the rest in a single line by eval or something

@@ -7,6 +7,9 @@
 
 FROM python:slim-bullseye
 
+ARG DEPLOYMENT_ENVIRONMENT
+ENV DEPLOYMENT_ENVIRONMENT ${DEPLOYMENT_ENVIRONMENT}
+
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV POETRY_HOME=/opt/poetry
 ENV PATH="${POETRY_HOME}/bin:/usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
@@ -30,7 +33,12 @@ COPY poetry.lock .
 
 RUN poetry check
 RUN poetry lock --check
-RUN poetry install --no-root --with dev
+RUN \
+  if [ "${DEPLOYMENT_ENVIRONMENT}" = "development" ]; then \
+    poetry install --no-root --with test; \
+  else \
+    poetry install --no-root; \
+  fi
 
 RUN apt-get -y remove gcc libc-dev ca-certificates
 RUN apt-get -y autoremove
