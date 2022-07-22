@@ -4,12 +4,12 @@ from sqlmodel import Session
 
 from common.app import get_application
 from common.services.authorization import require_authorization
-from common.services.user import UserService
 from common.types.response import Role
 from database import get_session
 
 from .types.request import UsersRequest
 from .types.response import UsersResponse
+from .orchestrations import arad_users
 
 
 app = get_application()
@@ -28,5 +28,4 @@ async def users(
     token: str = Depends(oauth2_scheme),
     database: Session = Depends(get_session),
 ):
-    user_service = UserService(database=database)
-    return await user_service.page(email_filter=request.email_filter, number=request.page)
+    return await arad_users(email_filter=request.email_filter, page=request.page, database=database)
