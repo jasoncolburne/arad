@@ -33,6 +33,12 @@ EOS
   docker compose run --rm -it "be-${SERVICE}" bash -c "${SHELL_SCRIPT}"
 }
 
+all() {
+  for BACKEND in "${BACKENDS[@]}"; do
+    ./scripts/test black "${BACKEND}"
+  done
+}
+
 # we can probably do the rest in a single line by eval or something
 execute() {
   local COMMAND=$1
@@ -42,6 +48,8 @@ execute() {
     pytest "${ARGUMENTS}"
   elif [[ "${COMMAND}" == "black" ]]; then
     black "${ARGUMENTS}"
+  elif [[ "${COMMAND}" == "all" ]]; then
+    all
   else
     echo "unknown command ${COMMAND}"
     exit 1
