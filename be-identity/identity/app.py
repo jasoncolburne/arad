@@ -2,18 +2,14 @@ import os
 
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
-from sqlalchemy import exc
 from sqlmodel import Session
 
 from common.app import get_application
 from common.services.authorization import require_authorization
-from common.services.user import UserService
 from common.types.exception import UnauthorizedException
-from common.types.response import User, Role
+from common.types.response import Role
 from database import get_session
 
-from .services.authentication import AuthenticationService
-from .services.role import RoleService
 from .types.request import (
     LoginRequest,
     RegisterRequest,
@@ -29,6 +25,14 @@ from .types.response import (
     RolesResponse,
     RoleResponse,
     LogoutResponse,
+)
+from .orchestrations import (
+    arad_register,
+    arad_login,
+    arad_logout,
+    arad_access_token,
+    arad_roles,
+    arad_assign_role,
 )
 
 
@@ -46,59 +50,32 @@ async def health():
 
 @app.post("/register", response_model=RegisterResponse)
 async def register(request: RegisterRequest, database: Session = Depends(get_session)):
-    authentication_service = AuthenticationService(database=database)
     try:
-        user = await authentication_service.create_user_with_passphrase(
+        return await arad_register(
             email=request.email,
             passphrase=request.passphrase,
+            database=database,
         )
-    except exc.IntegrityError:
+    except BadRequestException:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Invalid email address",
         )
-
-    role_service = RoleService(database=database)
-    await role_service.assign_for_user(user=user, role=Role.READER)
-
-    if DEFAULT_ADMIN_EMAIL and request.email == DEFAULT_ADMIN_EMAIL:
-        await role_service.assign_for_user(user=user, role=Role.REVIEWER)
-        await role_service.assign_for_user(user=user, role=Role.ADMINISTRATOR)
-
-    return await _authentication_response(database=database, user=user, authentication_service=authentication_service)
-
+        
 
 @app.post("/login", response_model=LoginResponse)
 async def login(request: LoginRequest, database: Session = Depends(get_session)):
-    authentication_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Incorrect username or password",
-        headers={"WWW-Authenticate": "Bearer"},
-    )
-
-    authentication_service = AuthenticationService(database=database)
     try:
-        user = await authentication_service.authenticate_by_passphrase(
-            email=request.email,
+        return await arad_login(
+            email=request.email, 
             passphrase=request.passphrase,
+            database=database,
         )
-    except (exc.NoResultFound, UnauthorizedException):
-        raise authentication_exception
-
-    return await _authentication_response(database=database, user=user, authentication_service=authentication_service)
-
-
-async def _authentication_response(database: Session, user: User, authentication_service: AuthenticationService):
-    refresh_token = await authentication_service.create_refresh_token(user=user)
-
-    role_service = RoleService(database=database)
-    roles = await role_service.all_for_user(user=user)
-    
-    return {
-        "refresh_token": refresh_token,
-        "user": user,
-        "roles": roles
-    }
+    except UnauthorizedException:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect email or password",
+        )
 
 
 @app.post("/logout", response_model=LogoutResponse)
@@ -106,35 +83,22 @@ async def logout(
     request: LogoutRequest,
     database: Session = Depends(get_session),
 ):
-    refresh_token = request.refresh_token
-    
-    authentication_service = AuthenticationService(database=database)
-    await authentication_service.destroy_refresh_token(refresh_token)
-
-    return {"status": "ok"}
+    return await arad_logout(refresh_token=request.refresh_token, database=database)
 
 
 @app.post("/token", response_model=TokenResponse)
-async def token(request: TokenRequest, database: Session = Depends(get_session)):
-    unauthorized_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Not authorized",
-    )
-    
-    authentication_service = AuthenticationService(database=database)
+async def access_token(request: TokenRequest, database: Session = Depends(get_session)):
     try:
-        user_id = await authentication_service.verify_and_extract_uuid_from_refresh_token(
-            refresh_token=request.refresh_token
+        return await arad_access_token(
+            refresh_token=request.refresh_token,
+            scope=request.scope,
+            database=database,
         )
     except UnauthorizedException:
-        raise unauthorized_exception
-
-    try:
-        access_token = await authentication_service.create_access_token(user_id=user_id, scope=request.scope)
-    except UnauthorizedException:
-        raise unauthorized_exception
-
-    return {"access_token": access_token}
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Not authorized",
+        )
 
 
 @app.get("/roles", response_model=RolesResponse)
@@ -143,9 +107,7 @@ async def roles(
     token: str = Depends(oauth2_scheme),
     database: Session = Depends(get_session),
 ):
-    role_service = RoleService(database=database)
-    roles = await role_service.all()
-    return {"roles": roles}
+    return await arad_roles(database=database)
 
 
 @app.put("/role", response_model=RoleResponse)
@@ -155,21 +117,9 @@ async def assign_role(
     token: str = Depends(oauth2_scheme),
     database: Session = Depends(get_session),
 ):
-    role_service = RoleService(database=database)
-    user_service = UserService(database=database)
-
-    user = await user_service.get(user_id=request.user_id)
-
-    # this admin function isn't critical and the ui should protect us from most edge cases so we'll just let these
-    # calls explode if for instance the role has already been assigned to the user (possible with two tabs open)
-    if request.action == RoleAction.ASSIGN:
-        role = await role_service.assign_for_user(user=user, role=request.role)
-    elif request.action == RoleAction.REVOKE:
-        role = await role_service.revoke_for_user(user=user, role=request.role)
-    else:
-        # this code should be unreachable
-        raise Exception()
-
-    # TODO: log user out by removing/denylisting refresh tokens
-
-    return {"role": role}
+    return await arad_assign_role(
+        user_id=request.user_id,
+        role=request.role,
+        action=request.action,
+        database=database
+    )
