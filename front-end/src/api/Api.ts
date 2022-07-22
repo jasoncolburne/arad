@@ -24,7 +24,7 @@ const Api = () => {
         options.body = JSON.stringify(body);
       }
 
-      const response = await fetch(`http://localhost:81/${endpoint}`, options);
+      const response = await fetch(`http://localhost:81/api/v1/${endpoint}`, options);
 
       if (!response.ok) {
         handleErrors(response);
