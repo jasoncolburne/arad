@@ -81,7 +81,6 @@ ${ACTIVATE_SCRIPT}
 PYTHONSTARTUP=${SERVICE}/repl.py ipython
 EOS
 
-  echo "${SHELL_SCRIPT}"
   docker compose run --rm -it "be-${SERVICE}" bash -c "${SHELL_SCRIPT}"
 }
 

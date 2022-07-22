@@ -17,7 +17,6 @@ ${ACTIVATE_SCRIPT}
 pytest .
 EOS
 
-  echo "${SHELL_SCRIPT}"
   docker compose run --rm -it "be-${SERVICE}" bash -c "${SHELL_SCRIPT}"
 }
 
@@ -29,14 +28,25 @@ ${ACTIVATE_SCRIPT}
 black .
 EOS
 
-  echo "${SHELL_SCRIPT}"
   docker compose run --rm -it "be-${SERVICE}" bash -c "${SHELL_SCRIPT}"
 }
 
 all() {
+  # sync first so that common changes don't get blown away during this process
+  ./scripts/sync
+
   for BACKEND in "${BACKENDS[@]}"; do
     ./scripts/test black "${BACKEND}"
   done
+
+  echo
+  echo "moving black changes back into be-common..."
+  rsync -v -r -d be-identity/database be-common
+  rsync -v -r -d be-identity/common be-common
+  
+  echo
+  echo "re-syncing"
+  ./scripts/sync
 }
 
 # we can probably do the rest in a single line by eval or something
