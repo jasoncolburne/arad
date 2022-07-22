@@ -1,7 +1,7 @@
 from sqlmodel import Session
 
 from common.repositories.role import RoleRepository
-from common.types.response import User, Role
+from common.datatypes.response import User, Role
 
 from identity.repositories.role_assignment import RoleAssignmentRepository
 

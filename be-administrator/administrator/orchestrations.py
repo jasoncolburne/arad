@@ -2,7 +2,7 @@ from sqlmodel import Session
 
 from common.services.user import UserService
 
-from .types.response import UsersResponse
+from .datatypes.response import UsersResponse
 
 
 async def arad_users(email_filter: str, page: int, database: Session) -> UsersResponse:

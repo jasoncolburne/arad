@@ -10,8 +10,8 @@ from sqlmodel import Session
 
 from common.repositories.role import RoleRepository
 from common.repositories.user import UserRepository
-from common.types.exception import UnauthorizedException
-from common.types.response import User as UserType, Role
+from common.datatypes.exception import UnauthorizedException
+from common.datatypes.response import User as UserType, Role
 
 from identity.cache import Cache, REFRESH_TOKEN_EXPIRATION_DAYS
 

@@ -1,5 +1,8 @@
 version: "3.9"
 
+x-common-args: &common-args
+  DEPLOYMENT_ENVIRONMENT: development
+
 x-common-environment: &common-environment
   ACCESS_TOKEN_PUBLIC_KEY_PEM: |
     -----BEGIN PUBLIC KEY-----
@@ -7,10 +10,9 @@ x-common-environment: &common-environment
     kak4CYTwDU8lSubpkIKXFqo7KtsWIycbTKbfLm2IdwNXDOO346u4OhCaBg==
     -----END PUBLIC KEY-----
   DATABASE_URL: postgresql+asyncpg://postgres:postgres@database:5432/arad
-  DEPLOYMENT_ENVIRONMENT: development
 
 x-be-healthcheck: &be-healthcheck
-  test: ["CMD-SHELL", "curl http://localhost:8000/health > /dev/null"]
+  test: ["CMD-SHELL", "curl http://localhost/health > /dev/null"]
   interval: 5s
   timeout: 5s
   retries: 5
@@ -32,7 +34,9 @@ services:
       - "80:3000"
 
   api:
-    build: api
+    build:
+      context: api
+      args: *common-args
     depends_on:
       be-identity:
         condition: service_healthy
@@ -51,7 +55,9 @@ services:
       - "81:80" # this is how the front end talks to the api. port 80 is taken atm.
 
   be-identity:
-    build: be-identity
+    build:
+      context: be-identity
+      args: *common-args
     restart: always
     environment:
       <<: *common-environment
@@ -71,10 +77,12 @@ services:
         condition: service_healthy
     healthcheck: *be-healthcheck
     ports:
-      - "8003:8000" # for docs
+      - "8003:80" # for docs
 
   be-reader:
-    build: be-reader
+    build:
+      context: be-reader
+      args: *common-args
     restart: always
     environment: *common-environment
     volumes:
@@ -82,10 +90,12 @@ services:
     depends_on: *database-dependency
     healthcheck: *be-healthcheck
     ports:
-      - "8002:8000" # for docs
+      - "8002:80" # for docs
 
   be-reviewer:
-    build: be-reviewer
+    build:
+      context: be-reviewer
+      args: *common-args
     restart: always
     environment: *common-environment
     volumes:
@@ -93,10 +103,12 @@ services:
     depends_on: *database-dependency
     healthcheck: *be-healthcheck
     ports:
-      - "8001:8000" # for docs
+      - "8001:80" # for docs
 
   be-administrator:
-    build: be-administrator
+    build:
+      context: be-administrator
+      args: *common-args
     restart: always
     environment: *common-environment
     volumes:
@@ -104,7 +116,7 @@ services:
     depends_on: *database-dependency
     healthcheck: *be-healthcheck
     ports:
-      - "8000:8000" # for docs
+      - "8000:80" # for docs
 
   cache:
     image: "redis:bullseye"

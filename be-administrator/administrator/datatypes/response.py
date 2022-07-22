@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 
-from common.types.response import UserPage
+from common.datatypes.response import UserPage
 
 
 class UsersResponse(UserPage):

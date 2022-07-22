@@ -6,7 +6,7 @@ from fastapi import HTTPException, status
 from ecdsa import VerifyingKey
 from jose import jwt, JWTError
 
-from common.types.exception import UnauthorizedException
+from common.datatypes.exception import UnauthorizedException
 
 
 ACCESS_TOKEN_ALGORITHM = "ES256"

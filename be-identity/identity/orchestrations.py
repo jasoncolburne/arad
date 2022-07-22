@@ -4,13 +4,13 @@ from sqlalchemy import exc
 from sqlmodel import Session
 
 from common.services.user import UserService
-from common.types.exception import BadRequestException, UnauthorizedException
-from common.types.response import User, Role
+from common.datatypes.exception import BadRequestException, UnauthorizedException
+from common.datatypes.response import User, Role
 
 from .services.authentication import AuthenticationService
 from .services.role import RoleService
-from .types.request import RoleAction
-from .types.response import (
+from .datatypes.request import RoleAction
+from .datatypes.response import (
     AuthenticationResponse,
     LoginResponse,
     RegisterResponse,

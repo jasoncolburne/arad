@@ -1,17 +1,30 @@
 version: "3.9"
 
+x-common-args: &common-args
+  DEPLOYMENT_ENVIRONMENT: production
+
 services:
   api:
-    build: api
+    build:
+      context: api
+      args: *common-args
 
   be-identity:
-    build: be-identity
+    build:
+      context: be-identity
+      args: *common-args
 
   be-reader:
-    build: be-reader
+    build:
+      context: be-reader
+      args: *common-args
 
   be-reviewer:
-    build: be-reviewer
+    build:
+      context: be-reviewer
+      args: *common-args
 
   be-administrator:
-    build: be-administrator
+    build:
+      context: be-administrator
+      args: *common-args

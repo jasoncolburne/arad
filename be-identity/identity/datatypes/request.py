@@ -3,7 +3,7 @@ from uuid import UUID
 
 from pydantic import BaseModel
 
-from common.types.response import Role, User
+from common.datatypes.response import Role, User
 
 
 class AuthenticationRequest(BaseModel):

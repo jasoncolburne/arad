@@ -17,8 +17,9 @@ python-jose = {extras = ["cryptography"], version = "^3.3.0"}
 pydantic = {extras = ["email"], version = "^1.9.1"}
 aioredis = "^2.0.1"
 fastapi-utils = "^0.2.1"
+ipython = "^8.4.0"
 
-[tool.poetry.dev-dependencies]
+[tool.poetry.group.test.dependencies]
 pytest = "^5.2"
 
 [tool.poetry.scripts]
