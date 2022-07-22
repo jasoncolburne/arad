@@ -151,9 +151,20 @@ This command will generate an empty migration for whatever purposes you may need
 
 ### Adding a new dependency to all back-end stacks
 
+First we'll add the package without installing it, since the changes won't persist.
+
 ```
-./local be-exec poetry add <package> -vv
+./local be-exec poetry add <package> -vv --lock
 ```
+
+To make these changes stick, we'll need to rebuild our images. Layer caching won't help us much, since thd slow step
+is poetry install.
+
+```
+./local build
+```
+
+That's it! You're ready to develop using your new package.
 
 ### Adding a new test or dev dependency to a single service
 
@@ -162,3 +173,12 @@ Here we add `black` to `identity`, as a `test` dependency, without installing.
 ```
 docker compose run --rm be-identity poetry add black -vv --group test --lock
 ```
+
+Next, we'll want to rebuild:
+
+```
+./sync && ./local build
+```
+
+It's convenient to sync before building in case you've made changes to common files. Sometimes I forget. If others find
+this annoying, someone should open a PR to sync from the build command itself.
