@@ -26,7 +26,11 @@ class RoleAssignmentRepository:
         result = await self.database.execute(query)
         role_id = result.scalars().one()
 
-        statement = delete(UserRole).where(UserRole.user_id == user_id).where(UserRole.role_id == role_id)
-        
+        statement = (
+            delete(UserRole)
+            .where(UserRole.user_id == user_id)
+            .where(UserRole.role_id == role_id)
+        )
+
         await self.database.execute(statement)
         await self.database.commit()

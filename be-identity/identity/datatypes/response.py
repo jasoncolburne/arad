@@ -29,5 +29,6 @@ class TokenResponse(BaseModel):
 class RolesResponse(BaseModel):
     roles: list[Role]
 
+
 class RoleResponse(BaseModel):
     role: Role

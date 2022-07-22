@@ -21,7 +21,9 @@ from .datatypes.response import (
 )
 
 
-async def arad_register(email: str, passphrase: str, database: Session) -> RegisterResponse:
+async def arad_register(
+    email: str, passphrase: str, database: Session
+) -> RegisterResponse:
     authentication_service = AuthenticationService(database=database)
     try:
         user = await authentication_service.create_user_with_passphrase(
@@ -39,9 +41,7 @@ async def arad_register(email: str, passphrase: str, database: Session) -> Regis
         await role_service.assign_for_user(user=user, role=Role.ADMINISTRATOR)
 
     return await _arad_authentication_response(
-        database=database,
-        user=user,
-        authentication_service=authentication_service
+        database=database, user=user, authentication_service=authentication_service
     )
 
 
@@ -71,12 +71,8 @@ async def _arad_authentication_response(
 
     role_service = RoleService(database=database)
     roles = await role_service.all_for_user(user=user)
-    
-    return {
-        "refresh_token": refresh_token,
-        "user": user,
-        "roles": roles
-    }
+
+    return {"refresh_token": refresh_token, "user": user, "roles": roles}
 
 
 async def arad_logout(refresh_token: str, database: Session) -> LogoutResponse:
@@ -86,13 +82,17 @@ async def arad_logout(refresh_token: str, database: Session) -> LogoutResponse:
     return {"status": "ok"}
 
 
-async def arad_access_token(refresh_token: str, scope: Role, database: Session) -> TokenResponse:
+async def arad_access_token(
+    refresh_token: str, scope: Role, database: Session
+) -> TokenResponse:
     authentication_service = AuthenticationService(database=database)
     user_id = await authentication_service.verify_and_extract_uuid_from_refresh_token(
         refresh_token=refresh_token
     )
 
-    access_token = await authentication_service.create_access_token(user_id=user_id, scope=scope)
+    access_token = await authentication_service.create_access_token(
+        user_id=user_id, scope=scope
+    )
     return {"access_token": access_token}
 
 
@@ -103,10 +103,7 @@ async def arad_roles(database: Session) -> RolesResponse:
 
 
 async def arad_assign_role(
-    user_id: UUID,
-    role: Role,
-    action: RoleAction,
-    database: Session
+    user_id: UUID, role: Role, action: RoleAction, database: Session
 ) -> RoleResponse:
     role_service = RoleService(database=database)
     user_service = UserService(database=database)

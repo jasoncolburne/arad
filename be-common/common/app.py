@@ -13,6 +13,7 @@ class HealthCheckFilter(logging.Filter):
     def filter(self, record: logging.LogRecord) -> bool:
         return record.args[2] != "/health"
 
+
 logging.getLogger("uvicorn.access").addFilter(HealthCheckFilter())
 
 
@@ -20,7 +21,7 @@ def get_application():
     app = FastAPI(
         openapi_url="/openapi.json" if LOCAL else None,
         docs_url="/docs" if LOCAL else None,
-        redoc_url=None,   
+        redoc_url=None,
     )
 
     origins = [
