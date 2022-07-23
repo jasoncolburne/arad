@@ -1,4 +1,4 @@
-[arad](../../../../) / [documentation](../) / [design](./)
+[arad](../../../../README.md) / [documentation](../README.md) / [design](./README.md)
 
 # Endpoint Design
 
