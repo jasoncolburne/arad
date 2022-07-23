@@ -10,6 +10,7 @@ class Role(Enum):
     ADMINISTRATOR = "ADMINISTRATOR"
 
 
+
 class User(BaseModel):
     id: UUID
     email: str
