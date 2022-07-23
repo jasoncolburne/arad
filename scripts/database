@@ -1,42 +1,50 @@
 #!/usr/bin/env bash
 
 # TODO see if we can turn -e back on and make read work
-set -o pipefail
+set -eo pipefail
 
 DATABASE_HOST=database
 DATABASE_NAME=arad
 DATABASE_USER=postgres
 DATABASE_PASSPHRASE=postgres
+set +e
 read -r -d '' ACTIVATE_SCRIPT << EOS
 BASE_PATH=\$(poetry env info | grep '^Path' | head -n1 | cut -d':' -f2 | sed 's/\s*//')
 ACTIVATE="\${BASE_PATH}/bin/activate"
 . \${ACTIVATE}
 EOS
+set -e
 
 create() {
+  set +e
   read -r -d '' CREATE_SCRIPT << EOS
 apt-get -y install postgresql-client
 echo "SELECT 'CREATE DATABASE ${DATABASE_NAME}' WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = '${DATABASE_NAME}')\gexec" | PGPASSWORD=${DATABASE_PASSPHRASE} psql -U${DATABASE_USER} -h${DATABASE_HOST}
 (echo "create EXTENSION if not EXISTS pgcrypto;" | PGPASSWORD=${DATABASE_PASSPHRASE} psql -U${DATABASE_USER} -h${DATABASE_HOST}) || true
 EOS
+  set -e
 
   docker compose run --rm be-identity bash -c "${CREATE_SCRIPT}"
 }
 
 drop() {
+  set +e
   read -r -d '' DROP_SCRIPT << EOS
 apt-get -y install postgresql-client
 PGPASSWORD=${DATABASE_PASSPHRASE} psql -U${DATABASE_USER} -h${DATABASE_HOST} -c "DROP DATABASE ${DATABASE_NAME}"
 EOS
+  set -e
 
   docker compose run --rm be-identity bash -c "${DROP_SCRIPT}"
 }
 
 migrate() {
+  set +e
   read -r -d '' MIGRATE_SCRIPT << EOS
 ${ACTIVATE_SCRIPT}
 alembic upgrade head
 EOS
+  set -e
 
   docker compose run --rm be-identity bash -c "${MIGRATE_SCRIPT}"
 }
@@ -50,11 +58,13 @@ generate_migrations() {
     exit 1
   fi
 
+  set +e
   read -r -d '' GENERATION_SCRIPT << EOS
 ${ACTIVATE_SCRIPT}
 alembic revision --autogenerate -m "${ARGUMENTS}"
 chown $(id -u):$(id -g) database/migrations/versions/*
 EOS
+  set -e
 
   docker compose run --rm be-identity bash -c "${GENERATION_SCRIPT}"
 
@@ -71,11 +81,13 @@ empty_migration() {
     exit 1
   fi
 
+  set +e
   read -r -d '' GENERATION_SCRIPT << EOS
 ${ACTIVATE_SCRIPT}
 alembic revision -m "${ARGUMENTS}"
 chown $(id -u):$(id -g) database/migrations/versions/*
 EOS
+  set -e
 
   docker compose run --rm be-identity bash -c "${GENERATION_SCRIPT}"
 

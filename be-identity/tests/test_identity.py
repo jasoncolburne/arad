@@ -1,4 +1,4 @@
-from node_administrator import __version__
+from identity import __version__
 
 
 def test_version():

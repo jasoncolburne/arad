@@ -1,39 +1,49 @@
 #!/usr/bin/env bash
 
-set -o pipefail
+set -eo pipefail
 
 BACKENDS=(administrator reviewer reader identity)
+
+set +e
 read -r -d '' ACTIVATE_SCRIPT << EOS
 BASE_PATH=\$(poetry env info | grep '^Path' | head -n1 | cut -d':' -f2 | sed 's/\s*//')
 ACTIVATE="\${BASE_PATH}/bin/activate"
 . \${ACTIVATE}
 EOS
+set -e
 
-pytest() {
+simple_command() {
   local SERVICE=$1
+  local COMMAND_STRING=$2
 
+  set +e
   read -r -d '' SHELL_SCRIPT << EOS
 ${ACTIVATE_SCRIPT}
-pytest .
+${COMMAND_STRING}
 EOS
+  set -e
 
   docker compose run --rm -it "be-${SERVICE}" bash -c "${SHELL_SCRIPT}"
 }
 
+pytest() {
+  simple_command $1 "pytest ."
+}
+
 black() {
-  local SERVICE=$1
-
-  read -r -d '' SHELL_SCRIPT << EOS
-${ACTIVATE_SCRIPT}
-black .
-EOS
-
-  docker compose run --rm -it "be-${SERVICE}" bash -c "${SHELL_SCRIPT}"
+  simple_command $1 "black ."
 }
 
 all() {
   # sync first so that common changes don't get blown away during this process
+  echo "syncing code"
+  echo
+
   ./scripts/sync
+
+  echo
+  echo "running black on all services"
+  echo
 
   for BACKEND in "${BACKENDS[@]}"; do
     ./scripts/test black "${BACKEND}"
@@ -41,12 +51,21 @@ all() {
 
   echo
   echo "moving black changes back into be-common..."
+  echo
   rsync -v -r -d be-identity/database be-common
   rsync -v -r -d be-identity/common be-common
   
   echo
   echo "re-syncing"
+  echo
   ./scripts/sync
+
+  echo
+  echo "running pytest on all services"
+  echo
+  for BACKEND in "${BACKENDS[@]}"; do
+    ./scripts/test pytest "${BACKEND}"
+  done
 }
 
 # we can probably do the rest in a single line by eval or something

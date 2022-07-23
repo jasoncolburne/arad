@@ -22,7 +22,7 @@ alembic = "^1.8.1"
 ipython = "^8.4.0"
 
 [tool.poetry.group.test.dependencies]
-pytest = "^5.2"
+pytest = "^7.1"
 black = "^22.6.0"
 
 [tool.poetry.scripts]
