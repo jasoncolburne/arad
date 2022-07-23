@@ -51,8 +51,6 @@ The top layer, the [`front-end`](https://en.wikipedia.org/wiki/Frontend_and_back
 In most of these documents, we assume the `client` is our SPA code running a web browser, but there is nothing
 preventing other consumers of the API from utilizing it.
 
-The `front-end` .
-
 ## API Layer
 The `front-end` commmunicates with the `back-end` stack (everything else) through the internet, and ultimately, an
 interface service called `api` - ([Application Programming Interface](https://en.wikipedia.org/wiki/API)). The sole
