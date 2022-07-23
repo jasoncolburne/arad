@@ -15,7 +15,7 @@ entities live in the repository layer, and are defined in the model layer.
 
 By decoupling these models through a repository layer abstraction, we are free to choose an entirely different
 implementation for the data model (this is sometimes required for performance or cost reasons as scale increases),
-or even an entirely different underling infrastructure. The service layer interface will not change in this case, and
+or even an entirely different underlying infrastructure. The service layer interface will not change in this case, and
 application/endpoint code that calls it will not need modification.
 
 ## Domain Model
