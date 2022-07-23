@@ -239,7 +239,7 @@ perspective (search view) to help us rank comments so we can display the top _N_
 - content: string
 - impressions: int
 - helped: int
-- helpfulness: float
+- sentiment: float
 
 #### Constraints
 
