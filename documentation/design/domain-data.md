@@ -242,7 +242,7 @@ perspective (search view) to help us rank comments so we can display the top _N_
 
 ### Analytics
 
-The analytics table allows us to cache aggregated results on a per article basis. There is a one to one mapping between
+The `Analytics` table allows us to cache aggregated results on a per article basis. There is a one to one mapping between
 articles and analytics records. They should be created in a transaction together.
 
 Each time we add a new `Review`, we should, in a transaction, update the corresponding `Analytics` record (in a
