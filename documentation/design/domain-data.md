@@ -10,7 +10,7 @@ represents a template of the application state in memory at any given time. The 
 internal service layer of a service.
 
 The data model describes data entities from the infrastructure perspective, and may use domain agnostic terms, at times,
-for clarity. The data model represents a template of the application state on disk at any given time. The data model
+for clarity. The data model represents a components of the application state on disk at any given time. The data model
 entities live in the repository layer, and are defined in the model layer.
 
 By decoupling these models through a repository layer abstraction, we are free to choose an entirely different
