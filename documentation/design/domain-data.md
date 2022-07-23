@@ -18,6 +18,14 @@ implementation for the data model (this is sometimes required for performance or
 or even an entirely different underlying infrastructure. The service layer interface will not change in this case, and
 application/endpoint code that calls it will not need modification.
 
+Effectively, we are describing a translation that happens in the repository layer. What I am saying, is that
+as a rule, repositories should use database models to compose domain objects for use by services.
+
+```
+Domain objects = Domain model
+Database models = Data model
+```
+
 ## Domain Model
 
 Arad is a simple distributed application. There are four services in the service layer, all backed by the same
@@ -62,8 +70,8 @@ Object Identifier - [more details](https://en.wikipedia.org/wiki/Digital_object_
 - duration: float
 - difficulty: float
 - jargon: string[]
-- comments: string[]
 - tags: string[]
+- top_comments: string[]
 
 #### Notes
 
@@ -270,3 +278,24 @@ compute counts to rank the most important terms.
 - foreign_key(review_id, Review.id)
 - foreign_key(article_id, Article.id)
 - unique(review_id, term)
+
+## Composition
+
+What's this all about? Well, remember how we mentioned that we'd be constructing a repository layer to translate between
+the data model and the service layer? This is how we map the data model to the domain.
+
+Legend:
+
+![Legend](./assets/domain-data-model-legend.png)
+
+### User
+
+![User](./assets/domain-data-model-user.png)
+
+### Article
+
+![Article](./assets/domain-data-model-article.png)
+
+### Review
+
+![Review](./assets/domain-data-model-review.png)
