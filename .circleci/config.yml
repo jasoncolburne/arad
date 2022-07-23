@@ -33,6 +33,19 @@ x-pytest-steps: &pytest-steps
         cd /app
         pytest .
 
+x-pylint-steps: &pylint-steps
+  - run:
+      name: Install test dependencies
+      command: |
+        cd /app
+        poetry install --no-root --with test
+  - run:
+      name: Pytest
+      command: |
+        . /root/.cache/pypoetry/virtualenvs/*/bin/activate
+        cd /app
+        find . -maxdepth 1 -type d -not -name '.*' | xargs pylint
+        
 jobs:
   build-images:
     resource_class: large
@@ -147,6 +160,34 @@ jobs:
         auth: *docker-auth
     steps: *pytest-steps
 
+  pylint-identity:
+    resource_class: small
+    docker:
+      - image: ${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:identity-${CIRCLE_BRANCH}-latest
+        auth: *docker-auth
+    steps: *pylint-steps
+
+  pylint-administrator:
+    resource_class: small
+    docker:
+      - image: ${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:administrator-${CIRCLE_BRANCH}-latest
+        auth: *docker-auth
+    steps: *pylint-steps
+
+  pylint-reviewer:
+    resource_class: small
+    docker:
+      - image: ${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:reviewer-${CIRCLE_BRANCH}-latest
+        auth: *docker-auth
+    steps: *pylint-steps
+
+  pylint-reader:
+    resource_class: small
+    docker:
+      - image: ${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:reader-${CIRCLE_BRANCH}-latest
+        auth: *docker-auth
+    steps: *pylint-steps
+
 workflows:
   everything:
     jobs:
@@ -177,5 +218,17 @@ workflows:
           requires:
             - build-images
       - pytest-reader:
+          requires:
+            - build-images
+      - pylint-identity:
+          requires:
+            - build-images
+      - pylint-administrator:
+          requires:
+            - build-images
+      - pylint-reviewer:
+          requires:
+            - build-images
+      - pylint-reader:
           requires:
             - build-images
