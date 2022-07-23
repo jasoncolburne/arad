@@ -62,7 +62,11 @@ Object Identifier - [more details](https://en.wikipedia.org/wiki/Digital_object_
 - duration: float
 - difficulty: float
 - jargon: string[]
+- comments: string[]
 - tags: string[]
+
+* A note about comments: We probably don't want to grab _all_ comments every time we assemble an Article. I'd rather
+assemble none and use another call to paginate comments - it's documented the way it is here for clarity.
 
 ### Review
 
@@ -136,13 +140,15 @@ relational database.
 #### Fields
 
 - id: UUID
+- review_id: UUID [indexed]
 - article_id: UUID [indexed]
 - term: string [indexed]
 
 #### Constraints
 
+- foreign_key(review_id, Review.id)
 - foreign_key(article_id, Article.id)
-- unique(article_id, term)
+- unique(review_id, term)
 
 ### Tag
 
@@ -167,4 +173,53 @@ relational database.
 
 - foreign_key(article_id, Article.id)
 - foreign_key(tag_id, Tag.id)
-- unique(atricle_id, tag_id)
+- unique(article_id, tag_id)
+
+### Review
+
+The review table gives us a place to store individual review results.
+
+#### Fields
+
+- id: UUID
+- article_id: UUID [indexed]
+- user_id: UUID [indexed] [nullable]
+- duration: int [indexed]
+- difficulty: int [indexed]
+- comment: string
+
+#### Constraints
+
+- foreign_key(article_id, Article.id)
+- foreign_key(user_id, User.id)
+- unique(article_id, user_id)
+
+#### Notes
+
+Due to problem constraints, we must allow for reviews to be created without real users connected to them. This means
+we have a couple choices - we can allow nulls in the field, or we can create fake users (we could use something like
+our test domain with sequential usernames for the emails, with random bytes for the passphrases).
+
+PostgreSQL should keep the unique constraint while allowing multiple nulls for the same article_id. This seems like
+the clean choice.
+
+### Analytics
+
+The analytics table allows us to cache aggregated results on a per article basis. There is a one to one mapping between
+articles and analytics records. They should be created in a transaction together.
+
+Each time we add a new `Review`, we should, in a transaction, update the corresponding `Analytics` record (in a
+transaction). This won't be a problem for our level of write load, but if you're having issues with this kind of thing
+in your setup you may need to consider sharding.
+
+#### Fields
+
+- id: UUID
+- article_id: UUID [indexed]
+- duration: float [indexed]
+- difficulty: float [indexed]
+
+#### Constraints
+
+- foreign_key(article_id, Article.id)
+- unique(article_id)
