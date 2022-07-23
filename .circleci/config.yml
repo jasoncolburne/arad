@@ -48,10 +48,10 @@ jobs:
 
             for IMAGE in "${IMAGES[@]}"; do
               TAG="${IMAGE}-${CIRCLE_BRANCH}-$(git rev-parse --short HEAD)"
-              docker tag "project_${IMAGE}:latest" "${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:${TAG}"
+              docker tag "project_be-${IMAGE}:latest" "${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:${TAG}"
 
               TAG="${IMAGE}-${CIRCLE_BRANCH}-latest"
-              docker tag "project_${IMAGE}:latest" "${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:${TAG}"
+              docker tag "project_be-${IMAGE}:latest" "${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:${TAG}"
             done
       - run:
           name: Login to DockerHub
