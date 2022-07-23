@@ -1,4 +1,4 @@
-[arad](../../../../README.md) / [documentation](../README.md) / [design](./README.md)
+[arad](../../../../) / [documentation](../README.md) / [design](./README.md)
 
 # The Anatomy of an Arad Production Deployment
 

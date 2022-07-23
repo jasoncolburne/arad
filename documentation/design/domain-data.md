@@ -1,4 +1,4 @@
-[arad](../../../../README.md) / [documentation](../README.md) / [design](./README.md)
+[arad](../../../../) / [documentation](../README.md) / [design](./README.md)
 
 # Domain and Data Model
 
