@@ -1,5 +1,6 @@
 version: 2.1
 
+
 jobs:
   build_and_push:
     docker:
@@ -9,16 +10,6 @@ jobs:
       - setup_remote_docker:
           docker_layer_caching: true
           version: 20.10.14
-      - run:
-          name: Echo system information
-          command: |
-            uname -a
-            echo
-            docker version
-            echo
-            ls
-            echo
-            pwd
       - run:
           name: Update package manager
           command: sudo apt-get update
@@ -59,19 +50,23 @@ jobs:
               docker push "${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:${TAG}"
             done
 
+  black:
+    docker:
+      - image: ${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:identity-${CIRCLE_BRANCH}-latest
+    steps:
+      - run: echo hello
+
 workflows:
-  build_test_push:
+  everything:
     jobs:
       - hold:
           type: approval
-          filters:
-            branches:
-              only:
-                - main
       - build_and_push:
-          filters:
-            branches:
-              only:
-                - main
           requires:
             - hold
+      - black:
+          requires:
+            - build_and_push
+      # - pytest:
+      #     requires:
+      #       - build_and_push
