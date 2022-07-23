@@ -6,12 +6,12 @@ Domain and data modelling allow us to understand the problem space from differen
 create two models that can interact to provide the correct application experience.
 
 The domain model describes data entities from the domain perspective, uses real-world language for clarity, and
-represents a template of the application state in memory at any given time. The domain model entities live in the
-internal service layer of a service.
+represents a subset of application state, required to serve a request, in application memory, at any given time. The
+domain model entities live in the internal service layer of a service.
 
 The data model describes data entities from the infrastructure perspective, and may use domain agnostic terms, at times,
-for clarity. The data model represents a components of the application state on disk at any given time. The data model
-entities live in the repository layer, and are defined in the model layer.
+for clarity. The data model represents the application state on disk at any given time. The data model entities live in
+the repository layer, and are defined in the model layer.
 
 By decoupling these models through a repository layer abstraction, we are free to choose an entirely different
 implementation for the data model (this is sometimes required for performance or cost reasons as scale increases),
