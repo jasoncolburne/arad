@@ -37,7 +37,7 @@ RUN \
   if [ "${DEPLOYMENT_ENVIRONMENT}" == "development" ]; then \
     poetry install --no-root --with test; \
   else \
-    poetry install --no-root; \
+    poetry install --no-root --without test; \
   fi
 
 RUN apt-get -y remove gcc libc-dev ca-certificates
