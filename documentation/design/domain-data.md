@@ -184,7 +184,7 @@ The `ArticleTag` table allows administrators apply administrator-defined `Tags` 
 
 The `Review` table gives us a place to store individual review results.
 
-`Jargon` is a related entity.
+`Jargon` is a set of related entities. Each review can own a single comment.
 
 #### Fields
 
@@ -193,7 +193,6 @@ The `Review` table gives us a place to store individual review results.
 - user_id: UUID [indexed] [nullable]
 - duration: int [indexed]
 - difficulty: int [indexed]
-- comment: string
 
 #### Constraints
 
@@ -209,6 +208,29 @@ our test domain with sequential usernames for the emails, with random bytes for 
 
 PostgreSQL should keep the unique constraint while allowing multiple nulls for the same article_id. This seems like
 the clean choice.
+
+### Comment
+
+The `Comment` table lets us attach a single comment to a review and track impressions vs helpfulness from the reader
+perspective (search view) to help us rank comments so we can display the top _N_.
+
+#### Fields
+
+- id: UUID
+- article_id: UUID [indexed]
+- review_id: UUID [indexed]
+- user_id: UUID
+- content: string
+- impressions: int
+- helped: int
+- helpfulness: float
+
+#### Constraints
+
+- foreign_key(article_id, Article.id)
+- foreign_key(review_id, Review.id)
+- foreign_key(user_id, User.id)
+- unique(review_id)
 
 ### Analytics
 
