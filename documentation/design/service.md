@@ -8,19 +8,24 @@ circular stack traces and makes code easier to debug.
 
 ![Typical service stack](./assets/service-stack.png)
 
-## Endpoint layer
+## Application layer
 
-The `endpoint` layer is responsible for orchestrating service calls. This is not typical, and normally we'd inject an
-orchestration layer between the endpoints and services to decouple them and delegate responsibility of encoding and
-decoding alone to the endpoint layer. In this case, however, we do not plan to produce features that will change the
-requirements and force us to orchestrate the same actions in multiple scenarios - for example, we won't need another
-api. It is also highly unlikely we'll ever need inter-service communication outside the storage layer (application
-state) - JWT for access solves the need for queries during authorization and there is no other known case that requires
-it (to be confirmed).
+The application layer is responsible translating requests into orchestrations and encoding the response for a client.
+The client could be a terminal, or a web client, or anything really. The whole point of the application layer is to
+integrate with external callers. Within the application layer we partition code by integration type, and there is
+uaully a one to one mapping between application level commands and orchestrations.
 
-If the need _does_ arise, do not hesitate to add an orchestration layer to decouple services and endpoints.
+Authorization is typically applied here, but nothing prevents us from passing tokens deeper into the stack and applying
+the authorization decorator wherever we want.
 
-Authorization also happens at the endpoint layer, using decoration.
+## Orchestration layer
+
+We place an orchestration layer between the application (endpoints for instance) and services to decouple them and
+delegate responsibility of encoding and decoding alone to the application layer. The orchestration layer orchestrates
+service calls.
+
+Initially we planned to not include this layer but it became clear with thought that we'd want to achieve similar things
+with a CLI or REPL. Orchestrations can be called directly from these tools.
 
 ## Service layer
 
