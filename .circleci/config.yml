@@ -40,12 +40,27 @@ x-pylint-steps: &pylint-steps
         cd /app
         poetry install --no-root --with test
   - run:
-      name: Pytest
+      name: Pylint
       command: |
         . /root/.cache/pypoetry/virtualenvs/*/bin/activate
         cd /app
         find . -maxdepth 1 -type d -not -name '.*' | xargs pylint
-        
+
+x-mypy-steps: &mypy-steps
+  - run:
+      name: Install test dependencies
+      command: |
+        cd /app
+        poetry install --no-root --with test
+  - run:
+      name: Mypy
+      command: |
+        . /root/.cache/pypoetry/virtualenvs/*/bin/activate
+        cd /app
+        mypy --install-types --non-interactive
+        mypy .
+
+
 jobs:
   build-images:
     resource_class: large
@@ -188,6 +203,34 @@ jobs:
         auth: *docker-auth
     steps: *pylint-steps
 
+  mypy-identity:
+    resource_class: small
+    docker:
+      - image: ${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:identity-${CIRCLE_BRANCH}-latest
+        auth: *docker-auth
+    steps: *mypy-steps
+
+  mypy-administrator:
+    resource_class: small
+    docker:
+      - image: ${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:administrator-${CIRCLE_BRANCH}-latest
+        auth: *docker-auth
+    steps: *mypy-steps
+
+  mypy-reviewer:
+    resource_class: small
+    docker:
+      - image: ${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:reviewer-${CIRCLE_BRANCH}-latest
+        auth: *docker-auth
+    steps: *mypy-steps
+
+  mypy-reader:
+    resource_class: small
+    docker:
+      - image: ${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:reader-${CIRCLE_BRANCH}-latest
+        auth: *docker-auth
+    steps: *mypy-steps
+
 workflows:
   everything:
     jobs:
@@ -230,5 +273,17 @@ workflows:
           requires:
             - build-images
       - pylint-reader:
+          requires:
+            - build-images
+      - mypy-identity:
+          requires:
+            - build-images
+      - mypy-administrator:
+          requires:
+            - build-images
+      - mypy-reviewer:
+          requires:
+            - build-images
+      - mypy-reader:
           requires:
             - build-images
