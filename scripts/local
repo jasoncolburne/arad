@@ -1,13 +1,15 @@
 #!/usr/bin/env bash
 
-set -o pipefail
+set -eo pipefail
 
 BACKENDS=(administrator reviewer reader identity)
+set +e
 read -r -d '' ACTIVATE_SCRIPT << EOS
 BASE_PATH=\$(poetry env info | grep '^Path' | head -n1 | cut -d':' -f2 | sed 's/\s*//')
 ACTIVATE="\${BASE_PATH}/bin/activate"
 . \${ACTIVATE}
 EOS
+set -e
 
 stack_up() {
   docker compose up
@@ -76,10 +78,12 @@ docker_compose_rm() {
 repl() {
   local SERVICE=$1
 
+  set +e
   read -r -d '' SHELL_SCRIPT << EOS
 ${ACTIVATE_SCRIPT}
 PYTHONSTARTUP=${SERVICE}/repl.py ipython
 EOS
+  set -e
 
   docker compose run --rm -it "be-${SERVICE}" bash -c "${SHELL_SCRIPT}"
 }

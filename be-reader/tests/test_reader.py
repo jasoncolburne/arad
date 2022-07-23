@@ -1,4 +1,4 @@
-from node_reviewer import __version__
+from reader import __version__
 
 
 def test_version():
