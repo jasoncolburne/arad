@@ -6,11 +6,19 @@ x-docker-auth: &docker-auth
 
 x-black-steps: &black-steps
   - run:
+      name: Change directory
+      command: cd /app
+  - run:
       name: Install test dependencies
       command: poetry install --no-root --with test
   - run:
+      name: Install git
+      command: apt-get -y install git
+  - run:
       name: Blacken
-      command: black .
+      command: |
+        . /root/.cache/pypoetry/virtualenvs/*/bin/activate
+        black .
   - run:
       name: Confirm unchanged
       command: |
@@ -18,11 +26,16 @@ x-black-steps: &black-steps
 
 x-pytest-steps: &pytest-steps
   - run:
+      name: Change directory
+      command: cd /app
+  - run:
       name: Install test dependencies
       command: poetry install --no-root --with test
   - run:
       name: Pytest
-      command: pytest .
+      command: |
+        . /root/.cache/pypoetry/virtualenvs/*/bin/activate
+        pytest .
 
 jobs:
   build_and_push:
