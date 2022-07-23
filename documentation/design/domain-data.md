@@ -7,11 +7,18 @@ create two models that can interact to provide the correct application experienc
 
 The domain model describes data entities from the domain perspective, uses real-world language for clarity, and
 represents a subset of application state, required to serve a request, in application memory, at any given time. The
-domain model entities live in the internal service layer of a service.
+domain model entities are composed in the [repository layer](./service.md#repository-layer) for use in the
+[service layer](./service.md#service-layer). Thus, you'll find them as outputs and inputs in a repository class, and
+pretty much everywhere in a service class.
 
 The data model describes data entities from the infrastructure perspective, and may use domain agnostic terms, at times,
-for clarity. The data model represents the application state on disk at any given time. The data model entities live in
-the repository layer, and are defined in the model layer.
+for clarity. The data model represents the application state on disk at any given time. The data model entities are
+defined in the [model layer](./service.md#models), and they are used to operate on data on behalf of the application.
+The [repository layer](./service.md#repository-layer) provides an interface fo the entire application to the models.
+
+What does all this look like?
+
+![Exploded View](./assets/domain-data-model-exploded.png)
 
 By decoupling these models through a repository layer abstraction, we are free to choose an entirely different
 implementation for the data model (this is sometimes required for performance or cost reasons as scale increases),
@@ -283,12 +290,6 @@ compute counts to rank the most important terms.
 
 What's this all about? Well, remember how we mentioned that we'd be constructing a repository layer to translate between
 the data model and the service layer? This is how we map the data model to the domain.
-
-The next image shows how the [service layer](./service.md#service-layer) inside an Arad service will communicate with
-the underlying [repository layer](./service.md#repository-layer), which in turn is composed of orm calls using
-[models](./service.md#models).
-
-![Exploded Article View](./assets/domain-data-model-exploded.png)
 
 For the diagrams below, here is a legend:
 
