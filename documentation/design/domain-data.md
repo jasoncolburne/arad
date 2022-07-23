@@ -93,6 +93,8 @@ relational database.
 
 ### User
 
+The `User` table actually contains a hashed passphrase, unlike the domain model. `Roles` are a related entity.
+
 #### Fields
 
 - id: UUID
@@ -101,12 +103,16 @@ relational database.
 
 ### Role
 
+The `Role` table contains three records at the moment, and is populated when the table is created in a migration.
+
 #### Fields
 
 - id: UUID
 - name: string [indexed]
 
 ### UserRole
+
+The `UserRole` table allows us to apply roles to a given user.
 
 #### Fields
 
@@ -121,6 +127,14 @@ relational database.
 - unique(user_id, role_id)
 
 ### Article
+
+The `Article` table contains most of the information required to populate our domain entity.
+
+Duration and difficulty have two views - from a reader's perspective, these values come from the `Analytics` table and
+are floating point values. From the reviewer's perspective, these values are integers that the reviewer supplies.
+
+`Jargon`, `Comments` and `Tags` are all related entities. `Jargon` and `Tags` are many to one with `Articles`/`Reviews`,
+but `Comments` are one to one with `Reviews`. Thus we can store `Comments` directly on the `Review`, if we desire.
 
 #### Fields
 
@@ -139,6 +153,8 @@ relational database.
 
 ### Tag
 
+The `Tag` table allows us to create tags that apply to all articles.
+
 #### Fields
 
 - id: UUID
@@ -149,6 +165,8 @@ relational database.
 - unique(name)
 
 ### ArticleTag
+
+The `ArticleTag` table allows administrators apply administrator-defined `Tags` to articles.
 
 #### Fields
 
@@ -164,7 +182,9 @@ relational database.
 
 ### Review
 
-The review table gives us a place to store individual review results.
+The `Review` table gives us a place to store individual review results.
+
+`Jargon` is a related entity.
 
 #### Fields
 
@@ -212,6 +232,9 @@ in your setup you may need to consider sharding.
 - unique(article_id)
 
 ### Jargon
+
+The `Jargon` table allows us to associate jargon on a per `Review` basis, and the `article_id` field permits us to
+compute counts to rank the most important terms.
 
 #### Fields
 
