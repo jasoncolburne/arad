@@ -1,6 +1,6 @@
 [arad](../../../../) / [documentation](../README.md) / [decisions](./README.md)
 
-# Use Comment Table to establish Sentiment Metric
+# Use Comment Table to Establish Sentiment Metric
 
 **Date**: 2022-07-23
 
