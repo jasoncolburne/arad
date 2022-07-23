@@ -45,7 +45,7 @@ changes in user behaviour.
 
 ## Front-end Layer
 The top layer, the [`front-end`](https://en.wikipedia.org/wiki/Frontend_and_backend), is a [React](https://reactjs.org/)
-[Single Page Application](https://en.wikipedia.org/wiki/Single-page_application) located in a web `client`. The
+[Single Page Application](https://en.wikipedia.org/wiki/Single-page_application) located in a web browser. The
 `client` may take many forms. Some examples include web browsers, mobile phones, or a variety of
 [headless](https://en.wikipedia.org/wiki/Headless_computer) clients. Perhaps a remote [cli](https://en.wikipedia.org/wiki/Command-line_interface).
 In most of these documents, we assume the `client` is our SPA code running a web browser, but there is nothing
