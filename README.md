@@ -13,4 +13,4 @@ out to aid others.
 
 For more details, dig into the documentation.
 
-- [Documentation](./documentation/)
+- [Documentation](./documentation/README.md)
