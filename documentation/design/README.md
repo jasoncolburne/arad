@@ -44,13 +44,14 @@ changes in user behaviour.
 ![Arad](./assets/arad-simple.png)
 
 ## Front-end Layer
-The top layer, the [`front-end`](https://en.wikipedia.org/wiki/Frontend_and_backend), is located in a web `client`. The
+The top layer, the [`front-end`](https://en.wikipedia.org/wiki/Frontend_and_backend), is a [React](https://reactjs.org/)
+[Single Page Application](https://en.wikipedia.org/wiki/Single-page_application) located in a web `client`. The
 `client` may take many forms. Some examples include web browsers, mobile phones, or a variety of
 [headless](https://en.wikipedia.org/wiki/Headless_computer) clients. Perhaps a remote [cli](https://en.wikipedia.org/wiki/Command-line_interface).
 In most of these documents, we assume the `client` is our SPA code running a web browser, but there is nothing
 preventing other consumers of the API from utilizing it.
 
-The `front-end` is a [React](https://reactjs.org/) [Single Page Application](https://en.wikipedia.org/wiki/Single-page_application).
+The `front-end` .
 
 ## API Layer
 The `front-end` commmunicates with the `back-end` stack (everything else) through the internet, and ultimately, an
