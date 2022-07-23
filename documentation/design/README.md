@@ -69,7 +69,8 @@ eliminates several operational problems and should work well for this simple, re
 #### Identity
 [identity](./services/identity.md) is the foundational piece of the service layer, providing authentication and
 authorization capabilities to permit [RBAC](https://en.wikipedia.org/wiki/Role-based_access_control). As there is no
-inter-service communication, we rely on other mechanisms (JWTs) to authorize user actions.
+inter-service communication, we rely on other mechanisms ([JWTs](#authentication-in-the-service-layer)) to authorize
+user actions.
 
 #### Reader
 
