@@ -10,4 +10,4 @@ for motivation behind this directory.
 - [002: Forbid Collection of Personally Identifying Information](./002-personally-identifying-information.md)
 - [003: Provide Mechanism to Invalidate Refresh Token](./003-invalidate-refresh-token.md)
 - [004: fastapi/sqlmodel/asyncpg/aioredis for Back-end Stack](./004-stack-for-backend-services.md)
-- [005: Comment Table to establish Usefulness Metric](./005-use-comment-table.md)
+- [005: Comment Table to establish Sentiment Metric](./005-use-comment-table.md)
