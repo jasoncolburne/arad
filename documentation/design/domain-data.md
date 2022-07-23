@@ -284,9 +284,18 @@ compute counts to rank the most important terms.
 What's this all about? Well, remember how we mentioned that we'd be constructing a repository layer to translate between
 the data model and the service layer? This is how we map the data model to the domain.
 
-Legend:
+The next image shows how the [service layer](./service.md#service-layer) inside an Arad service will communicate with
+the underlying [repository layer](./service.md#repository-layer), which in turn is composed of orm calls using
+[models](./service.md#models).
+
+![Exploded Article View](./assets/domain-data-model-exploded.png)
+
+For the diagrams below, here is a legend:
 
 ![Legend](./assets/domain-data-model-legend.png)
+
+They (diagrams below) all show how data is aggregated from the data model into the domain model, in which there are
+only three entities.
 
 ### User
 

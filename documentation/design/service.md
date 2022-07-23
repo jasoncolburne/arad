@@ -45,6 +45,14 @@ The repository layer provides an abstraction over the models, which represent da
 it probably isn't entirely necessary to decouple the database and service layer with this repository layer, but it
 should future-proof us if we want to change the interface to the database.
 
+The repository layer composes domain objects for specific use cases using the [ORM](https://en.wikipedia.org/wiki/Object%E2%80%93relational_mapping)
+of choice, SQLAlchemy, which acts on models. 
+
+## Models
+
+Models are the foundational element of our application, and provide it access to state. They are the closest thing to
+the database, except maybe the SQAlchemy orm which is a pretty thin wrapper around SQL.
+
 ## Common code and sync
 
 In addition to all the services, there is a `common` service that is not invoked when the application runs, but instead
