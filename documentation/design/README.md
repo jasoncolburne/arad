@@ -36,7 +36,7 @@ Within services, we maintain a similar rigidity and layering where layers only i
 layers, in isolation from processes in their own layer. Thanks to A. Tucker for teaching me this technique. In the
 future, should we have the need for more complex behaviours, we may consider adding another `orchestration` layer 
 between `api` and the `service` layer and some sort of data pipeline in the `infrastructure` layer that allows us
-maintain state during orchestration.
+maintain state during orchestration (though they do all use the same database...).
 
 By grouping functionality by user type/concern, we can scale components of the system independently, reacting to
 changes in user behaviour.
