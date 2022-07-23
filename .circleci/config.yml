@@ -1,7 +1,41 @@
 version: 2.1
 
+x-docker-auth: &docker-auth
+  username: $DOCKERHUB_USER
+  password: $DOCKERHUB_ACCESS_TOKEN
+
+x-black-steps: &black-steps
+  - run:
+      name: Install git
+      command: apt-get -y install git
+  - run:
+      name: Install test dependencies
+      command: |
+        cd /app
+        poetry install --no-root --with test
+  - run:
+      name: Blacken
+      command: |
+        . /root/.cache/pypoetry/virtualenvs/*/bin/activate
+        cd /app
+        black --check .
+
+x-pytest-steps: &pytest-steps
+  - run:
+      name: Install test dependencies
+      command: |
+        cd /app
+        poetry install --no-root --with test
+  - run:
+      name: Pytest
+      command: |
+        . /root/.cache/pypoetry/virtualenvs/*/bin/activate
+        cd /app
+        pytest .
+
 jobs:
-  build_and_push:
+  build-images:
+    resource_class: large
     docker:
       - image: cimg/base:stable
     steps:
@@ -9,16 +43,6 @@ jobs:
       - setup_remote_docker:
           docker_layer_caching: true
           version: 20.10.14
-      - run:
-          name: Echo system information
-          command: |
-            uname -a
-            echo
-            docker version
-            echo
-            ls
-            echo
-            pwd
       - run:
           name: Update package manager
           command: sudo apt-get update
@@ -34,44 +58,124 @@ jobs:
       - run:
           name: Tag images
           command: |
-            IMAGES=(api be-identity be-reader be-reviewer be-administrator)
-
+            IMAGES=(identity reader reviewer administrator)
             for IMAGE in "${IMAGES[@]}"; do
-              TAG="${IMAGE}-${CIRCLE_BRANCH}-$(git rev-parse --short HEAD)"
-              docker tag "project_${IMAGE}:latest" "${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:${TAG}"
+              HASH_TAG="${IMAGE}-${CIRCLE_BRANCH}-$(git rev-parse --short HEAD)"
+              LATEST_TAG="${IMAGE}-${CIRCLE_BRANCH}-latest"
 
-              TAG="${IMAGE}-${CIRCLE_BRANCH}-latest"
-              docker tag "project_${IMAGE}:latest" "${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:${TAG}"
+              docker tag "project_be-${IMAGE}:latest" "${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:${HASH_TAG}"
+              docker tag "project_be-${IMAGE}:latest" "${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:${LATEST_TAG}"
             done
+
+            HASH_TAG="api-${CIRCLE_BRANCH}-$(git rev-parse --short HEAD)"
+            LATEST_TAG="api-${CIRCLE_BRANCH}-latest"
+            docker tag "project_api:latest" "${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:${HASH_TAG}"
+            docker tag "project_api:latest" "${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:${LATEST_TAG}"
       - run:
           name: Login to DockerHub
           command: docker login -u "${DOCKERHUB_USER}" -p "${DOCKERHUB_ACCESS_TOKEN}"
       - run:
           name: Push images
           command: |
-            IMAGES=(api be-identity be-reader be-reviewer be-administrator)
-
+            IMAGES=(identity reader reviewer administrator)
             for IMAGE in "${IMAGES[@]}"; do
-              TAG="${IMAGE}-${CIRCLE_BRANCH}-$(git rev-parse --short HEAD)"
-              docker push "${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:${TAG}"
+              HASH_TAG="${IMAGE}-${CIRCLE_BRANCH}-$(git rev-parse --short HEAD)"
+              LATEST_TAG="${IMAGE}-${CIRCLE_BRANCH}-latest"
 
-              TAG="${IMAGE}-${CIRCLE_BRANCH}-latest"
-              docker push "${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:${TAG}"
+              docker push "${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:${HASH_TAG}"
+              docker push "${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:${LATEST_TAG}"
             done
 
+            HASH_TAG="api-${CIRCLE_BRANCH}-$(git rev-parse --short HEAD)"
+            LATEST_TAG="api-${CIRCLE_BRANCH}-latest"
+            docker push "${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:${HASH_TAG}"
+            docker push "${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:${LATEST_TAG}"
+
+  black-identity:
+    resource_class: small
+    docker:
+      - image: ${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:identity-${CIRCLE_BRANCH}-latest
+        auth: *docker-auth
+    steps: *black-steps
+
+  black-administrator:
+    resource_class: small
+    docker:
+      - image: ${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:administrator-${CIRCLE_BRANCH}-latest
+        auth: *docker-auth
+    steps: *black-steps
+
+  black-reviewer:
+    resource_class: small
+    docker:
+      - image: ${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:reviewer-${CIRCLE_BRANCH}-latest
+        auth: *docker-auth
+    steps: *black-steps
+
+  black-reader:
+    resource_class: small
+    docker:
+      - image: ${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:reader-${CIRCLE_BRANCH}-latest
+        auth: *docker-auth
+    steps: *black-steps
+
+  pytest-identity:
+    resource_class: small
+    docker:
+      - image: ${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:identity-${CIRCLE_BRANCH}-latest
+        auth: *docker-auth
+    steps: *pytest-steps
+
+  pytest-administrator:
+    resource_class: small
+    docker:
+      - image: ${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:administrator-${CIRCLE_BRANCH}-latest
+        auth: *docker-auth
+    steps: *pytest-steps
+
+  pytest-reviewer:
+    resource_class: small
+    docker:
+      - image: ${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:reviewer-${CIRCLE_BRANCH}-latest
+        auth: *docker-auth
+    steps: *pytest-steps
+
+  pytest-reader:
+    resource_class: small
+    docker:
+      - image: ${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:reader-${CIRCLE_BRANCH}-latest
+        auth: *docker-auth
+    steps: *pytest-steps
+
 workflows:
-  build_test_push:
+  everything:
     jobs:
       - hold:
           type: approval
-          filters:
-            branches:
-              only:
-                - main
-      - build_and_push:
-          filters:
-            branches:
-              only:
-                - main
+      - build-images:
           requires:
             - hold
+      - black-identity:
+          requires:
+            - build-images
+      - black-administrator:
+          requires:
+            - build-images
+      - black-reviewer:
+          requires:
+            - build-images
+      - black-reader:
+          requires:
+            - build-images
+      - pytest-identity:
+          requires:
+            - build-images
+      - pytest-administrator:
+          requires:
+            - build-images
+      - pytest-reviewer:
+          requires:
+            - build-images
+      - pytest-reader:
+          requires:
+            - build-images
