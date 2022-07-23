@@ -137,21 +137,6 @@ relational database.
 
 - unique(doi)
 
-### Jargon
-
-#### Fields
-
-- id: UUID
-- review_id: UUID [indexed]
-- article_id: UUID [indexed]
-- term: string [indexed]
-
-#### Constraints
-
-- foreign_key(review_id, Review.id)
-- foreign_key(article_id, Article.id)
-- unique(review_id, term)
-
 ### Tag
 
 #### Fields
@@ -225,3 +210,18 @@ in your setup you may need to consider sharding.
 
 - foreign_key(article_id, Article.id)
 - unique(article_id)
+
+### Jargon
+
+#### Fields
+
+- id: UUID
+- review_id: UUID [indexed]
+- article_id: UUID [indexed]
+- term: string [indexed]
+
+#### Constraints
+
+- foreign_key(review_id, Review.id)
+- foreign_key(article_id, Article.id)
+- unique(review_id, term)
