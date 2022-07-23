@@ -34,7 +34,7 @@ COPY poetry.lock .
 RUN poetry check
 RUN poetry lock --check
 RUN \
-  if [ "${DEPLOYMENT_ENVIRONMENT}" == "development" ]; then \
+  if [ "${DEPLOYMENT_ENVIRONMENT}" = "development" ]; then \
     poetry install --no-root --with test; \
   else \
     poetry install --no-root --without test; \
