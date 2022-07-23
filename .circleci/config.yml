@@ -54,7 +54,19 @@ jobs:
     docker:
       - image: ${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:identity-${CIRCLE_BRANCH}-latest
     steps:
-      - run: echo hello
+      - run:
+          name: Login to DockerHub
+          command: docker login -u "${DOCKERHUB_USER}" -p "${DOCKERHUB_ACCESS_TOKEN}"
+      - run:
+          name: Install test dependencies
+          command: poetry install --no-root --with test
+      - run:
+          name: Blacken
+          command: black .
+      - run:
+          name: Confirm unchanged
+          command: |
+            [[ -z "$(git status --porcelain)" ]] || false
 
 workflows:
   everything:
