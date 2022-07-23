@@ -1,3 +1,5 @@
+[arad](../../../../) / [documentation](../README.md) / [decisions](./README.md)
+
 # Forbid Collection of Personally Identifying Information
 
 **Date**: 2022-07-19

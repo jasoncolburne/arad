@@ -1,9 +1,10 @@
-[arad](../../../../) / [documentation](../)
+[arad](../../../../) / [documentation](../README.md)
 
 # Design
 
 ## Table of Contents
 
+- [Overview](#overview)
 - [Front-end Layer](#front-end-layer)
 - [API Layer](#api-layer)
 - [Service Layer](#service-layer)
@@ -36,7 +37,7 @@ Within services, we maintain a similar rigidity and layering where layers only i
 layers, in isolation from processes in their own layer. Thanks to A. Tucker for teaching me this technique. In the
 future, should we have the need for more complex behaviours, we may consider adding another `orchestration` layer 
 between `api` and the `service` layer and some sort of data pipeline in the `infrastructure` layer that allows us
-maintain state during orchestration.
+maintain state during orchestration (though they do all use the same database...).
 
 By grouping functionality by user type/concern, we can scale components of the system independently, reacting to
 changes in user behaviour.
@@ -44,11 +45,12 @@ changes in user behaviour.
 ![Arad](./assets/arad-simple.png)
 
 ## Front-end Layer
-The top layer, the [`front-end`](https://en.wikipedia.org/wiki/Frontend_and_backend), is located in the `client`. The
-client may take many forms. Some examples include web browsers, mobile phones, or a variety of
-[headless](https://en.wikipedia.org/wiki/Headless_computer) clients.
-
-The `front-end` is a [React](https://reactjs.org/) [Single Page Application](https://en.wikipedia.org/wiki/Single-page_application).
+The top layer, the [`front-end`](https://en.wikipedia.org/wiki/Frontend_and_backend), is a [React](https://reactjs.org/)
+[Single Page Application](https://en.wikipedia.org/wiki/Single-page_application) located in a web browser. The
+`client` may take many forms. Some examples include web browsers, mobile phones, or a variety of
+[headless](https://en.wikipedia.org/wiki/Headless_computer) clients. Perhaps a remote [cli](https://en.wikipedia.org/wiki/Command-line_interface).
+In most of these documents, we assume the `client` is our SPA code running a web browser, but there is nothing
+preventing other consumers of the API from utilizing it.
 
 ## API Layer
 The `front-end` commmunicates with the `back-end` stack (everything else) through the internet, and ultimately, an
@@ -69,7 +71,8 @@ eliminates several operational problems and should work well for this simple, re
 #### Identity
 [identity](./services/identity.md) is the foundational piece of the service layer, providing authentication and
 authorization capabilities to permit [RBAC](https://en.wikipedia.org/wiki/Role-based_access_control). As there is no
-inter-service communication, we rely on other mechanisms (JWTs) to authorize user actions.
+inter-service communication, we rely on other mechanisms ([JWTs](#authentication-in-the-service-layer)) to authorize
+user actions.
 
 #### Reader
 
