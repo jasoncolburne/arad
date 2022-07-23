@@ -19,12 +19,12 @@
 ### Further reading
 
 - [The Anatomy of an Arad Production Deployment](./deployment.md)
+- [How an Arad service node is architected](./service.md)
 - [Domain and Data Model](./domain-data.md)
 - [Project Structure](./project.md)
 - [Front-end Architecture](./front-end.md)
 - [The API nginx proxy](./api.md)
 - [Endpoint Design](./endpoint.md)
-- [How an Arad service node is architected](./service.md)
 
 ## Overview
 
