@@ -65,7 +65,7 @@ jobs:
             done
 
             HASH_TAG="api-${CIRCLE_BRANCH}-$(git rev-parse --short HEAD)"
-            LATEST_TAG="$api-${CIRCLE_BRANCH}-latest"
+            LATEST_TAG="api-${CIRCLE_BRANCH}-latest"
             docker tag "project_api:latest" "${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:${HASH_TAG}"
             docker tag "project_api:latest" "${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:${LATEST_TAG}"
       - run:
@@ -84,7 +84,7 @@ jobs:
             done
 
             HASH_TAG="api-${CIRCLE_BRANCH}-$(git rev-parse --short HEAD)"
-            LATEST_TAG="$api-${CIRCLE_BRANCH}-latest"
+            LATEST_TAG="api-${CIRCLE_BRANCH}-latest"
             docker push "${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:${HASH_TAG}"
             docker push "${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:${LATEST_TAG}"
 
