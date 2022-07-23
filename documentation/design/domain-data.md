@@ -14,7 +14,8 @@ pretty much everywhere in a service class.
 The data model describes data entities from the infrastructure perspective, and may use domain agnostic terms, at times,
 for clarity. The data model represents the application state on disk at any given time. The data model entities are
 defined in the [model layer](./service.md#models), and they are used to operate on data on behalf of the application.
-The [repository layer](./service.md#repository-layer) provides an interface fo the entire application to the models.
+The [repository layer](./service.md#repository-layer) provides an interface to the models. You'l find data models used
+in repositories.
 
 What does all this look like?
 
