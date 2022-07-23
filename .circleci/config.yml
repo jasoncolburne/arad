@@ -35,7 +35,7 @@ x-pytest-steps: &pytest-steps
         pytest .
 
 jobs:
-  build_and_push:
+  build-images:
     resource_class: large
     docker:
       - image: cimg/base:stable
@@ -153,30 +153,30 @@ workflows:
     jobs:
       - hold:
           type: approval
-      - build_and_push:
+      - build-images:
           requires:
             - hold
       - black-identity:
           requires:
-            - build_and_push
+            - build-images
       - black-administrator:
           requires:
-            - build_and_push
+            - build-images
       - black-reviewer:
           requires:
-            - build_and_push
+            - build-images
       - black-reader:
           requires:
-            - build_and_push
+            - build-images
       - pytest-identity:
           requires:
-            - build_and_push
+            - build-images
       - pytest-administrator:
           requires:
-            - build_and_push
+            - build-images
       - pytest-reviewer:
           requires:
-            - build_and_push
+            - build-images
       - pytest-reader:
           requires:
-            - build_and_push
+            - build-images
