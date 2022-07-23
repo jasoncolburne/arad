@@ -20,8 +20,8 @@ application/endpoint code that calls it will not need modification.
 
 ## Domain Model
 
-Arad is a simple distributed application. There are four service layers, all backed by the same underlying
-infrastructure, sharing the same domain model.
+Arad is a simple distributed application. There are four services in the service layer, all backed by the same
+underlying infrastructure, sharing the same domain model.
 
 ### User
 
