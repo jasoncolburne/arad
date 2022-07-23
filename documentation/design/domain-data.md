@@ -65,8 +65,10 @@ Object Identifier - [more details](https://en.wikipedia.org/wiki/Digital_object_
 - comments: string[]
 - tags: string[]
 
-* A note about comments: We probably don't want to grab _all_ comments every time we assemble an Article. I'd rather
-assemble none and use another call to paginate comments - it's documented the way it is here for clarity.
+#### Notes
+
+We probably don't want to grab _all_ comments every time we assemble an Article. I'd rather assemble none and use
+another call to paginate comments - it's documented the way it is here for clarity.
 
 ### Review
 
