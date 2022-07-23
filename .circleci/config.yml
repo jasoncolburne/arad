@@ -57,8 +57,7 @@ x-mypy-steps: &mypy-steps
       command: |
         . /root/.cache/pypoetry/virtualenvs/*/bin/activate
         cd /app
-        mypy --install-types --non-interactive
-        mypy .
+        mypy --install-types --non-interactive .
 
 
 jobs:
