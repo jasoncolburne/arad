@@ -1,6 +1,6 @@
 [arad](../../../../) / [documentation](../README.md) / [decisions](./README.md)
 
-# [short title of solved problem and solution]
+# Use Comment Table to Establish Sentiment Metric
 
 **Date**: 2022-07-23
 
