@@ -18,7 +18,7 @@ x-black-steps: &black-steps
       command: |
         . /root/.cache/pypoetry/virtualenvs/*/bin/activate
         cd /app
-        [[ $(black . 2>&1 | wc -l) -eq 2 ]] || false
+        black --check .
 
 x-pytest-steps: &pytest-steps
   - run:
