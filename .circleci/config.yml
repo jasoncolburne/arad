@@ -1,5 +1,24 @@
 version: 2.1
 
+x-docker-auth: &docker-auth
+  username: $DOCKERHUB_USER
+  password: $DOCKERHUB_ACCESS_TOKEN
+
+x-black-steps: &black-steps
+  - run:
+      name: Login to DockerHub
+      command: docker login -u "${DOCKERHUB_USER}" -p "${DOCKERHUB_ACCESS_TOKEN}"
+  - run:
+      name: Install test dependencies
+      command: poetry install --no-root --with test
+  - run:
+      name: Blacken
+      command: black .
+  - run:
+      name: Confirm unchanged
+      command: |
+        [[ -z "$(git status --porcelain)" ]] || false
+
 
 jobs:
   build_and_push:
@@ -25,7 +44,7 @@ jobs:
       - run:
           name: Tag images
           command: |
-            IMAGES=(api be-identity be-reader be-reviewer be-administrator)
+            IMAGES=(api identity reader reviewer administrator)
 
             for IMAGE in "${IMAGES[@]}"; do
               TAG="${IMAGE}-${CIRCLE_BRANCH}-$(git rev-parse --short HEAD)"
@@ -40,7 +59,7 @@ jobs:
       - run:
           name: Push images
           command: |
-            IMAGES=(api be-identity be-reader be-reviewer be-administrator)
+            IMAGES=(api identity reader reviewer administrator)
 
             for IMAGE in "${IMAGES[@]}"; do
               TAG="${IMAGE}-${CIRCLE_BRANCH}-$(git rev-parse --short HEAD)"
@@ -50,26 +69,29 @@ jobs:
               docker push "${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:${TAG}"
             done
 
-  black:
+  black-identity:
     docker:
       - image: ${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:identity-${CIRCLE_BRANCH}-latest
-        auth:
-          username: $DOCKERHUB_USER
-          password: $DOCKERHUB_ACCESS_TOKEN
-    steps:
-      - run:
-          name: Login to DockerHub
-          command: docker login -u "${DOCKERHUB_USER}" -p "${DOCKERHUB_ACCESS_TOKEN}"
-      - run:
-          name: Install test dependencies
-          command: poetry install --no-root --with test
-      - run:
-          name: Blacken
-          command: black .
-      - run:
-          name: Confirm unchanged
-          command: |
-            [[ -z "$(git status --porcelain)" ]] || false
+        auth: *docker-auth
+    steps: *black-steps
+
+  black-administrator:
+    docker:
+      - image: ${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:administrator-${CIRCLE_BRANCH}-latest
+        auth: *docker-auth
+    steps: *black-steps
+
+  black-reviewer:
+    docker:
+      - image: ${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:reviewer-${CIRCLE_BRANCH}-latest
+        auth: *docker-auth
+    steps: *black-steps
+
+  black-reader:
+    docker:
+      - image: ${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:reader-${CIRCLE_BRANCH}-latest
+        auth: *docker-auth
+    steps: *black-steps
 
 workflows:
   everything:
@@ -79,9 +101,15 @@ workflows:
       - build_and_push:
           requires:
             - hold
-      - black:
+      - black-identity:
           requires:
             - build_and_push
-      # - pytest:
-      #     requires:
-      #       - build_and_push
+      - black-administrator:
+          requires:
+            - build_and_push
+      - black-reviewer:
+          requires:
+            - build_and_push
+      - black-reader:
+          requires:
+            - build_and_push
