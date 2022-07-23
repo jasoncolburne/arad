@@ -53,6 +53,9 @@ jobs:
   black:
     docker:
       - image: ${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:identity-${CIRCLE_BRANCH}-latest
+        auth:
+          username: $DOCKERHUB_USER
+          password: $DOCKERHUB_ACCESS_TOKEN
     steps:
       - run:
           name: Login to DockerHub
