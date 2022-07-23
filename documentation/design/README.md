@@ -44,9 +44,11 @@ changes in user behaviour.
 ![Arad](./assets/arad-simple.png)
 
 ## Front-end Layer
-The top layer, the [`front-end`](https://en.wikipedia.org/wiki/Frontend_and_backend), is located in the `client`. The
+The top layer, the [`front-end`](https://en.wikipedia.org/wiki/Frontend_and_backend), is located in a web `client`. The
 client may take many forms. Some examples include web browsers, mobile phones, or a variety of
-[headless](https://en.wikipedia.org/wiki/Headless_computer) clients.
+[headless](https://en.wikipedia.org/wiki/Headless_computer) clients. Perhaps a remote [cli](https://en.wikipedia.org/wiki/Command-line_interface).
+In most of these documents, we assume the front end is a web browser, but there is nothing preventing other consumers
+of the API from utilizing it.
 
 The `front-end` is a [React](https://reactjs.org/) [Single Page Application](https://en.wikipedia.org/wiki/Single-page_application).
 
