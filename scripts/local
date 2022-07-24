@@ -3,13 +3,7 @@
 set -eo pipefail
 
 BACKENDS=(administrator reviewer reader identity)
-set +e
-read -r -d '' ACTIVATE_SCRIPT << EOS
-BASE_PATH=\$(poetry env info | grep '^Path' | head -n1 | cut -d':' -f2 | sed 's/\s*//')
-ACTIVATE="\${BASE_PATH}/bin/activate"
-. \${ACTIVATE}
-EOS
-set -e
+ACTIVATE_SCRIPT=". \$(./activate)"
 
 stack_up() {
   docker compose up
@@ -75,6 +69,12 @@ docker_compose_rm() {
   docker compose rm
 }
 
+shell() {
+  local SERVICE=$1
+
+  docker compose run --rm -it "be-${SERVICE}" bash
+}
+
 repl() {
   local SERVICE=$1
 
@@ -111,6 +111,8 @@ execute() {
     types
   elif [[ "${COMMAND}" == "nuke" ]]; then
     nuke
+  elif [[ "${COMMAND}" == "shell" ]]; then
+    shell "${ARGUMENTS}"
   elif [[ "${COMMAND}" == "repl" ]]; then
     repl "${ARGUMENTS}"
   else

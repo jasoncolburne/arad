@@ -30,4 +30,11 @@ be-reviewer/.pylintrc
 be-reader/.pylintrc
 be-identity/.pylintrc
 
+be-administrator/activate
+be-reviewer/activate
+be-reader/activate
+be-identity/activate
+
+.pylintrc
+
 __pycache__
