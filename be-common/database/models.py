@@ -1,11 +1,8 @@
 # Make sure you are editing this file in be-common
 
-from datetime import date
-from typing import Optional
-from uuid import UUID, uuid4
+from uuid import UUID
 
-from pydantic import EmailStr
-from sqlalchemy import String
+from pydantic import EmailStr  # pylint: disable=no-name-in-module
 from sqlalchemy.sql.schema import Column, ForeignKey, UniqueConstraint
 from sqlmodel import Field, SQLModel
 from sqlmodel.sql.sqltypes import AutoString

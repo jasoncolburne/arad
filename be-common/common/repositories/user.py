@@ -16,17 +16,17 @@ class UserRepository:
     async def create(self, email: str, hashed_passphrase: str) -> User:
         user = User(email=email, hashed_passphrase=hashed_passphrase)
         self.database.add(user)
-        await self.database.commit()
+        await self.database.commit()  # type: ignore
         return user
 
     async def get_by_id(self, user_id: UUID) -> User:
         query = select(User).where(User.id == user_id)
-        result = await self.database.execute(query)
+        result = await self.database.execute(query)  # type: ignore
         return result.scalars().one()
 
     async def get_by_email(self, email: str) -> User:
         query = select(User).where(User.email == email)
-        result = await self.database.execute(query)
+        result = await self.database.execute(query)  # type: ignore
         return result.scalars().one()
 
     async def count(self, email_filter: str | None) -> int:
@@ -38,7 +38,10 @@ class UserRepository:
             query = select(func.count(User.id))
         return await self.database.scalar(query)
 
-    async def page(self, email_filter: str, number: int = 1) -> list[User]:
+    async def page(self, email_filter: str, number: int | None = 1) -> list[User]:
+        if number is None:
+            raise Exception()
+
         limit = PAGE_SIZE_USER
         offset = (number - 1) * limit
 
@@ -50,5 +53,5 @@ class UserRepository:
             query = select(User)
         query = query.order_by(User.email).limit(limit).offset(offset)
 
-        result = await self.database.execute(query)
-        return list(result.scalars().all())
+        result = await self.database.execute(query)  # type: ignore
+        return result.scalars().all()

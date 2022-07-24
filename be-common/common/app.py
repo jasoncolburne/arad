@@ -11,13 +11,13 @@ LOCAL = DEPLOYMENT_ENVIRONMENT == "development"
 
 class HealthCheckFilter(logging.Filter):
     def filter(self, record: logging.LogRecord) -> bool:
-        return record.args[2] != "/health"
+        return record.args[2] != "/health"  # type: ignore
 
 
 logging.getLogger("uvicorn.access").addFilter(HealthCheckFilter())
 
 
-def get_application():
+def get_application() -> FastAPI:
     app = FastAPI(
         openapi_url="/openapi.json" if LOCAL else None,
         docs_url="/docs" if LOCAL else None,

@@ -26,10 +26,6 @@ EOS
   docker compose run --rm -it "be-${SERVICE}" bash -c "${SHELL_SCRIPT}"
 }
 
-behave() {
-  simple_command $1 "behave ."
-}
-
 pytest() {
   simple_command $1 "pytest ."
 }
@@ -43,7 +39,7 @@ pylint() {
 }
 
 mypy() {
-  simple_command $1 "mypy ."
+  simple_command $1 "mypy --install-types --non-interactive ."
 }
 
 all() {
@@ -87,18 +83,14 @@ all() {
   done
 
   echo
-  echo "running behave on all services"
-  echo
-  for BACKEND in "${BACKENDS[@]}"; do
-    ./scripts/test behave "${BACKEND}"
-  done
-
-  echo
   echo "running pytest on all services"
   echo
   for BACKEND in "${BACKENDS[@]}"; do
     ./scripts/test pytest "${BACKEND}"
   done
+
+  echo
+  echo "all tests passed!"
 }
 
 # we can probably do the rest in a single line by eval or something
