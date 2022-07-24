@@ -20,4 +20,14 @@ be-reviewer/.dockerignore
 be-reader/.dockerignore
 be-identity/.dockerignore
 
+be-administrator/mypy.ini
+be-reviewer/mypy.ini
+be-reader/mypy.ini
+be-identity/mypy.ini
+
+be-administrator/.pylintrc
+be-reviewer/.pylintrc
+be-reader/.pylintrc
+be-identity/.pylintrc
+
 __pycache__

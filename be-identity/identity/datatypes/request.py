@@ -1,9 +1,9 @@
 from enum import Enum
 from uuid import UUID
 
-from pydantic import BaseModel
+from pydantic import BaseModel  # pylint: disable=no-name-in-module
 
-from common.datatypes.response import Role, User
+from common.datatypes.response import Role
 
 
 class AuthenticationRequest(BaseModel):

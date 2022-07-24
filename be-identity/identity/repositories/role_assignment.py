@@ -12,18 +12,18 @@ class RoleAssignmentRepository:
 
     async def assign_for_user_id(self, user_id: UUID, role_name: str) -> UserRole:
         query = select(Role.id).where(Role.name == role_name)
-        result = await self.database.execute(query)
+        result = await self.database.execute(query)  # type: ignore
         role_id = result.scalars().one()
 
         user_role = UserRole(user_id=user_id, role_id=role_id)
         self.database.add(user_role)
-        await self.database.commit()
+        await self.database.commit()  # type: ignore
 
         return user_role
 
-    async def revoke_for_user_id(self, user_id: UUID, role_name: str):
+    async def revoke_for_user_id(self, user_id: UUID, role_name: str) -> None:
         query = select(Role.id).where(Role.name == role_name)
-        result = await self.database.execute(query)
+        result = await self.database.execute(query)  # type: ignore
         role_id = result.scalars().one()
 
         statement = (
@@ -32,5 +32,5 @@ class RoleAssignmentRepository:
             .where(UserRole.role_id == role_id)
         )
 
-        await self.database.execute(statement)
-        await self.database.commit()
+        await self.database.execute(statement)  # type: ignore
+        await self.database.commit()  # type: ignore

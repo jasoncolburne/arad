@@ -34,14 +34,15 @@ def upgrade() -> None:
     )
     op.create_index(op.f("ix_role_name"), "role", ["name"], unique=True)
     # ### end Alembic commands ###
-    op.bulk_insert(
-        table,
-        [
-            {"name": Role.READER.value},
-            {"name": Role.REVIEWER.value},
-            {"name": Role.ADMINISTRATOR.value},
-        ],
-    )
+    if table is not None:
+        op.bulk_insert(
+            table,
+            [
+                {"name": Role.READER.value},
+                {"name": Role.REVIEWER.value},
+                {"name": Role.ADMINISTRATOR.value},
+            ],
+        )
 
 
 def downgrade() -> None:

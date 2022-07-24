@@ -13,10 +13,21 @@ class RoleService:
         role_repository: RoleRepository | None = None,
         role_assignment_repository: RoleAssignmentRepository | None = None,
     ):
-        self.role_repository = role_repository or RoleRepository(database=database)
-        self.role_assignment_repository = (
-            role_assignment_repository or RoleAssignmentRepository(database=database)
-        )
+        if role_repository is not None:
+            self.role_repository = role_repository
+        elif database is not None:
+            self.role_repository = RoleRepository(database=database)
+        else:
+            raise Exception()
+
+        if role_assignment_repository is not None:
+            self.role_assignment_repository = role_assignment_repository
+        elif database is not None:
+            self.role_assignment_repository = RoleAssignmentRepository(
+                database=database
+            )
+        else:
+            raise Exception()
 
     async def all(self) -> list[Role]:
         role_models = await self.role_repository.all()

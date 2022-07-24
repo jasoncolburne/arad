@@ -1,9 +1,10 @@
 from common.app import get_application
+from common.datatypes.response import HealthCheckResponse
 
 
 app = get_application()
 
 
-@app.get("/health", include_in_schema=False)
-async def health():
-    return {"status": "healthy?"}
+@app.get("/health", include_in_schema=False, response_model=HealthCheckResponse)
+async def health() -> HealthCheckResponse:
+    return HealthCheckResponse(status="ok")

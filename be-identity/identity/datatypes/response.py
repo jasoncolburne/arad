@@ -1,5 +1,4 @@
-from enum import Enum
-from pydantic import BaseModel
+from pydantic import BaseModel  # pylint: disable=no-name-in-module
 
 from common.datatypes.response import User, Role
 

@@ -1,5 +1,6 @@
 from datetime import datetime
 from functools import wraps
+from typing import Any, Awaitable, Callable
 import os
 
 from fastapi import HTTPException, status
@@ -7,6 +8,7 @@ from ecdsa import VerifyingKey
 from jose import jwt, JWTError
 
 from common.datatypes.exception import UnauthorizedException
+from common.datatypes.response import Role, Token
 
 
 ACCESS_TOKEN_ALGORITHM = "ES256"
@@ -15,18 +17,21 @@ ACCESS_TOKEN_PUBLIC_KEY = VerifyingKey.from_pem(ACCESS_TOKEN_PUBLIC_KEY_PEM)
 
 
 class AuthorizationService:
-    def verify_and_parse_token(self, token: str) -> dict:
+    def verify_and_parse_token(self, token: str) -> Token:
         try:
             payload = jwt.decode(
                 token, ACCESS_TOKEN_PUBLIC_KEY, algorithms=[ACCESS_TOKEN_ALGORITHM]
             )
-        except JWTError:
-            raise UnauthorizedException()
+        except JWTError as exc:
+            raise UnauthorizedException() from exc
 
-        if payload["exp"] - int(datetime.utcnow().timestamp()) < 0:
-            raise UnauthorizedException()
+        try:
+            if payload["exp"] - int(datetime.utcnow().timestamp()) < 0:
+                raise UnauthorizedException()
+        except KeyError as exc:
+            raise UnauthorizedException() from exc
 
-        return payload
+        return Token(**payload)
 
 
 global_authorization_service = AuthorizationService()
@@ -37,23 +42,23 @@ credentials_exception = HTTPException(
 )
 
 
-def require_authorization(role):
-    def callable(func):
+def require_authorization(role: Role) -> Callable[..., Callable[..., Awaitable[Any]]]:
+    def _callable(func: Callable[..., Awaitable[Any]]) -> Callable[..., Awaitable[Any]]:
         @wraps(func)
-        async def wrapped(*args, **kwargs):
+        async def wrapped(*args: Any, **kwargs: Any) -> Awaitable[Any]:
             try:
-                token = kwargs["token"]
-                token_contents = global_authorization_service.verify_and_parse_token(
-                    token=token
+                token_string: str = kwargs["token"]
+                token = global_authorization_service.verify_and_parse_token(
+                    token=token_string
                 )
-            except UnauthorizedException:
-                raise credentials_exception
+            except UnauthorizedException as exc:
+                raise credentials_exception from exc
 
-            if token_contents.get("scope") != role.value:
+            if token.scope != role.value:
                 raise credentials_exception
 
             return await func(*args, **kwargs)
 
         return wrapped
 
-    return callable
+    return _callable

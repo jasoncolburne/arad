@@ -1,7 +1,11 @@
 from enum import Enum
 from uuid import UUID
 
-from pydantic import BaseModel
+from pydantic import BaseModel  # pylint: disable=no-name-in-module
+
+
+class HealthCheckResponse(BaseModel):
+    status: str
 
 
 class Role(Enum):
@@ -21,3 +25,9 @@ class UserPage(BaseModel):
     count: int
     page: int
     pages: int
+
+
+class Token(BaseModel):
+    sub: str
+    exp: str
+    scope: str

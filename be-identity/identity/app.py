@@ -1,13 +1,11 @@
-import os
-
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from sqlmodel import Session
 
 from common.app import get_application
 from common.services.authorization import require_authorization
-from common.datatypes.exception import UnauthorizedException
-from common.datatypes.response import Role
+from common.datatypes.exception import BadRequestException, UnauthorizedException
+from common.datatypes.response import Role, HealthCheckResponse
 from database import get_session
 
 from .datatypes.request import (
@@ -15,7 +13,6 @@ from .datatypes.request import (
     RegisterRequest,
     TokenRequest,
     RoleRequest,
-    RoleAction,
     LogoutRequest,
 )
 from .datatypes.response import (
@@ -36,76 +33,80 @@ from .orchestrations import (
 )
 
 
-DEFAULT_ADMIN_EMAIL = os.environ.get("DEFAULT_ADMIN_EMAIL")
-
 app = get_application()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/identify/token")
 
 
-@app.get("/health", include_in_schema=False)
-async def health():
-    return {"status": "healthy?"}
+@app.get("/health", include_in_schema=False, response_model=HealthCheckResponse)
+async def health() -> HealthCheckResponse:
+    return HealthCheckResponse(status="ok")
 
 
 @app.post("/register", response_model=RegisterResponse)
-async def register(request: RegisterRequest, database: Session = Depends(get_session)):
+async def register(
+    request: RegisterRequest, database: Session = Depends(get_session)
+) -> RegisterResponse:
     try:
         return await arad_register(
             email=request.email,
             passphrase=request.passphrase,
             database=database,
         )
-    except BadRequestException:
+    except BadRequestException as exc:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Invalid email address",
-        )
+        ) from exc
 
 
 @app.post("/login", response_model=LoginResponse)
-async def login(request: LoginRequest, database: Session = Depends(get_session)):
+async def login(
+    request: LoginRequest, database: Session = Depends(get_session)
+) -> LoginResponse:
     try:
         return await arad_login(
             email=request.email,
             passphrase=request.passphrase,
             database=database,
         )
-    except UnauthorizedException:
+    except UnauthorizedException as exc:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect email or password",
-        )
+        ) from exc
 
 
 @app.post("/logout", response_model=LogoutResponse)
 async def logout(
     request: LogoutRequest,
     database: Session = Depends(get_session),
-):
+) -> LogoutResponse:
     return await arad_logout(refresh_token=request.refresh_token, database=database)
 
 
 @app.post("/token", response_model=TokenResponse)
-async def access_token(request: TokenRequest, database: Session = Depends(get_session)):
+async def access_token(
+    request: TokenRequest, database: Session = Depends(get_session)
+) -> TokenResponse:
     try:
         return await arad_access_token(
             refresh_token=request.refresh_token,
             scope=request.scope,
             database=database,
         )
-    except UnauthorizedException:
+    except UnauthorizedException as exc:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Not authorized",
-        )
+        ) from exc
 
 
 @app.get("/roles", response_model=RolesResponse)
 @require_authorization(Role.ADMINISTRATOR)
 async def roles(
-    token: str = Depends(oauth2_scheme),
+    token: str = Depends(oauth2_scheme),  # pylint: disable=unused-argument
     database: Session = Depends(get_session),
-):
+) -> RolesResponse:
     return await arad_roles(database=database)
 
 
@@ -113,9 +114,9 @@ async def roles(
 @require_authorization(Role.ADMINISTRATOR)
 async def assign_role(
     request: RoleRequest,
-    token: str = Depends(oauth2_scheme),
+    token: str = Depends(oauth2_scheme),  # pylint: disable=unused-argument
     database: Session = Depends(get_session),
-):
+) -> RoleResponse:
     return await arad_assign_role(
         user_id=request.user_id,
         role=request.role,

@@ -1,4 +1,5 @@
 from uuid import UUID
+import os
 
 from sqlalchemy import exc
 from sqlmodel import Session
@@ -21,6 +22,9 @@ from .datatypes.response import (
 )
 
 
+DEFAULT_ADMIN_EMAIL = os.environ.get("DEFAULT_ADMIN_EMAIL")
+
+
 async def arad_register(
     email: str, passphrase: str, database: Session
 ) -> RegisterResponse:
@@ -30,8 +34,8 @@ async def arad_register(
             email=email,
             passphrase=passphrase,
         )
-    except exc.IntegrityError:
-        raise BadRequestException()
+    except exc.IntegrityError as ex:
+        raise BadRequestException() from ex
 
     role_service = RoleService(database=database)
     await role_service.assign_for_user(user=user, role=Role.READER)
@@ -40,9 +44,11 @@ async def arad_register(
         await role_service.assign_for_user(user=user, role=Role.REVIEWER)
         await role_service.assign_for_user(user=user, role=Role.ADMINISTRATOR)
 
-    return await _arad_authentication_response(
+    response = await _arad_authentication_response(
         database=database, user=user, authentication_service=authentication_service
     )
+
+    return RegisterResponse(**response.dict())
 
 
 async def arad_login(email: str, passphrase: str, database: Session) -> LoginResponse:
@@ -52,14 +58,16 @@ async def arad_login(email: str, passphrase: str, database: Session) -> LoginRes
             email=email,
             passphrase=passphrase,
         )
-    except exc.NoResultFound:
-        raise UnauthorizedException()
+    except exc.NoResultFound as ex:
+        raise UnauthorizedException() from ex
 
-    return await _arad_authentication_response(
+    response = await _arad_authentication_response(
         user=user,
         authentication_service=authentication_service,
         database=database,
     )
+
+    return LoginResponse(**response.dict())
 
 
 async def _arad_authentication_response(
@@ -72,14 +80,18 @@ async def _arad_authentication_response(
     role_service = RoleService(database=database)
     roles = await role_service.all_for_user(user=user)
 
-    return {"refresh_token": refresh_token, "user": user, "roles": roles}
+    return AuthenticationResponse(
+        refresh_token=refresh_token,
+        user=user,
+        roles=roles,
+    )
 
 
 async def arad_logout(refresh_token: str, database: Session) -> LogoutResponse:
     authentication_service = AuthenticationService(database=database)
     await authentication_service.destroy_refresh_token(refresh_token=refresh_token)
 
-    return {"status": "ok"}
+    return LogoutResponse(status="ok")
 
 
 async def arad_access_token(
@@ -93,13 +105,15 @@ async def arad_access_token(
     access_token = await authentication_service.create_access_token(
         user_id=user_id, scope=scope
     )
-    return {"access_token": access_token}
+
+    return TokenResponse(access_token=access_token)
 
 
 async def arad_roles(database: Session) -> RolesResponse:
     role_service = RoleService(database=database)
     roles = await role_service.all()
-    return {"roles": roles}
+
+    return RolesResponse(roles=roles)
 
 
 async def arad_assign_role(
@@ -123,4 +137,4 @@ async def arad_assign_role(
     authentication_service = AuthenticationService(database=database)
     await authentication_service.destroy_all_refresh_tokens_for_user_id(user_id=user.id)
 
-    return {"role": role}
+    return RoleResponse(role=role)

@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 from secrets import token_urlsafe
+from typing import Any
 from uuid import UUID
 import os
 
@@ -29,7 +30,7 @@ global_token_cache = Cache()
 
 class AuthenticationService:
     # one of database or user_repository must be defined
-    def __init__(
+    def __init__(  # pylint: disable=too-many-arguments
         self,
         database: Session | None = None,
         user_repository: UserRepository | None = None,
@@ -39,8 +40,22 @@ class AuthenticationService:
     ):
         self.passphrase_context = passphrase_context
         self.token_cache = token_cache
-        self.user_repository = user_repository or UserRepository(database=database)
-        self.role_repository = role_repository or RoleRepository(database=database)
+
+        # pylint: disable=duplicate-code
+        if user_repository is not None:
+            self.user_repository = user_repository
+        elif database is not None:
+            self.user_repository = UserRepository(database=database)
+        else:
+            raise Exception()
+
+        # pylint: disable=duplicate-code
+        if role_repository is not None:
+            self.role_repository = role_repository
+        elif database is not None:
+            self.role_repository = RoleRepository(database=database)
+        else:
+            raise Exception()
 
     async def create_user_with_passphrase(
         self, email: str, passphrase: str
@@ -53,19 +68,19 @@ class AuthenticationService:
 
     async def authenticate_by_passphrase(self, email: str, passphrase: str) -> UserType:
         user = await self.user_repository.get_by_email(email=email)
-        if self._verify_passphrase(passphrase, user.hashed_passphrase):
-            return UserType(id=user.id, email=user.email)
-        else:
+        if not self._verify_passphrase(passphrase, user.hashed_passphrase):
             raise UnauthorizedException()
+
+        return UserType(id=user.id, email=user.email)
 
     async def create_access_token(self, user_id: UUID, scope: Role) -> str:
         valid_roles = await self.role_repository.all_for_user_id(user_id=user_id)
         if scope.value not in [role.name for role in valid_roles]:
             raise UnauthorizedException()
 
-        payload = {"sub": str(user_id), "scope": scope.value}
+        payload: dict[str, Any] = {"sub": str(user_id), "scope": scope.value}
         expires = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRATION_MINUTES)
-        payload.update({"exp": expires})
+        payload.update({"exp": expires.timestamp()})
         encoded_jwt = jwt.encode(
             payload, ACCESS_TOKEN_PRIVATE_KEY, algorithm=ACCESS_TOKEN_ALGORITHM
         )
@@ -85,10 +100,10 @@ class AuthenticationService:
 
         return refresh_token
 
-    async def destroy_refresh_token(self, refresh_token: str):
+    async def destroy_refresh_token(self, refresh_token: str) -> None:
         await self.token_cache.purge_refresh_token(refresh_token=refresh_token)
 
-    async def destroy_all_refresh_tokens_for_user_id(self, user_id: UUID):
+    async def destroy_all_refresh_tokens_for_user_id(self, user_id: UUID) -> None:
         await self.token_cache.purge_all_refresh_tokens_for_user_id(user_id=user_id)
 
     async def verify_and_extract_uuid_from_refresh_token(

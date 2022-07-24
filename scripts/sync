@@ -2,7 +2,7 @@
 
 BACKENDS=(identity reader reviewer administrator)
 DIRECTORIES=(common database)
-FILES=(Dockerfile .dockerignore)
+FILES=(Dockerfile .dockerignore mypy.ini .pylintrc)
 
 for BACKEND in "${BACKENDS[@]}"
 do

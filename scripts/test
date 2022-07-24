@@ -34,6 +34,14 @@ black() {
   simple_command $1 "black ."
 }
 
+pylint() {
+  simple_command $1 "find . -maxdepth 1 -type d -not -name '.*' | xargs pylint"
+}
+
+mypy() {
+  simple_command $1 "mypy --install-types --non-interactive ."
+}
+
 all() {
   # sync first so that common changes don't get blown away during this process
   echo "syncing code"
@@ -61,11 +69,28 @@ all() {
   ./scripts/sync
 
   echo
+  echo "running pylint on all services"
+  echo
+  for BACKEND in "${BACKENDS[@]}"; do
+    ./scripts/test pylint "${BACKEND}"
+  done
+
+  echo
+  echo "running mypy on all services"
+  echo
+  for BACKEND in "${BACKENDS[@]}"; do
+    ./scripts/test mypy "${BACKEND}"
+  done
+
+  echo
   echo "running pytest on all services"
   echo
   for BACKEND in "${BACKENDS[@]}"; do
     ./scripts/test pytest "${BACKEND}"
   done
+
+  echo
+  echo "all tests passed!"
 }
 
 # we can probably do the rest in a single line by eval or something
@@ -73,10 +98,16 @@ execute() {
   local COMMAND=$1
   local ARGUMENTS=$(echo $2 | sed "s/^ *//" | sed "s/ *\$//")
 
-  if [[ "${COMMAND}" == "pytest" ]]; then
+  if [[ "${COMMAND}" == "behave" ]]; then
+    behave "${ARGUMENTS}"
+  elif [[ "${COMMAND}" == "pytest" ]]; then
     pytest "${ARGUMENTS}"
   elif [[ "${COMMAND}" == "black" ]]; then
     black "${ARGUMENTS}"
+  elif [[ "${COMMAND}" == "pylint" ]]; then
+    pylint "${ARGUMENTS}"
+  elif [[ "${COMMAND}" == "mypy" ]]; then
+    mypy "${ARGUMENTS}"
   elif [[ "${COMMAND}" == "all" ]]; then
     all
   else

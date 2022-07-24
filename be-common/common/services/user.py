@@ -15,8 +15,21 @@ class UserService:
         role_repository: RoleRepository | None = None,
         user_repository: UserRepository | None = None,
     ):
-        self.role_repository = role_repository or RoleRepository(database=database)
-        self.user_repository = user_repository or UserRepository(database=database)
+        # pylint: disable=duplicate-code
+        if role_repository is not None:
+            self.role_repository = role_repository
+        elif database is not None:
+            self.role_repository = RoleRepository(database=database)
+        else:
+            raise Exception()
+
+        # pylint: disable=duplicate-code
+        if user_repository is not None:
+            self.user_repository = user_repository
+        elif database is not None:
+            self.user_repository = UserRepository(database=database)
+        else:
+            raise Exception()
 
     async def get(self, user_id: UUID) -> UserType:
         user_model = await self.user_repository.get_by_id(user_id=user_id)
@@ -25,7 +38,7 @@ class UserService:
         return self._sanitize_user(user_model=user_model, role_models=role_models)
 
     # TODO make this fast with a single query after figuring out sqlalchemy
-    async def page(self, email_filter: str, number: int = 1) -> UserPage:
+    async def page(self, email_filter: str, number: int | None = 1) -> UserPage:
         user_models = await self.user_repository.page(
             email_filter=email_filter, number=number
         )
@@ -33,6 +46,9 @@ class UserService:
 
         users = []
         for user_model in user_models:
+            if user_model.id is None:
+                raise Exception()
+
             role_models = await self.role_repository.all_for_user_id(
                 user_id=user_model.id
             )
@@ -42,12 +58,7 @@ class UserService:
         print(f"total: {total}")
         pages = (total - 1) // PAGE_SIZE_USER + 1
 
-        return {
-            "users": users,
-            "count": len(users),
-            "page": number,
-            "pages": pages,
-        }
+        return UserPage(users=users, count=len(users), page=number, pages=pages)
 
     # here we remove passphrases
     def _sanitize_user(
