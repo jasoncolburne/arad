@@ -1,7 +1,7 @@
 import unittest.mock
-import pytest
 import uuid
 
+import pytest
 import sqlmodel
 
 import common.services.user
@@ -11,15 +11,16 @@ import administrator.orchestrations
 import administrator.datatypes.response
 
 
-
 @pytest.mark.asyncio
 async def test_arad_users_returns_service_results():
     mock_result = administrator.datatypes.response.UsersResponse(
-        users=[common.datatypes.response.User(
-            id=uuid.uuid4(),
-            email='address@arad.org',
-            roles=[],
-        )],
+        users=[
+            common.datatypes.response.User(
+                id=uuid.uuid4(),
+                email="address@arad.org",
+                roles=[],
+            )
+        ],
         count=1,
         page=1,
         pages=1,
@@ -30,10 +31,7 @@ async def test_arad_users_returns_service_results():
     mock_user_service.page = unittest.mock.AsyncMock(return_value=mock_result)
 
     result = await administrator.orchestrations.arad_users(
-        email_filter='',
-        page=1,
-        database=None,
-        user_service=mock_user_service
+        email_filter="", page=1, database=None, user_service=mock_user_service
     )
 
     assert result == mock_result

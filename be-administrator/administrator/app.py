@@ -29,5 +29,8 @@ async def users(
     database: Session = Depends(get_session),
 ) -> UsersResponse:
     return await arad_users(
-        email_filter=request.email_filter, page=request.page, database=database
+        email_filter=request.email_filter,
+        page=request.page,
+        database=database,
+        user_service=None,
     )
