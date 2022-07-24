@@ -7,13 +7,7 @@ DATABASE_HOST=database
 DATABASE_NAME=arad
 DATABASE_USER=postgres
 DATABASE_PASSPHRASE=postgres
-set +e
-read -r -d '' ACTIVATE_SCRIPT << EOS
-BASE_PATH=\$(poetry env info | grep '^Path' | head -n1 | cut -d':' -f2 | sed 's/\s*//')
-ACTIVATE="\${BASE_PATH}/bin/activate"
-. \${ACTIVATE}
-EOS
-set -e
+ACTIVATE_SCRIPT=". \$(./activate)"
 
 create() {
   set +e

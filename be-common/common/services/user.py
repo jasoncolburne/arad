@@ -5,7 +5,10 @@ from sqlmodel import Session
 from common.repositories.role import RoleRepository
 from common.repositories.user import UserRepository, PAGE_SIZE_USER
 from common.datatypes.response import UserPage, User as UserType, Role as RoleType
-from database.models import User as UserModel, Role as RoleModel
+from database.models import (  # pylint: disable=unused-import
+    User as UserModel,
+    Role as RoleModel,
+)
 
 
 class UserService:
@@ -62,10 +65,16 @@ class UserService:
 
     # here we remove passphrases
     def _sanitize_user(
-        self, user_model: UserModel, role_models: list[RoleModel]
+        self, user_model: UserModel, role_models: list[RoleModel] | None
     ) -> UserType:
+        roles = (
+            [RoleType(role_model.name) for role_model in role_models]
+            if role_models
+            else []
+        )
+
         return UserType(
             id=user_model.id,
             email=user_model.email,
-            roles=[RoleType(role_model.name) for role_model in role_models],
+            roles=roles,
         )
