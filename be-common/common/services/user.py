@@ -62,7 +62,7 @@ class UserService:
 
     # here we remove passphrases
     def _sanitize_user(
-        self, user_model: UserModel, role_models: list[RoleModel]
+        self, user_model: UserModel, role_models: list[RoleModel] | None
     ) -> UserType:
         return UserType(
             id=user_model.id,
