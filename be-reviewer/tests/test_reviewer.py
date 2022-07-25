@@ -1,5 +1,5 @@
-from reviewer import __version__
+import reviewer
 
 
 def test_version() -> None:
-    assert __version__ == "0.1.0"
+    assert reviewer.__version__ == "0.1.0"
