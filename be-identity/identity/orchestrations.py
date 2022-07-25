@@ -104,11 +104,11 @@ async def arad_access_token(
     if auth_service is None:
         auth_service = identity.services.auth.AuthService(database=database)
 
-    user_id = await auth_service.verify_and_extract_uuid_from_refresh_token(
+    user_id = await auth_service.verify_and_extract_user_id_from_refresh_token(
         refresh_token=refresh_token
     )
 
-    access_token = await auth_service.create_access_token(user_id=user_id, scope=scope)
+    access_token = await auth_service.verify_role_and_create_access_token(user_id=user_id, scope=scope)
 
     return identity.datatypes.response.TokenResponse(access_token=access_token)
 

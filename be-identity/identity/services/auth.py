@@ -88,7 +88,7 @@ class AuthService:
     async def all_roles(self) -> list[common.datatypes.domain.Role]:
         return await self.auth_repository.all_roles()
 
-    async def create_access_token(
+    async def verify_role_and_create_access_token(
         self, user_id: uuid.UUID, scope: common.datatypes.domain.Role
     ) -> str:
         valid_roles = await self.auth_repository.roles_for_user_id(user_id=user_id)
@@ -126,7 +126,7 @@ class AuthService:
     async def destroy_all_refresh_tokens_for_user_id(self, user_id: uuid.UUID) -> None:
         await self.token_cache.purge_all_refresh_tokens_for_user_id(user_id=user_id)
 
-    async def verify_and_extract_uuid_from_refresh_token(
+    async def verify_and_extract_user_id_from_refresh_token(
         self, refresh_token: str
     ) -> uuid.UUID:
         return await self.token_cache.fetch_user_id_from_valid_refresh_token(
