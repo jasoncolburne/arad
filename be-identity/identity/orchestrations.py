@@ -16,9 +16,17 @@ DEFAULT_ADMIN_EMAIL = os.environ.get("DEFAULT_ADMIN_EMAIL")
 
 
 async def arad_register(
-    email: str, passphrase: str, database: sqlmodel.Session
+    email: str,
+    passphrase: str,
+    auth_service: identity.services.auth.AuthService | None = None,
+    database: sqlmodel.Session | None = None,
 ) -> identity.datatypes.response.RegisterResponse:
-    auth_service = identity.services.auth.AuthService(database=database)
+    if auth_service is None and database is None:
+        raise Exception()
+
+    if auth_service is None:
+        auth_service = identity.services.auth.AuthService(database=database)
+
     try:
         user = await auth_service.create_user_with_passphrase(
             email=email,
@@ -29,9 +37,6 @@ async def arad_register(
 
     if DEFAULT_ADMIN_EMAIL and email == DEFAULT_ADMIN_EMAIL:
         await auth_service.assign_role_for_user_id(
-            user_id=user.id, role=common.datatypes.domain.Role.REVIEWER
-        )
-        await auth_service.assign_role_for_user_id(
             user_id=user.id, role=common.datatypes.domain.Role.ADMINISTRATOR
         )
 
@@ -40,14 +45,21 @@ async def arad_register(
     return identity.datatypes.response.RegisterResponse(
         refresh_token=refresh_token,
         user=user,
-        roles=user.roles,
     )
 
 
 async def arad_login(
-    email: str, passphrase: str, database: sqlmodel.Session
+    email: str,
+    passphrase: str,
+    auth_service: identity.services.auth.AuthService | None = None,
+    database: sqlmodel.Session | None = None,
 ) -> identity.datatypes.response.LoginResponse:
-    auth_service = identity.services.auth.AuthService(database=database)
+    if auth_service is None and database is None:
+        raise Exception()
+
+    if auth_service is None:
+        auth_service = identity.services.auth.AuthService(database=database)
+
     try:
         user = await auth_service.authenticate_user_by_email_and_passphrase(
             email=email,
@@ -61,23 +73,37 @@ async def arad_login(
     return identity.datatypes.response.LoginResponse(
         refresh_token=refresh_token,
         user=user,
-        roles=user.roles,
     )
 
 
 async def arad_logout(
-    refresh_token: str, database: sqlmodel.Session
+    refresh_token: str,
+    auth_service: identity.services.auth.AuthService | None = None,
+    database: sqlmodel.Session | None = None,
 ) -> identity.datatypes.response.LogoutResponse:
-    auth_service = identity.services.auth.AuthService(database=database)
+    if auth_service is None and database is None:
+        raise Exception()
+
+    if auth_service is None:
+        auth_service = identity.services.auth.AuthService(database=database)
+
     await auth_service.destroy_refresh_token(refresh_token=refresh_token)
 
     return identity.datatypes.response.LogoutResponse(status="ok")
 
 
 async def arad_access_token(
-    refresh_token: str, scope: common.datatypes.domain.Role, database: sqlmodel.Session
+    refresh_token: str,
+    scope: common.datatypes.domain.Role,
+    auth_service: identity.services.auth.AuthService | None = None,
+    database: sqlmodel.Session | None = None,
 ) -> identity.datatypes.response.TokenResponse:
-    auth_service = identity.services.auth.AuthService(database=database)
+    if auth_service is None and database is None:
+        raise Exception()
+
+    if auth_service is None:
+        auth_service = identity.services.auth.AuthService(database=database)
+
     user_id = await auth_service.verify_and_extract_uuid_from_refresh_token(
         refresh_token=refresh_token
     )
@@ -88,9 +114,15 @@ async def arad_access_token(
 
 
 async def arad_roles(
-    database: sqlmodel.Session,
+    auth_service: identity.services.auth.AuthService | None = None,
+    database: sqlmodel.Session | None = None,
 ) -> identity.datatypes.response.RolesResponse:
-    auth_service = identity.services.auth.AuthService(database=database)
+    if auth_service is None and database is None:
+        raise Exception()
+
+    if auth_service is None:
+        auth_service = identity.services.auth.AuthService(database=database)
+
     roles = await auth_service.all_roles()
 
     return identity.datatypes.response.RolesResponse(roles=roles)
@@ -100,9 +132,14 @@ async def arad_modify_role_assignment(
     user_id: uuid.UUID,
     role: common.datatypes.domain.Role,
     action: identity.datatypes.request.RoleAction,
-    database: sqlmodel.Session,
+    auth_service: identity.services.auth.AuthService | None = None,
+    database: sqlmodel.Session | None = None,
 ) -> identity.datatypes.response.RoleResponse:
-    auth_service = identity.services.auth.AuthService(database=database)
+    if auth_service is None and database is None:
+        raise Exception()
+
+    if auth_service is None:
+        auth_service = identity.services.auth.AuthService(database=database)
 
     # this admin function isn't critical and the ui should protect us from most edge cases so we'll just let these
     # calls explode if for instance the role has already been assigned to the user (possible with two tabs open)

@@ -13,7 +13,7 @@ import administrator.services.user
 
 
 @pytest.mark.asyncio
-async def test_arad_users_returns_service_results():
+async def test_arad_users__returns_service_results():
     page = 3
     pages = 3
     users = [
@@ -23,7 +23,7 @@ async def test_arad_users_returns_service_results():
             roles=[],
         )
     ]
-    mock_result = administrator.datatypes.response.UsersResponse(
+    mock_response = administrator.datatypes.response.UsersResponse(
         users=users,
         count=len(users),
         page=page,
@@ -32,10 +32,12 @@ async def test_arad_users_returns_service_results():
 
     mock_database = sqlmodel.Session()
     mock_user_service = administrator.services.user.UserService(database=mock_database)
-    mock_user_service.page = unittest.mock.AsyncMock(return_value=mock_result)
+    mock_user_service.page = unittest.mock.AsyncMock(return_value=mock_response)
 
-    result = await administrator.orchestrations.arad_users(
+    response = await administrator.orchestrations.arad_users(
         email_filter="", page=page, database=None, user_service=mock_user_service
     )
 
-    assert result == mock_result
+    mock_user_service.page.assert_awaited_once_with(email_filter="", number=page)
+
+    assert response == mock_response

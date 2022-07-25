@@ -8,7 +8,6 @@ import common.datatypes.domain
 class AuthenticationResponse(pydantic.BaseModel):
     refresh_token: str
     user: common.datatypes.domain.User
-    roles: list[common.datatypes.domain.Role]
 
 
 class RegisterResponse(AuthenticationResponse):
