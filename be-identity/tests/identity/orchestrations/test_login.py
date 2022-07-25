@@ -9,8 +9,8 @@ import common.datatypes.domain
 import common.datatypes.exception
 
 import identity.datatypes.response
-import identity.repositories.auth
 import identity.orchestrations
+import identity.repositories.auth
 import identity.services.auth
 
 
@@ -32,8 +32,8 @@ async def test_arad_login__returns_service_results():
 
     mock_database = sqlmodel.Session()
     mock_auth_service = identity.services.auth.AuthService(database=mock_database)
-    mock_auth_service.authenticate_user_by_email_and_passphrase = unittest.mock.AsyncMock(
-        return_value=user
+    mock_auth_service.authenticate_user_by_email_and_passphrase = (
+        unittest.mock.AsyncMock(return_value=user)
     )
     mock_auth_service.create_refresh_token = unittest.mock.AsyncMock(
         return_value=refresh_token
@@ -69,8 +69,10 @@ async def test_arad_login__denies_login_according_to_service_response():
     mock_auth_service = identity.services.auth.AuthService(database=mock_database)
 
     # this assumes knowledge of some potentially unintuitive behaviour of the auth service
-    mock_auth_service.authenticate_user_by_email_and_passphrase = unittest.mock.AsyncMock(
-        side_effect=common.datatypes.exception.UnauthorizedException()
+    mock_auth_service.authenticate_user_by_email_and_passphrase = (
+        unittest.mock.AsyncMock(
+            side_effect=common.datatypes.exception.UnauthorizedException()
+        )
     )
     mock_auth_service.create_refresh_token = unittest.mock.AsyncMock(
         return_value=refresh_token

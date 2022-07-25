@@ -5,14 +5,16 @@ import pytest
 import sqlmodel
 
 import identity.datatypes.response
-import identity.repositories.auth
 import identity.orchestrations
+import identity.repositories.auth
 import identity.services.auth
 
 
 @pytest.mark.asyncio
 async def test_arad_logout__invokes_service_to_destroy_token():
-    fake_refresh_token = secrets.token_urlsafe(identity.services.auth.REFRESH_TOKEN_BYTES)
+    fake_refresh_token = secrets.token_urlsafe(
+        identity.services.auth.REFRESH_TOKEN_BYTES
+    )
 
     mock_database = sqlmodel.Session()
     mock_auth_service = identity.services.auth.AuthService(database=mock_database)

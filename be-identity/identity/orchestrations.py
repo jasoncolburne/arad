@@ -108,7 +108,9 @@ async def arad_access_token(
         refresh_token=refresh_token
     )
 
-    access_token = await auth_service.verify_role_and_create_access_token(user_id=user_id, scope=scope)
+    access_token = await auth_service.verify_role_and_create_access_token(
+        user_id=user_id, scope=scope
+    )
 
     return identity.datatypes.response.TokenResponse(access_token=access_token)
 
@@ -150,7 +152,6 @@ async def arad_modify_role_assignment(
     else:
         raise Exception()
 
-    auth_service = identity.services.auth.AuthService(database=database)
     await auth_service.destroy_all_refresh_tokens_for_user_id(user_id=user_id)
 
     return identity.datatypes.response.RoleResponse(role=role)

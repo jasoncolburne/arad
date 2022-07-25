@@ -32,8 +32,7 @@ global_token_cache = identity.cache.Cache()
 
 
 class AuthService:
-    # one of database or user_repository must be defined
-    def __init__(  # pylint: disable=too-many-arguments
+    def __init__(
         self,
         database: sqlmodel.Session | None = None,
         auth_repository: identity.repositories.auth.AuthRepository | None = None,

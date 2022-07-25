@@ -9,8 +9,8 @@ import sqlmodel
 import common.datatypes.domain
 
 import identity.datatypes.response
-import identity.repositories.auth
 import identity.orchestrations
+import identity.repositories.auth
 import identity.services.auth
 
 
@@ -62,7 +62,10 @@ async def test_arad_register__creates_admin_user_if_admin_email_provided():
     user = common.datatypes.domain.User(
         id=user_id,
         email=admin_email,
-        roles=[common.datatypes.domain.Role.READER, common.datatypes.domain.Role.ADMINISTRATOR],
+        roles=[
+            common.datatypes.domain.Role.READER,
+            common.datatypes.domain.Role.ADMINISTRATOR,
+        ],
     )
     passphrase = "terrible passphrase"
 
