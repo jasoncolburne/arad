@@ -1,57 +1,64 @@
-from datetime import datetime
-from functools import wraps
-from typing import Any, Awaitable, Callable
+import datetime
+import functools
+import typing
 import os
 
-from fastapi import HTTPException, status
-from ecdsa import VerifyingKey
-from jose import jwt, JWTError
+import fastapi
+import ecdsa
+import jose
+from jose import jwt
 
-from common.datatypes.exception import UnauthorizedException
-from common.datatypes.response import Role, Token
+import common.datatypes.domain
+import common.datatypes.exception
 
 
 ACCESS_TOKEN_ALGORITHM = "ES256"
 ACCESS_TOKEN_PUBLIC_KEY_PEM = os.environ.get("ACCESS_TOKEN_PUBLIC_KEY_PEM")
-ACCESS_TOKEN_PUBLIC_KEY = VerifyingKey.from_pem(ACCESS_TOKEN_PUBLIC_KEY_PEM)
+ACCESS_TOKEN_PUBLIC_KEY = ecdsa.VerifyingKey.from_pem(ACCESS_TOKEN_PUBLIC_KEY_PEM)
 
 
 class AuthorizationService:
-    def verify_and_parse_token(self, token: str) -> Token:
+    def verify_and_parse_token(self, token: str) -> common.datatypes.domain.Token:
         try:
             payload = jwt.decode(
                 token, ACCESS_TOKEN_PUBLIC_KEY, algorithms=[ACCESS_TOKEN_ALGORITHM]
             )
-        except JWTError as exc:
-            raise UnauthorizedException() from exc
+        except jose.JWTError as exc:
+            raise common.datatypes.exception.UnauthorizedException() from exc
 
         try:
-            if payload["exp"] - int(datetime.utcnow().timestamp()) < 0:
-                raise UnauthorizedException()
+            if payload["exp"] - int(datetime.datetime.utcnow().timestamp()) < 0:
+                raise common.datatypes.exception.UnauthorizedException()
         except KeyError as exc:
-            raise UnauthorizedException() from exc
+            raise common.datatypes.exception.UnauthorizedException() from exc
 
-        return Token(**payload)
+        return common.datatypes.domain.Token(**payload)
 
 
 global_authorization_service = AuthorizationService()
-credentials_exception = HTTPException(
-    status_code=status.HTTP_401_UNAUTHORIZED,
+credentials_exception = fastapi.HTTPException(
+    status_code=fastapi.status.HTTP_401_UNAUTHORIZED,
     detail="Could not validate credentials",
     headers={"WWW-Authenticate": "Bearer"},
 )
 
 
-def require_authorization(role: Role) -> Callable[..., Callable[..., Awaitable[Any]]]:
-    def _callable(func: Callable[..., Awaitable[Any]]) -> Callable[..., Awaitable[Any]]:
-        @wraps(func)
-        async def wrapped(*args: Any, **kwargs: Any) -> Awaitable[Any]:
+def require_authorization(
+    role: common.datatypes.domain.Role,
+) -> typing.Callable[..., typing.Callable[..., typing.Awaitable[typing.Any]]]:
+    def _callable(
+        func: typing.Callable[..., typing.Awaitable[typing.Any]]
+    ) -> typing.Callable[..., typing.Awaitable[typing.Any]]:
+        @functools.wraps(func)
+        async def wrapped(
+            *args: typing.Any, **kwargs: typing.Any
+        ) -> typing.Awaitable[typing.Any]:
             try:
                 token_string: str = kwargs["token"]
                 token = global_authorization_service.verify_and_parse_token(
                     token=token_string
                 )
-            except UnauthorizedException as exc:
+            except common.datatypes.exception.UnauthorizedException as exc:
                 raise credentials_exception from exc
 
             if token.scope != role.value:

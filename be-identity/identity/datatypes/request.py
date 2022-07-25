@@ -1,12 +1,14 @@
-from enum import Enum
-from uuid import UUID
+# pylint: disable=no-member
 
-from pydantic import BaseModel  # pylint: disable=no-name-in-module
+import enum
+import uuid
 
-from common.datatypes.response import Role
+import pydantic
+
+import common.datatypes.domain
 
 
-class AuthenticationRequest(BaseModel):
+class AuthenticationRequest(pydantic.BaseModel):
     email: str
     passphrase: str
 
@@ -19,21 +21,21 @@ class LoginRequest(AuthenticationRequest):
     pass
 
 
-class LogoutRequest(BaseModel):
+class LogoutRequest(pydantic.BaseModel):
     refresh_token: str
 
 
-class TokenRequest(BaseModel):
+class TokenRequest(pydantic.BaseModel):
     refresh_token: str
-    scope: Role
+    scope: common.datatypes.domain.Role
 
 
-class RoleAction(Enum):
+class RoleAction(enum.Enum):
     ASSIGN = "ASSIGN"
     REVOKE = "REVOKE"
 
 
-class RoleRequest(BaseModel):
-    user_id: UUID
-    role: Role
+class RoleRequest(pydantic.BaseModel):
+    user_id: uuid.UUID
+    role: common.datatypes.domain.Role
     action: RoleAction

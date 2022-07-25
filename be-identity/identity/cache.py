@@ -1,10 +1,10 @@
-from datetime import datetime
-from uuid import UUID
+import datetime
 import os
+import uuid
 
 import aioredis
 
-from common.datatypes.exception import UnauthorizedException
+import common.datatypes.exception
 
 
 # TODO move all this stuff into a settings file
@@ -21,7 +21,7 @@ class Cache:
         self.redis = aioredis.from_url(CACHE_URL, decode_responses=True)
 
     async def store_refresh_token(
-        self, refresh_token: str, user_id: UUID, expiration: datetime
+        self, refresh_token: str, user_id: uuid.UUID, expiration: datetime.datetime
     ) -> None:
         token_key = self._token_key(refresh_token=refresh_token)
         token_data = {
@@ -43,14 +43,14 @@ class Cache:
         if not user_id_string:
             return
 
-        user_id = UUID(user_id_string)
+        user_id = uuid.UUID(user_id_string)
 
         await self.redis.delete(token_key)
 
         user_key = self._user_key(user_id)
         await self.redis.hdel(user_key, token_key)
 
-    async def purge_all_refresh_tokens_for_user_id(self, user_id: UUID) -> None:
+    async def purge_all_refresh_tokens_for_user_id(self, user_id: uuid.UUID) -> None:
         user_key = self._user_key(user_id=user_id)
         token_keys = await self.redis.hkeys(user_key)
 
@@ -61,22 +61,24 @@ class Cache:
         for token_key in token_keys:
             await self.redis.delete(token_key)
 
-    async def fetch_user_id_from_valid_refresh_token(self, refresh_token: str) -> UUID:
+    async def fetch_user_id_from_valid_refresh_token(
+        self, refresh_token: str
+    ) -> uuid.UUID:
         token_key = self._token_key(refresh_token=refresh_token)
         token_data = await self.redis.hgetall(token_key)
 
         try:
             expiration_timestamp = int(token_data["expiration"])
         except KeyError as exc:
-            raise UnauthorizedException() from exc
+            raise common.datatypes.exception.UnauthorizedException() from exc
 
-        if expiration_timestamp < int(datetime.utcnow().timestamp()):
-            raise UnauthorizedException()
+        if expiration_timestamp < int(datetime.datetime.utcnow().timestamp()):
+            raise common.datatypes.exception.UnauthorizedException()
 
-        return UUID(token_data["user_id"])
+        return uuid.UUID(token_data["user_id"])
 
     def _token_key(self, refresh_token: str) -> str:
         return f"refresh-token-{refresh_token}"
 
-    def _user_key(self, user_id: UUID) -> str:
+    def _user_key(self, user_id: uuid.UUID) -> str:
         return f"user_tokens-{str(user_id)}"
