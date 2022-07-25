@@ -1,6 +1,6 @@
-from pydantic import BaseModel  # pylint: disable=no-name-in-module
+import pydantic
 
 
-class UsersRequest(BaseModel):
+class UsersRequest(pydantic.BaseModel):  # pylint: disable=no-member
     page: int | None
     email_filter: str

@@ -1,12 +1,14 @@
-from pydantic import BaseModel  # pylint: disable=no-name-in-module
+# pylint: disable=no-member
 
-from common.datatypes.response import User, Role
+import pydantic
+
+import common.datatypes.domain
 
 
-class AuthenticationResponse(BaseModel):
+class AuthenticationResponse(pydantic.BaseModel):
     refresh_token: str
-    user: User
-    roles: list[Role]
+    user: common.datatypes.domain.User
+    roles: list[common.datatypes.domain.Role]
 
 
 class RegisterResponse(AuthenticationResponse):
@@ -17,17 +19,17 @@ class LoginResponse(AuthenticationResponse):
     pass
 
 
-class LogoutResponse(BaseModel):
+class LogoutResponse(pydantic.BaseModel):
     status: str
 
 
-class TokenResponse(BaseModel):
+class TokenResponse(pydantic.BaseModel):
     access_token: str
 
 
-class RolesResponse(BaseModel):
-    roles: list[Role]
+class RolesResponse(pydantic.BaseModel):
+    roles: list[common.datatypes.domain.Role]
 
 
-class RoleResponse(BaseModel):
-    role: Role
+class RoleResponse(pydantic.BaseModel):
+    role: common.datatypes.domain.Role

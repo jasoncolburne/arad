@@ -1,125 +1,119 @@
-from fastapi import Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordBearer
-from sqlmodel import Session
+import fastapi
+import fastapi.security
+import sqlmodel
 
-from common.app import get_application
-from common.services.authorization import require_authorization
-from common.datatypes.exception import BadRequestException, UnauthorizedException
-from common.datatypes.response import Role, HealthCheckResponse
-from database import get_session
+import common.app
+import common.datatypes.domain
+import common.datatypes.exception
+import common.datatypes.response
+import common.services.authorization
+import database
 
-from .datatypes.request import (
-    LoginRequest,
-    RegisterRequest,
-    TokenRequest,
-    RoleRequest,
-    LogoutRequest,
+import identity.datatypes.request
+import identity.datatypes.response
+import identity.orchestrations
+
+
+app = common.app.get_application()
+oauth2_scheme = fastapi.security.OAuth2PasswordBearer(tokenUrl="/identify/token")
+
+
+@app.get(
+    "/health",
+    include_in_schema=False,
+    response_model=common.datatypes.response.HealthCheckResponse,
 )
-from .datatypes.response import (
-    LoginResponse,
-    RegisterResponse,
-    TokenResponse,
-    RolesResponse,
-    RoleResponse,
-    LogoutResponse,
-)
-from .orchestrations import (
-    arad_register,
-    arad_login,
-    arad_logout,
-    arad_access_token,
-    arad_roles,
-    arad_assign_role,
-)
+async def health() -> common.datatypes.response.HealthCheckResponse:
+    return common.datatypes.response.HealthCheckResponse(status="ok")
 
 
-app = get_application()
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/identify/token")
-
-
-@app.get("/health", include_in_schema=False, response_model=HealthCheckResponse)
-async def health() -> HealthCheckResponse:
-    return HealthCheckResponse(status="ok")
-
-
-@app.post("/register", response_model=RegisterResponse)
+@app.post("/register", response_model=identity.datatypes.response.RegisterResponse)
 async def register(
-    request: RegisterRequest, database: Session = Depends(get_session)
-) -> RegisterResponse:
+    request: identity.datatypes.request.RegisterRequest,
+    _database: sqlmodel.Session = fastapi.Depends(database.get_session),
+) -> identity.datatypes.response.RegisterResponse:
     try:
-        return await arad_register(
+        return await identity.orchestrations.arad_register(
             email=request.email,
             passphrase=request.passphrase,
-            database=database,
+            database=_database,
         )
-    except BadRequestException as exc:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
+    except common.datatypes.exception.BadRequestException as exc:
+        raise fastapi.HTTPException(
+            status_code=fastapi.status.HTTP_400_BAD_REQUEST,
             detail="Invalid email address",
         ) from exc
 
 
-@app.post("/login", response_model=LoginResponse)
+@app.post("/login", response_model=identity.datatypes.response.LoginResponse)
 async def login(
-    request: LoginRequest, database: Session = Depends(get_session)
-) -> LoginResponse:
+    request: identity.datatypes.request.LoginRequest,
+    _database: sqlmodel.Session = fastapi.Depends(database.get_session),
+) -> identity.datatypes.response.LoginResponse:
     try:
-        return await arad_login(
+        return await identity.orchestrations.arad_login(
             email=request.email,
             passphrase=request.passphrase,
-            database=database,
+            database=_database,
         )
-    except UnauthorizedException as exc:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
+    except common.datatypes.exception.UnauthorizedException as exc:
+        raise fastapi.HTTPException(
+            status_code=fastapi.status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect email or password",
         ) from exc
 
 
-@app.post("/logout", response_model=LogoutResponse)
+@app.post("/logout", response_model=identity.datatypes.response.LogoutResponse)
 async def logout(
-    request: LogoutRequest,
-    database: Session = Depends(get_session),
-) -> LogoutResponse:
-    return await arad_logout(refresh_token=request.refresh_token, database=database)
+    request: identity.datatypes.request.LogoutRequest,
+    _database: sqlmodel.Session = fastapi.Depends(database.get_session),
+) -> identity.datatypes.response.LogoutResponse:
+    return await identity.orchestrations.arad_logout(
+        refresh_token=request.refresh_token, database=_database
+    )
 
 
-@app.post("/token", response_model=TokenResponse)
+@app.post("/token", response_model=identity.datatypes.response.TokenResponse)
 async def access_token(
-    request: TokenRequest, database: Session = Depends(get_session)
-) -> TokenResponse:
+    request: identity.datatypes.request.TokenRequest,
+    _database: sqlmodel.Session = fastapi.Depends(database.get_session),
+) -> identity.datatypes.response.TokenResponse:
     try:
-        return await arad_access_token(
+        return await identity.orchestrations.arad_access_token(
             refresh_token=request.refresh_token,
             scope=request.scope,
-            database=database,
+            database=_database,
         )
-    except UnauthorizedException as exc:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
+    except common.datatypes.exception.UnauthorizedException as exc:
+        raise fastapi.HTTPException(
+            status_code=fastapi.status.HTTP_401_UNAUTHORIZED,
             detail="Not authorized",
         ) from exc
 
 
-@app.get("/roles", response_model=RolesResponse)
-@require_authorization(Role.ADMINISTRATOR)
+@app.get("/roles", response_model=identity.datatypes.response.RolesResponse)
+@common.services.authorization.require_authorization(
+    common.datatypes.domain.Role.ADMINISTRATOR
+)
 async def roles(
-    token: str = Depends(oauth2_scheme),  # pylint: disable=unused-argument
-    database: Session = Depends(get_session),
-) -> RolesResponse:
-    return await arad_roles(database=database)
+    token: str = fastapi.Depends(oauth2_scheme),  # pylint: disable=unused-argument
+    _database: sqlmodel.Session = fastapi.Depends(database.get_session),
+) -> identity.datatypes.response.RolesResponse:
+    return await identity.orchestrations.arad_roles(database=_database)
 
 
-@app.put("/role", response_model=RoleResponse)
-@require_authorization(Role.ADMINISTRATOR)
+@app.put("/role", response_model=identity.datatypes.response.RoleResponse)
+@common.services.authorization.require_authorization(
+    common.datatypes.domain.Role.ADMINISTRATOR
+)
 async def assign_role(
-    request: RoleRequest,
-    token: str = Depends(oauth2_scheme),  # pylint: disable=unused-argument
-    database: Session = Depends(get_session),
-) -> RoleResponse:
-    return await arad_assign_role(
+    request: identity.datatypes.request.RoleRequest,
+    token: str = fastapi.Depends(oauth2_scheme),  # pylint: disable=unused-argument
+    _database: sqlmodel.Session = fastapi.Depends(database.get_session),
+) -> identity.datatypes.response.RoleResponse:
+    return await identity.orchestrations.arad_modify_role_assignment(
         user_id=request.user_id,
         role=request.role,
         action=request.action,
-        database=database,
+        database=_database,
     )

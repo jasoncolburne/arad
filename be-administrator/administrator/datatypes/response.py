@@ -1,5 +1,5 @@
-from common.datatypes.response import UserPage
+import common.datatypes.domain
 
 
-class UsersResponse(UserPage):
+class UsersResponse(common.datatypes.domain.UserPage):
     pass

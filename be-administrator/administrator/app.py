@@ -1,36 +1,45 @@
-from fastapi import Depends
-from fastapi.security import OAuth2PasswordBearer
-from sqlmodel import Session
+import fastapi
+import fastapi.security
+import sqlmodel
 
-from common.app import get_application
-from common.services.authorization import require_authorization
-from common.datatypes.response import Role, HealthCheckResponse
-from database import get_session
+import common.app
+import common.services.authorization
+import common.datatypes.domain
+import common.datatypes.response
+import database
 
-from .datatypes.request import UsersRequest
-from .datatypes.response import UsersResponse
-from .orchestrations import arad_users
-
-
-app = get_application()
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/identify/token")
+import administrator.datatypes.request
+import administrator.datatypes.response
+import administrator.orchestrations
 
 
-@app.get("/health", include_in_schema=False, response_model=HealthCheckResponse)
-async def health() -> HealthCheckResponse:
-    return HealthCheckResponse(status="ok")
+app = common.app.get_application()
+oauth2_scheme = fastapi.security.OAuth2PasswordBearer(tokenUrl="/identify/token")
 
 
-@app.post("/users", response_model=UsersResponse)
-@require_authorization(Role.ADMINISTRATOR)
+@app.get(
+    "/health",
+    include_in_schema=False,
+    response_model=common.datatypes.response.HealthCheckResponse,
+)
+async def health() -> common.datatypes.response.HealthCheckResponse:
+    return common.datatypes.response.HealthCheckResponse(status="ok")
+
+
+@app.post("/users", response_model=administrator.datatypes.response.UsersResponse)
+@common.services.authorization.require_authorization(
+    common.datatypes.domain.Role.ADMINISTRATOR
+)
 async def users(
-    request: UsersRequest,
-    token: str = Depends(oauth2_scheme),  # pylint: disable=unused-argument
-    database: Session = Depends(get_session),
-) -> UsersResponse:
-    return await arad_users(
+    request: administrator.datatypes.request.UsersRequest,
+    token: str = fastapi.Depends(oauth2_scheme),  # pylint: disable=unused-argument
+    _database: sqlmodel.Session = fastapi.Depends(database.get_session),
+) -> administrator.datatypes.response.UsersResponse:
+    response = await administrator.orchestrations.arad_users(
         email_filter=request.email_filter,
         page=request.page,
-        database=database,
+        database=_database,
         user_service=None,
     )
+
+    return administrator.datatypes.response.UsersResponse(**response)

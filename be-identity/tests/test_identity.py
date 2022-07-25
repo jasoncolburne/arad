@@ -1,5 +1,5 @@
-from identity import __version__
+import identity
 
 
 def test_version() -> None:
-    assert __version__ == "0.1.0"
+    assert identity.__version__ == "0.1.0"

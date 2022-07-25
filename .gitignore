@@ -36,5 +36,6 @@ be-reader/activate
 be-identity/activate
 
 .pylintrc
+mypy.ini
 
 __pycache__
