@@ -4,15 +4,15 @@ x-docker-auth: &docker-auth
   username: $DOCKERHUB_USER
   password: $DOCKERHUB_ACCESS_TOKEN
 
+x-install-python-test-dependencies: &install-python-test-dependencies
+  name: Install test dependencies
+  command: |
+    cd /app
+    poetry install --no-root --with test
+
+
 x-black-steps: &black-steps
-  - run:
-      name: Install git
-      command: apt-get -y install git
-  - run:
-      name: Install test dependencies
-      command: |
-        cd /app
-        poetry install --no-root --with test
+  - run: *install-python-test-dependencies
   - run:
       name: Blacken
       command: |
@@ -21,11 +21,7 @@ x-black-steps: &black-steps
         black --check .
 
 x-pytest-steps: &pytest-steps
-  - run:
-      name: Install test dependencies
-      command: |
-        cd /app
-        poetry install --no-root --with test
+  - run: *install-python-test-dependencies
   - run:
       name: Pytest
       command: |
@@ -34,11 +30,7 @@ x-pytest-steps: &pytest-steps
         pytest .
 
 x-pylint-steps: &pylint-steps
-  - run:
-      name: Install test dependencies
-      command: |
-        cd /app
-        poetry install --no-root --with test
+  - run: *install-python-test-dependencies
   - run:
       name: Pylint
       command: |
@@ -47,11 +39,7 @@ x-pylint-steps: &pylint-steps
         find . -maxdepth 1 -type d -not -name '.*' | xargs pylint
 
 x-mypy-steps: &mypy-steps
-  - run:
-      name: Install test dependencies
-      command: |
-        cd /app
-        poetry install --no-root --with test
+  - run: *install-python-test-dependencies
   - run:
       name: Mypy
       command: |
