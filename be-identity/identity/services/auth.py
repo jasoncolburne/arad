@@ -21,6 +21,8 @@ ACCESS_TOKEN_ALGORITHM = "ES256"
 ACCESS_TOKEN_PRIVATE_KEY_PEM = os.environ.get("ACCESS_TOKEN_PRIVATE_KEY_PEM")
 ACCESS_TOKEN_PRIVATE_KEY = ecdsa.SigningKey.from_pem(ACCESS_TOKEN_PRIVATE_KEY_PEM)
 
+REFRESH_TOKEN_BYTES = 48
+
 
 # never remove any used schemes, or existing users won't be able to log in
 global_passphrase_context = passlib.context.CryptContext(
@@ -105,7 +107,7 @@ class AuthService:
         return json_web_token
 
     async def create_refresh_token(self, user: common.datatypes.domain.User) -> str:
-        refresh_token = secrets.token_urlsafe(48)
+        refresh_token = secrets.token_urlsafe(REFRESH_TOKEN_BYTES)
 
         await self.token_cache.store_refresh_token(
             refresh_token=refresh_token,

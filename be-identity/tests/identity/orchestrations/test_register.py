@@ -16,7 +16,7 @@ import identity.services.auth
 
 @pytest.mark.asyncio
 async def test_arad_register__returns_service_results():
-    fake_refresh_token = secrets.token_urlsafe()
+    fake_refresh_token = secrets.token_urlsafe(identity.services.auth.REFRESH_TOKEN_BYTES)
     fake_user = common.datatypes.domain.User(
         id=uuid.uuid4(),
         email="address@arad.org",
@@ -57,7 +57,7 @@ async def test_arad_register__creates_admin_user_if_admin_email_provided():
     admin_email = "admin@arad.org"
     user_id = uuid.uuid4()
 
-    fake_refresh_token = secrets.token_urlsafe()
+    fake_refresh_token = secrets.token_urlsafe(identity.services.auth.REFRESH_TOKEN_BYTES)
     fake_user = common.datatypes.domain.User(
         id=user_id,
         email=admin_email,

@@ -17,7 +17,7 @@ import identity.services.auth
 @pytest.mark.asyncio
 async def test_arad_login__returns_service_results():
     fake_email = "address@arad.org"
-    fake_refresh_token = secrets.token_urlsafe()
+    fake_refresh_token = secrets.token_urlsafe(identity.services.auth.REFRESH_TOKEN_BYTES)
     fake_user = common.datatypes.domain.User(
         id=uuid.uuid4(),
         email=fake_email,
@@ -56,7 +56,7 @@ async def test_arad_login__returns_service_results():
 @pytest.mark.asyncio
 async def test_arad_login__denies_login_according_to_service_response():
     fake_email = "address@arad.org"
-    fake_refresh_token = secrets.token_urlsafe()
+    fake_refresh_token = secrets.token_urlsafe(identity.services.auth.REFRESH_TOKEN_BYTES)
     fake_user = common.datatypes.domain.User(
         id=uuid.uuid4(),
         email=fake_email,
