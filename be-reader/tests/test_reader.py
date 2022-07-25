@@ -1,5 +1,5 @@
-from reader import __version__
+import reader
 
 
 def test_version() -> None:
-    assert __version__ == "0.1.0"
+    assert reader.__version__ == "0.1.0"
