@@ -78,7 +78,11 @@ async def test_arad_register__creates_admin_user_if_admin_email_provided():
     passphrase = "terrible passphrase"
 
     mock_database = sqlmodel.Session()
-    mock_auth_service = identity.services.auth.AuthService(database=mock_database)
+    mock_redis = unittest.mock.Mock()
+    mock_token_cache = identity.cache.Cache(redis=mock_redis)
+    mock_auth_service = identity.services.auth.AuthService(
+        database=mock_database, token_cache=mock_token_cache
+    )
     mock_auth_service.create_user_with_passphrase = unittest.mock.AsyncMock(
         return_value=user
     )
