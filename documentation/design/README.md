@@ -45,7 +45,7 @@ changes in user behaviour.
 By restricting reader instance access to the application database to read-only, we prevent our most exposed service
 from being able to modify application data.
 
-By isolating the auth database, we prevent a compromised administrator, reviewer or reader instance from modifying
+By isolating the user database, we prevent a compromised administrator, reviewer or reader instance from modifying
 sensitive data. We also prevent exfiltration of password hashes by a compromised administrator, reviewer or reader
 instance.
 
