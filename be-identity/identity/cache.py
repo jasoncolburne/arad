@@ -83,3 +83,17 @@ class Cache:
 
     def _user_key(self, user_id: uuid.UUID) -> str:
         return f"user_tokens-{str(user_id)}"
+
+
+class CacheManager:
+    def __init__(self) -> None:
+        self.cache: Cache | None = None
+
+    def get_cache(self) -> Cache:
+        if self.cache is None:
+            self.cache = Cache()
+
+        return self.cache
+
+
+global_cache_manager = CacheManager()

@@ -19,7 +19,9 @@ import identity.repositories.auth
 
 ACCESS_TOKEN_EXPIRATION_MINUTES = 10
 ACCESS_TOKEN_ALGORITHM = "ES256"
-ACCESS_TOKEN_PRIVATE_KEY_PEM = os.environ["ACCESS_TOKEN_PRIVATE_KEY_PEM"]  # we actually do want to throw if unset
+ACCESS_TOKEN_PRIVATE_KEY_PEM = os.environ[
+    "ACCESS_TOKEN_PRIVATE_KEY_PEM"
+]  # we actually do want to throw if unset
 ACCESS_TOKEN_PRIVATE_KEY = ecdsa.SigningKey.from_pem(ACCESS_TOKEN_PRIVATE_KEY_PEM)
 
 REFRESH_TOKEN_BYTES = 48
@@ -29,7 +31,6 @@ REFRESH_TOKEN_BYTES = 48
 global_passphrase_context = passlib.context.CryptContext(
     schemes=["argon2"], deprecated="auto"
 )
-global_token_cache = identity.cache.Cache()
 
 
 class AuthService:
@@ -38,10 +39,14 @@ class AuthService:
         database: sqlmodel.Session | None = None,
         auth_repository: identity.repositories.auth.AuthRepository | None = None,
         passphrase_context: passlib.context.CryptContext = global_passphrase_context,
-        token_cache: identity.cache.Cache = global_token_cache,
+        token_cache: identity.cache.Cache | None = None,
     ):
         self.passphrase_context = passphrase_context
-        self.token_cache = token_cache
+
+        if token_cache is not None:
+            self.token_cache = token_cache
+        else:
+            self.token_cache = identity.cache.global_cache_manager.get_cache()
 
         if auth_repository is not None:
             self.auth_repository = auth_repository
