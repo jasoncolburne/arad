@@ -37,10 +37,17 @@ Within services, we maintain a similar rigidity and layering where layers only i
 layers, in isolation from processes in their own layer. Thanks to A. Tucker for teaching me this technique. In the
 future, should we have the need for more complex behaviours, we may consider adding another `orchestration` layer 
 between `api` and the `service` layer and some sort of data pipeline in the `infrastructure` layer that allows us
-maintain state during orchestration (though they do all use the same database...).
+maintain state during orchestration.
 
 By grouping functionality by user type/concern, we can scale components of the system independently, reacting to
 changes in user behaviour.
+
+By restricting reader instance access to the application database to read-only, we prevent our most exposed service
+from being able to modify application data.
+
+By isolating the user database, we prevent a compromised administrator, reviewer or reader instance from modifying
+sensitive data. We also prevent exfiltration of password hashes by a compromised administrator, reviewer or reader
+instance.
 
 ![Arad](./assets/arad-simple.png)
 
@@ -118,9 +125,9 @@ resources. Currently ES256 is employed. We should consider upgrading to ES512 to
 
 ## Infrastructure Layer
 
-The infrastructure is composed of the database, and a distributed memory cache (not pictured) to improve performance.
+The infrastructure is composed of the databases, and a distributed memory cache (not pictured) to improve performance.
 
-By having only a single hard dependency, we can be assured of a higher uptime/downtime ratio.
+By having only fewer hard dependencies for each service, we can be assured of a higher uptime ratio.
 
 ### Database
 

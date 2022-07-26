@@ -101,48 +101,75 @@ an article at most once.
 - comment: string
 - jargon: string[]
 
+## Analysis
+
+At this point, you may wonder what is connecting articles and users; the answer is that there are some user ids we'll
+need to track to enforce constraints in our application, but that's about it. This is why we can split one database
+into two, quite easily.
+
+Put more simply, user data lives in the user database, and article data lives in the application database. The identity
+service interacts with the user database, and the other services all use application database. Roles are a concept that
+exist across the ecosystem, but no database interaction with them is required outside identity. Thus, we can construct
+a tight security perimeter, containint all user data in the vertical stack below api that belongs to the identity
+service.
+
 ## Data Model
 
 The data model is composed of entities that represent abstract concepts and concerns related to the real world objects
 in the domain model. In this case, our data model is best described by the database schema used in our underlying
-relational database.
+relational databases.
 
-### User
+We will utilize two databases to provide a security boundary around user data. The other database is really focused on
+article data, and is called the application database.
+
+### User Data Model
+
+#### User
 
 The `User` table actually contains a hashed passphrase, unlike the domain model. `Roles` are a related entity.
 
-#### Fields
+##### Fields
 
 - id: UUID
 - email: email [indexed]
 - hashed_passphrase: string
 
-### Role
+#### Role
 
 The `Role` table contains three records at the moment, and is populated when the table is created in a migration.
 
-#### Fields
+##### Fields
 
 - id: UUID
 - name: string [indexed]
 
-### UserRole
+#### UserRole
 
 The `UserRole` table allows us to apply roles to a given user.
 
-#### Fields
+##### Fields
 
 - id: UUID
 - user_id: UUID [indexed]
 - role_id: UUID
 
-#### Constraints
+##### Constraints
 
 - foreign_key(user_id, User.id)
 - foreign_key(role_id, Role.id)
 - unique(user_id, role_id)
 
-### Article
+### Application Data Model
+
+#### User
+
+The `User` table is a placeholder for an id from `identity`.
+
+##### Fields
+
+- id: UUID
+
+#### Article
 
 The `Article` table contains most of the information required to populate our domain entity.
 
@@ -152,7 +179,7 @@ are floating point values. From the reviewer's perspective, these values are int
 `Jargon`, `Comments` and `Tags` are all related entities. `Jargon` and `Tags` are many to one with `Articles`/`Reviews`,
 but `Comments` are one to one with `Reviews`. Thus we can store `Comments` directly on the `Review`, if we desire.
 
-#### Fields
+##### Fields
 
 - id: UUID
 - doi: string [indexed]
@@ -163,46 +190,46 @@ but `Comments` are one to one with `Reviews`. Thus we can store `Comments` direc
 - volume: string [nullable]
 - pages: string [nullable]
 
-#### Constraints
+##### Constraints
 
 - unique(doi)
 
-### Tag
+#### Tag
 
 The `Tag` table allows us to create tags that apply to all articles.
 
-#### Fields
+##### Fields
 
 - id: UUID
 - name: string [indexed]
 
-#### Constraints
+##### Constraints
 
 - unique(name)
 
-### ArticleTag
+#### ArticleTag
 
 The `ArticleTag` table allows administrators apply administrator-defined `Tags` to articles.
 
-#### Fields
+##### Fields
 
 - id: UUID
 - article_id: UUID [indexed]
 - tag_id: UUID [indexed]
 
-#### Constraints
+##### Constraints
 
 - foreign_key(article_id, Article.id)
 - foreign_key(tag_id, Tag.id)
 - unique(article_id, tag_id)
 
-### Review
+#### Review
 
 The `Review` table gives us a place to store individual review results.
 
 `Jargon` is a set of related entities. Each review can own a single comment.
 
-#### Fields
+##### Fields
 
 - id: UUID
 - article_id: UUID [indexed]
@@ -210,13 +237,13 @@ The `Review` table gives us a place to store individual review results.
 - duration: int [indexed]
 - difficulty: int [indexed]
 
-#### Constraints
+##### Constraints
 
 - foreign_key(article_id, Article.id)
 - foreign_key(user_id, User.id)
 - unique(article_id, user_id)
 
-#### Notes
+##### Notes
 
 Due to problem constraints, we must allow for reviews to be created without real users connected to them. This means
 we have a couple choices - we can allow nulls in the field, or we can create fake users (we could use something like
@@ -225,30 +252,47 @@ our test domain with sequential usernames for the emails, with random bytes for 
 PostgreSQL should keep the unique constraint while allowing multiple nulls for the same article_id. This seems like
 the clean choice.
 
-### Comment
+#### Comment
 
 The `Comment` table lets us attach a single comment to a review and track impressions vs helpfulness from the reader
 perspective (search view) to help us rank comments so we can display the top _N_.
 
-#### Fields
+##### Fields
 
 - id: UUID
 - article_id: UUID [indexed]
 - review_id: UUID [indexed]
 - user_id: UUID
 - content: string
-- impressions: int
-- helped: int
+- votes: int
 - sentiment: float
 
-#### Constraints
+##### Constraints
 
 - foreign_key(article_id, Article.id)
 - foreign_key(review_id, Review.id)
 - foreign_key(user_id, User.id)
 - unique(review_id)
 
-### Analytics
+#### CommentVote
+
+The CommentVote table associates a user with a comment should they choose upvote it. A user should not be able to vote
+on their own comment.
+
+##### Fields
+
+- id: UUID
+- comment_id: UUID [indexed]
+- user_id: UUID [indexed]
+- helpful: bool [indexed]
+
+##### Constraints
+
+- foreign_key(comment_id, Comment.id)
+- foreign_key(user_id, User.id)
+- unique(comment_id, user_id)
+
+#### Analytics
 
 The `Analytics` table allows us to cache aggregated results on a per article basis. There is a one to one mapping between
 articles and analytics records. They should be created in a transaction together.
@@ -257,31 +301,31 @@ Each time we add a new `Review`, we should, in a transaction, update the corresp
 transaction). This won't be a problem for our level of write load, but if you're having issues with this kind of thing
 in your setup you may need to consider sharding.
 
-#### Fields
+##### Fields
 
 - id: UUID
 - article_id: UUID [indexed]
 - duration: float [indexed]
 - difficulty: float [indexed]
 
-#### Constraints
+##### Constraints
 
 - foreign_key(article_id, Article.id)
 - unique(article_id)
 
-### Jargon
+#### Jargon
 
 The `Jargon` table allows us to associate jargon on a per `Review` basis, and the `article_id` field permits us to
 compute counts to rank the most important terms.
 
-#### Fields
+##### Fields
 
 - id: UUID
 - review_id: UUID [indexed]
 - article_id: UUID [indexed]
 - term: string [indexed]
 
-#### Constraints
+##### Constraints
 
 - foreign_key(review_id, Review.id)
 - foreign_key(article_id, Article.id)
