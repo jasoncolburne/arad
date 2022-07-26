@@ -23,7 +23,7 @@ const Users = () => {
   const [fetchingAccessToken, setFetchingAccessToken] = useState(false);
   const navigate = useNavigate();
 
-  const authorized = loggedIn(state.credentials!) && isAdministrator(state.roles!);
+  const authorized = loggedIn(state.credentials!) && isAdministrator(state.user!.roles);
   const accessTokenValid = authorized && jwtValid(state.credentials!.access_tokens.administrator);
 
   useEffect(() => {
@@ -70,7 +70,7 @@ const Users = () => {
     };
 
     const fetchUsers = async (request: UsersRequest, accessToken: string) => {
-      const response: UsersResponse = await Api().post('administrate/users', accessToken, request, handleErrors);
+      const response: UsersResponse = await Api().post('identify/users', accessToken, request, handleErrors);
       setUsers(response.users);
       setTotalPages(response.pages);
       setErrorMessage('');

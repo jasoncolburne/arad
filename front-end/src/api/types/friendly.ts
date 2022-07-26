@@ -1,5 +1,4 @@
 import { components as identify } from './identify';
-import { components as administrate } from './administrate';
 
 export type User = identify['schemas']['User'];
 export type Role = identify['schemas']['Role'];
@@ -33,5 +32,5 @@ export type RolesResponse = identify['schemas']['RolesResponse'];
 export type RoleRequest = identify['schemas']['RoleRequest'];
 export type RoleResponse = identify['schemas']['RoleResponse'];
 
-export type UsersRequest = administrate['schemas']['UsersRequest'];
-export type UsersResponse = administrate['schemas']['UsersResponse'];
+export type UsersRequest = identify['schemas']['UsersRequest'];
+export type UsersResponse = identify['schemas']['UsersResponse'];

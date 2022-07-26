@@ -117,3 +117,20 @@ async def assign_role(
         action=request.action,
         database=_database,
     )
+
+
+@app.post("/users", response_model=identity.datatypes.response.UsersResponse)
+@common.services.authorization.require_authorization(
+    common.datatypes.domain.Role.ADMINISTRATOR
+)
+async def users(
+    request: identity.datatypes.request.UsersRequest,
+    token: str = fastapi.Depends(oauth2_scheme),  # pylint: disable=unused-argument
+    _database: sqlmodel.Session = fastapi.Depends(database.get_session),
+) -> identity.datatypes.response.UsersResponse:
+    return await identity.orchestrations.arad_users(
+        email_filter=request.email_filter,
+        page=request.page,
+        database=_database,
+        user_service=None,
+    )

@@ -13,6 +13,7 @@ import common.datatypes.exception
 import common.datatypes.domain
 
 import identity.cache
+import identity.datatypes.domain
 import identity.repositories.auth
 
 
@@ -53,7 +54,7 @@ class AuthService:
 
     async def create_user_with_passphrase(
         self, email: str, passphrase: str
-    ) -> common.datatypes.domain.User:
+    ) -> identity.datatypes.domain.User:
         hashed_passphrase = self._hash_passphrase(passphrase=passphrase)
         return await self.auth_repository.create_user(
             email=email, hashed_passphrase=hashed_passphrase
@@ -61,7 +62,7 @@ class AuthService:
 
     async def authenticate_user_by_email_and_passphrase(
         self, email: str, passphrase: str
-    ) -> common.datatypes.domain.User:
+    ) -> identity.datatypes.domain.User:
         return await self.auth_repository.verify_user_email_and_passphrase(
             email=email,
             passphrase=passphrase,
@@ -105,7 +106,7 @@ class AuthService:
 
         return json_web_token
 
-    async def create_refresh_token(self, user: common.datatypes.domain.User) -> str:
+    async def create_refresh_token(self, user: identity.datatypes.domain.User) -> str:
         refresh_token = secrets.token_urlsafe(REFRESH_TOKEN_BYTES)
 
         await self.token_cache.store_refresh_token(

@@ -6,15 +6,16 @@ import sqlmodel
 
 import common.datatypes.domain
 import common.datatypes.exception
-import common.mixins
 import database.models
 
+import identity.datatypes.domain
+import identity.mixins
 
 DEFAULT_USER_ROLES = [common.datatypes.domain.Role.READER]
 global_role_id_cache: dict[str, uuid.UUID] = {}
 
 
-class AuthRepository(common.mixins.RolesForUserID):
+class AuthRepository(identity.mixins.RolesForUserID):
     def __init__(self, _database: sqlmodel.Session):
         self.database = _database
 
@@ -38,7 +39,7 @@ class AuthRepository(common.mixins.RolesForUserID):
 
     async def create_user(
         self, email: str, hashed_passphrase: str
-    ) -> common.datatypes.domain.User:
+    ) -> identity.datatypes.domain.User:
         user = database.models.User(email=email, hashed_passphrase=hashed_passphrase)
         self.database.add(user)
         await self.database.commit()  # type: ignore
@@ -52,13 +53,13 @@ class AuthRepository(common.mixins.RolesForUserID):
             self.database.add(user_role)
             await self.database.commit()  # type: ignore
 
-        return common.datatypes.domain.User(
+        return identity.datatypes.domain.User(
             id=user.id, email=user.email, roles=default_roles
         )
 
     async def verify_user_email_and_passphrase(
         self, email: str, passphrase: str, verify: typing.Callable[[str, str], bool]
-    ) -> common.datatypes.domain.User:
+    ) -> identity.datatypes.domain.User:
         query = sqlalchemy.select(database.models.User).where(
             database.models.User.email == email
         )
@@ -66,10 +67,11 @@ class AuthRepository(common.mixins.RolesForUserID):
         user = result.scalars().one()
         roles = await self.roles_for_user_id(user_id=user.id)
 
+        # it's a bit less efficient to verify before grabbing roles, but it protects against information leakage
         if not verify(passphrase, user.hashed_passphrase):
             raise common.datatypes.exception.UnauthorizedException()
 
-        return common.datatypes.domain.User(
+        return identity.datatypes.domain.User(
             id=user.id,
             email=user.email,
             roles=roles,

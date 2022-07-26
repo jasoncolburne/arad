@@ -18,7 +18,7 @@ async def test_arad_access_token__creates_access_token():
     refresh_token = secrets.token_urlsafe(identity.services.auth.REFRESH_TOKEN_BYTES)
     user_id = uuid.uuid4()
     scope = common.datatypes.domain.Role.ADMINISTRATOR
-    access_token = "xxx.xxx"
+    access_token = "access_token"
 
     mock_database = sqlmodel.Session()
     mock_auth_service = identity.services.auth.AuthService(database=mock_database)

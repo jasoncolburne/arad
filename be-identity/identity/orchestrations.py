@@ -10,6 +10,7 @@ import common.datatypes.exception
 import identity.datatypes.request
 import identity.datatypes.response
 import identity.services.auth
+import identity.services.user
 
 
 DEFAULT_ADMIN_EMAIL = os.environ.get("DEFAULT_ADMIN_EMAIL")
@@ -155,3 +156,20 @@ async def arad_modify_role_assignment(
     await auth_service.destroy_all_refresh_tokens_for_user_id(user_id=user_id)
 
     return identity.datatypes.response.RoleResponse(role=role)
+
+
+async def arad_users(
+    email_filter: str,
+    page: int | None,
+    database: sqlmodel.Session | None,
+    user_service: identity.services.user.UserService | None,
+) -> identity.datatypes.response.UsersResponse:
+    if user_service is None and database is None:
+        raise Exception()
+
+    if user_service is None:
+        user_service = identity.services.user.UserService(database=database)
+
+    user_page = await user_service.page(email_filter=email_filter, number=page)
+
+    return identity.datatypes.response.UsersResponse(**user_page.dict())

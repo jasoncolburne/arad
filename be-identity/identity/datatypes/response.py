@@ -4,10 +4,12 @@ import pydantic
 
 import common.datatypes.domain
 
+import identity.datatypes.domain
+
 
 class AuthenticationResponse(pydantic.BaseModel):
     refresh_token: str
-    user: common.datatypes.domain.User
+    user: identity.datatypes.domain.User
 
 
 class RegisterResponse(AuthenticationResponse):
@@ -32,3 +34,7 @@ class RolesResponse(pydantic.BaseModel):
 
 class RoleResponse(pydantic.BaseModel):
     role: common.datatypes.domain.Role
+
+
+class UsersResponse(identity.datatypes.domain.UserPage):
+    pass

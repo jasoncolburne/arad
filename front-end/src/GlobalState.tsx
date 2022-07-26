@@ -52,7 +52,6 @@ const modifyAccessToken = (state: Partial<ApplicationState>, scope: Role, token_
         },
       },
       user: state.user!,
-      roles: state.roles!,
     };
   }
 
@@ -67,14 +66,12 @@ const modifyAccessToken = (state: Partial<ApplicationState>, scope: Role, token_
         },
       },
       user: state.user!,
-      roles: state.roles!,
     };
   }
 
   return {
     credentials: state.credentials!,
     user: state.user!,
-    roles: state.roles!,
   };
 };
 
@@ -87,7 +84,6 @@ const stateFromAuthenticationResponseData = (response: LoginResponse): Applicati
       refresh_token: response.refresh_token,
     },
     user: response.user,
-    roles: response.roles,
   };
 };
 
