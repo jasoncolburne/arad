@@ -139,6 +139,13 @@ jobs:
     docker:
       - image: ${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:identity-${CIRCLE_BRANCH}-latest
         auth: *docker-auth
+    environment:
+      ACCESS_TOKEN_PRIVATE_KEY_PEM: |
+        -----BEGIN EC PRIVATE KEY-----
+        MHcCAQEEIPDn6E30e3lwXXnW1GyYYH942x0OiU/lRhYKYh9IJReaoAoGCCqGSM49
+        AwEHoUQDQgAEnoH4lyjW4T0uUFbAYRL1G/3dxF1Mkak4CYTwDU8lSubpkIKXFqo7
+        KtsWIycbTKbfLm2IdwNXDOO346u4OhCaBg==
+        -----END EC PRIVATE KEY-----
     steps: *pytest-steps
 
   pytest-administrator:
