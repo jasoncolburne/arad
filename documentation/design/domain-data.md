@@ -119,9 +119,10 @@ The data model is composed of entities that represent abstract concepts and conc
 in the domain model. In this case, our data model is best described by the database schema used in our underlying
 relational databases.
 
-We will utilize two databases to provide a security boundary around auth data.
+We will utilize two databases to provide a security boundary around user data. The other database is really focused on
+article data, and is called the application database.
 
-### Auth Data Model
+### User Data Model
 
 #### User
 
@@ -158,7 +159,7 @@ The `UserRole` table allows us to apply roles to a given user.
 - foreign_key(role_id, Role.id)
 - unique(user_id, role_id)
 
-### App Data Model
+### Application Data Model
 
 #### User
 
