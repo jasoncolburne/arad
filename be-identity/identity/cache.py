@@ -30,7 +30,7 @@ class Cache:
             "expiration": str(int(expiration.timestamp())),
         }
 
-        # we may want to write these to the auth db too
+        # we may want to write these to the user db too.
 
         await self.redis.hset(token_key, mapping=token_data)
         await self.redis.expire(token_key, REFRESH_TOKEN_EXPIRATION_SECONDS)

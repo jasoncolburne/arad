@@ -2,6 +2,7 @@ import secrets
 import unittest.mock
 import uuid
 
+import aioredis
 import passlib.context
 import pytest
 import sqlmodel
@@ -31,7 +32,8 @@ async def test_create_user_with_passphrase__calls_repository() -> None:
     mock_passphrase_context = passlib.context.CryptContext(
         schemes=["argon2"], deprecated="auto"
     )
-    mock_token_cache = identity.cache.Cache()
+    mock_redis = unittest.mock.Mock()
+    mock_token_cache = identity.cache.Cache(redis=mock_redis)
     mock_database = sqlmodel.Session()
     mock_auth_repository = identity.repositories.auth.AuthRepository(
         _database=mock_database
@@ -75,7 +77,8 @@ async def test_authenticate_user_by_email_and_passphrase__calls_repository() -> 
     mock_passphrase_context = passlib.context.CryptContext(
         schemes=["argon2"], deprecated="auto"
     )
-    mock_token_cache = identity.cache.Cache()
+    mock_redis = unittest.mock.Mock()
+    mock_token_cache = identity.cache.Cache(redis=mock_redis)
     mock_database = sqlmodel.Session()
     mock_auth_repository = identity.repositories.auth.AuthRepository(
         _database=mock_database
@@ -112,7 +115,8 @@ async def test_assign_role_for_user_id__calls_repository() -> None:
     mock_passphrase_context = passlib.context.CryptContext(
         schemes=["argon2"], deprecated="auto"
     )
-    mock_token_cache = identity.cache.Cache()
+    mock_redis = unittest.mock.Mock()
+    mock_token_cache = identity.cache.Cache(redis=mock_redis)
     mock_database = sqlmodel.Session()
     mock_auth_repository = identity.repositories.auth.AuthRepository(
         _database=mock_database
@@ -144,7 +148,8 @@ async def test_revoke_role_for_user_id__calls_repository() -> None:
     mock_passphrase_context = passlib.context.CryptContext(
         schemes=["argon2"], deprecated="auto"
     )
-    mock_token_cache = identity.cache.Cache()
+    mock_redis = unittest.mock.Mock()
+    mock_token_cache = identity.cache.Cache(redis=mock_redis)
     mock_database = sqlmodel.Session()
     mock_auth_repository = identity.repositories.auth.AuthRepository(
         _database=mock_database
@@ -179,7 +184,8 @@ async def test_all_roles__calls_repository() -> None:
     mock_passphrase_context = passlib.context.CryptContext(
         schemes=["argon2"], deprecated="auto"
     )
-    mock_token_cache = identity.cache.Cache()
+    mock_redis = unittest.mock.Mock()
+    mock_token_cache = identity.cache.Cache(redis=mock_redis)
     mock_database = sqlmodel.Session()
     mock_auth_repository = identity.repositories.auth.AuthRepository(
         _database=mock_database
@@ -211,7 +217,8 @@ async def test_verify_role_and_create_access_token__creates_token() -> None:
     mock_passphrase_context = passlib.context.CryptContext(
         schemes=["argon2"], deprecated="auto"
     )
-    mock_token_cache = identity.cache.Cache()
+    mock_redis = unittest.mock.Mock()
+    mock_token_cache = identity.cache.Cache(redis=mock_redis)
     mock_database = sqlmodel.Session()
     mock_auth_repository = identity.repositories.auth.AuthRepository(
         _database=mock_database
@@ -249,7 +256,8 @@ async def test_verify_role_and_create_access_token__raises_when_role_requirement
     mock_passphrase_context = passlib.context.CryptContext(
         schemes=["argon2"], deprecated="auto"
     )
-    mock_token_cache = identity.cache.Cache()
+    mock_redis = unittest.mock.Mock()
+    mock_token_cache = identity.cache.Cache(redis=mock_redis)
     mock_database = sqlmodel.Session()
     mock_auth_repository = identity.repositories.auth.AuthRepository(
         _database=mock_database
@@ -284,7 +292,8 @@ async def test_create_refresh_token__creates_and_stores_token() -> None:
     mock_passphrase_context = passlib.context.CryptContext(
         schemes=["argon2"], deprecated="auto"
     )
-    mock_token_cache = identity.cache.Cache()
+    mock_redis = unittest.mock.Mock()
+    mock_token_cache = identity.cache.Cache(redis=mock_redis)
     mock_database = sqlmodel.Session()
     mock_auth_repository = identity.repositories.auth.AuthRepository(
         _database=mock_database
@@ -319,7 +328,8 @@ async def test_destroy_refresh_token__purges_cache() -> None:
     mock_passphrase_context = passlib.context.CryptContext(
         schemes=["argon2"], deprecated="auto"
     )
-    mock_token_cache = identity.cache.Cache()
+    mock_redis = unittest.mock.Mock()
+    mock_token_cache = identity.cache.Cache(redis=mock_redis)
     mock_database = sqlmodel.Session()
     mock_auth_repository = identity.repositories.auth.AuthRepository(
         _database=mock_database
@@ -347,7 +357,8 @@ async def test_destroy_all_refresh_tokens_for_user_id__purges_cache() -> None:
     mock_passphrase_context = passlib.context.CryptContext(
         schemes=["argon2"], deprecated="auto"
     )
-    mock_token_cache = identity.cache.Cache()
+    mock_redis = unittest.mock.Mock()
+    mock_token_cache = identity.cache.Cache(redis=mock_redis)
     mock_database = sqlmodel.Session()
     mock_auth_repository = identity.repositories.auth.AuthRepository(
         _database=mock_database
@@ -376,7 +387,8 @@ async def test_verify_and_extract_user_id_from_refresh_token__extracts_user_id()
     mock_passphrase_context = passlib.context.CryptContext(
         schemes=["argon2"], deprecated="auto"
     )
-    mock_token_cache = identity.cache.Cache()
+    mock_redis = unittest.mock.Mock()
+    mock_token_cache = identity.cache.Cache(redis=mock_redis)
     mock_database = sqlmodel.Session()
     mock_auth_repository = identity.repositories.auth.AuthRepository(
         _database=mock_database
