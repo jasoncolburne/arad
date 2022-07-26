@@ -1,3 +1,5 @@
+# pylint: disable=duplicate-code
+
 import os
 import secrets
 import unittest.mock
@@ -8,6 +10,7 @@ import sqlmodel
 
 import common.datatypes.domain
 
+import identity.cache
 import identity.datatypes.domain
 import identity.datatypes.response
 import identity.orchestrations
@@ -31,7 +34,11 @@ async def test_arad_register__returns_service_results():
     )
 
     mock_database = sqlmodel.Session()
-    mock_auth_service = identity.services.auth.AuthService(database=mock_database)
+    mock_redis = unittest.mock.Mock()
+    mock_token_cache = identity.cache.Cache(redis=mock_redis)
+    mock_auth_service = identity.services.auth.AuthService(
+        database=mock_database, token_cache=mock_token_cache
+    )
     mock_auth_service.create_user_with_passphrase = unittest.mock.AsyncMock(
         return_value=user
     )

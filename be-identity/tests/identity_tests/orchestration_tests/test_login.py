@@ -1,3 +1,5 @@
+# pylint: disable=duplicate-code
+
 import secrets
 import unittest.mock
 import uuid
@@ -8,6 +10,7 @@ import sqlmodel
 import common.datatypes.domain
 import common.datatypes.exception
 
+import identity.cache
 import identity.datatypes.domain
 import identity.datatypes.response
 import identity.orchestrations
@@ -32,7 +35,11 @@ async def test_arad_login__returns_service_results():
     )
 
     mock_database = sqlmodel.Session()
-    mock_auth_service = identity.services.auth.AuthService(database=mock_database)
+    mock_redis = unittest.mock.Mock()
+    mock_token_cache = identity.cache.Cache(redis=mock_redis)
+    mock_auth_service = identity.services.auth.AuthService(
+        database=mock_database, token_cache=mock_token_cache
+    )
     mock_auth_service.authenticate_user_by_email_and_passphrase = (
         unittest.mock.AsyncMock(return_value=user)
     )
@@ -67,7 +74,11 @@ async def test_arad_login__denies_login_according_to_service_response():
     passphrase = "terrible passphrase"
 
     mock_database = sqlmodel.Session()
-    mock_auth_service = identity.services.auth.AuthService(database=mock_database)
+    mock_redis = unittest.mock.Mock()
+    mock_token_cache = identity.cache.Cache(redis=mock_redis)
+    mock_auth_service = identity.services.auth.AuthService(
+        database=mock_database, token_cache=mock_token_cache
+    )
 
     # this assumes knowledge of some potentially unintuitive behaviour of the auth service
     mock_auth_service.authenticate_user_by_email_and_passphrase = (

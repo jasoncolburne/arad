@@ -1,3 +1,5 @@
+# pylint: disable=duplicate-code
+
 import unittest.mock
 
 import pytest
@@ -5,6 +7,7 @@ import sqlmodel
 
 import common.datatypes.domain
 
+import identity.cache
 import identity.datatypes.response
 import identity.orchestrations
 import identity.repositories.auth
@@ -20,7 +23,11 @@ async def test_arad_roles__returns_all_roles():
     ]
 
     mock_database = sqlmodel.Session()
-    mock_auth_service = identity.services.auth.AuthService(database=mock_database)
+    mock_redis = unittest.mock.Mock()
+    mock_token_cache = identity.cache.Cache(redis=mock_redis)
+    mock_auth_service = identity.services.auth.AuthService(
+        database=mock_database, token_cache=mock_token_cache
+    )
     mock_auth_service.all_roles = unittest.mock.AsyncMock(return_value=all_roles)
 
     expected_response = identity.datatypes.response.RolesResponse(roles=all_roles)

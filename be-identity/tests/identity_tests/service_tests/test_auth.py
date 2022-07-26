@@ -2,7 +2,6 @@ import secrets
 import unittest.mock
 import uuid
 
-import aioredis
 import passlib.context
 import pytest
 import sqlmodel

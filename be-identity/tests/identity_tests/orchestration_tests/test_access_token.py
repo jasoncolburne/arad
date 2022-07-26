@@ -7,6 +7,7 @@ import sqlmodel
 
 import common.datatypes.domain
 
+import identity.cache
 import identity.datatypes.response
 import identity.orchestrations
 import identity.repositories.auth
@@ -21,7 +22,12 @@ async def test_arad_access_token__creates_access_token():
     access_token = "access_token"
 
     mock_database = sqlmodel.Session()
-    mock_auth_service = identity.services.auth.AuthService(database=mock_database)
+    mock_redis = unittest.mock.Mock()
+    mock_token_cache = identity.cache.Cache(redis=mock_redis)
+    mock_auth_service = identity.services.auth.AuthService(
+        database=mock_database,
+        token_cache=mock_token_cache,
+    )
     mock_auth_service.verify_and_extract_user_id_from_refresh_token = (
         unittest.mock.AsyncMock(return_value=user_id)
     )
