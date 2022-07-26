@@ -14,13 +14,16 @@ export interface paths {
     post: operations["logout_logout_post"];
   };
   "/token": {
-    post: operations["token_token_post"];
+    post: operations["access_token_token_post"];
   };
   "/roles": {
     get: operations["roles_roles_get"];
   };
   "/role": {
     put: operations["assign_role_role_put"];
+  };
+  "/users": {
+    post: operations["users_users_post"];
   };
 }
 
@@ -43,7 +46,6 @@ export interface components {
       /** Refresh Token */
       refresh_token: string;
       user: components["schemas"]["User"];
-      roles: components["schemas"]["Role"][];
     };
     /** LogoutRequest */
     LogoutRequest: {
@@ -67,7 +69,6 @@ export interface components {
       /** Refresh Token */
       refresh_token: string;
       user: components["schemas"]["User"];
-      roles: components["schemas"]["Role"][];
     };
     /**
      * Role
@@ -119,7 +120,25 @@ export interface components {
       id: string;
       /** Email */
       email: string;
-      roles?: components["schemas"]["Role"][];
+      roles: components["schemas"]["Role"][];
+    };
+    /** UsersRequest */
+    UsersRequest: {
+      /** Page */
+      page?: number;
+      /** Email Filter */
+      email_filter: string;
+    };
+    /** UsersResponse */
+    UsersResponse: {
+      /** Users */
+      users: components["schemas"]["User"][];
+      /** Count */
+      count: number;
+      /** Page */
+      page: number;
+      /** Pages */
+      pages: number;
     };
     /** ValidationError */
     ValidationError: {
@@ -197,7 +216,7 @@ export interface operations {
       };
     };
   };
-  token_token_post: {
+  access_token_token_post: {
     responses: {
       /** Successful Response */
       200: {
@@ -246,6 +265,27 @@ export interface operations {
     requestBody: {
       content: {
         "application/json": components["schemas"]["RoleRequest"];
+      };
+    };
+  };
+  users_users_post: {
+    responses: {
+      /** Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["UsersResponse"];
+        };
+      };
+      /** Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["UsersRequest"];
       };
     };
   };

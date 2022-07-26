@@ -1,5 +1,5 @@
-from node_common import __version__
+import common
 
 
 def test_version():
-    assert __version__ == '0.1.0'
+    assert common.__version__ == '0.1.0'
