@@ -13,33 +13,40 @@ import common.datatypes.exception
 import common.datatypes.domain
 
 import identity.cache
+import identity.datatypes.domain
 import identity.repositories.auth
 
 
 ACCESS_TOKEN_EXPIRATION_MINUTES = 10
 ACCESS_TOKEN_ALGORITHM = "ES256"
-ACCESS_TOKEN_PRIVATE_KEY_PEM = os.environ.get("ACCESS_TOKEN_PRIVATE_KEY_PEM")
+ACCESS_TOKEN_PRIVATE_KEY_PEM = os.environ[
+    "ACCESS_TOKEN_PRIVATE_KEY_PEM"
+]  # we actually do want to throw if unset
 ACCESS_TOKEN_PRIVATE_KEY = ecdsa.SigningKey.from_pem(ACCESS_TOKEN_PRIVATE_KEY_PEM)
+
+REFRESH_TOKEN_BYTES = 48
 
 
 # never remove any used schemes, or existing users won't be able to log in
 global_passphrase_context = passlib.context.CryptContext(
     schemes=["argon2"], deprecated="auto"
 )
-global_token_cache = identity.cache.Cache()
 
 
 class AuthService:
-    # one of database or user_repository must be defined
-    def __init__(  # pylint: disable=too-many-arguments
+    def __init__(
         self,
         database: sqlmodel.Session | None = None,
         auth_repository: identity.repositories.auth.AuthRepository | None = None,
         passphrase_context: passlib.context.CryptContext = global_passphrase_context,
-        token_cache: identity.cache.Cache = global_token_cache,
+        token_cache: identity.cache.Cache | None = None,
     ):
         self.passphrase_context = passphrase_context
-        self.token_cache = token_cache
+
+        if token_cache is not None:
+            self.token_cache = token_cache
+        else:
+            self.token_cache = identity.cache.global_cache_manager.get_cache()
 
         if auth_repository is not None:
             self.auth_repository = auth_repository
@@ -52,7 +59,7 @@ class AuthService:
 
     async def create_user_with_passphrase(
         self, email: str, passphrase: str
-    ) -> common.datatypes.domain.User:
+    ) -> identity.datatypes.domain.User:
         hashed_passphrase = self._hash_passphrase(passphrase=passphrase)
         return await self.auth_repository.create_user(
             email=email, hashed_passphrase=hashed_passphrase
@@ -60,7 +67,7 @@ class AuthService:
 
     async def authenticate_user_by_email_and_passphrase(
         self, email: str, passphrase: str
-    ) -> common.datatypes.domain.User:
+    ) -> identity.datatypes.domain.User:
         return await self.auth_repository.verify_user_email_and_passphrase(
             email=email,
             passphrase=passphrase,
@@ -86,7 +93,7 @@ class AuthService:
     async def all_roles(self) -> list[common.datatypes.domain.Role]:
         return await self.auth_repository.all_roles()
 
-    async def create_access_token(
+    async def verify_role_and_create_access_token(
         self, user_id: uuid.UUID, scope: common.datatypes.domain.Role
     ) -> str:
         valid_roles = await self.auth_repository.roles_for_user_id(user_id=user_id)
@@ -104,8 +111,8 @@ class AuthService:
 
         return json_web_token
 
-    async def create_refresh_token(self, user: common.datatypes.domain.User) -> str:
-        refresh_token = secrets.token_urlsafe(48)
+    async def create_refresh_token(self, user: identity.datatypes.domain.User) -> str:
+        refresh_token = secrets.token_urlsafe(REFRESH_TOKEN_BYTES)
 
         await self.token_cache.store_refresh_token(
             refresh_token=refresh_token,
@@ -124,7 +131,7 @@ class AuthService:
     async def destroy_all_refresh_tokens_for_user_id(self, user_id: uuid.UUID) -> None:
         await self.token_cache.purge_all_refresh_tokens_for_user_id(user_id=user_id)
 
-    async def verify_and_extract_uuid_from_refresh_token(
+    async def verify_and_extract_user_id_from_refresh_token(
         self, refresh_token: str
     ) -> uuid.UUID:
         return await self.token_cache.fetch_user_id_from_valid_refresh_token(

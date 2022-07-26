@@ -15,10 +15,11 @@ CACHE_URL = os.environ.get("CACHE_URL")
 
 
 class Cache:
-    def __init__(
-        self,
-    ) -> None:
-        self.redis = aioredis.from_url(CACHE_URL, decode_responses=True)
+    def __init__(self, redis: aioredis.Redis | None = None) -> None:
+        if redis is None:
+            self.redis = aioredis.from_url(CACHE_URL, decode_responses=True)
+        else:
+            self.redis = redis
 
     async def store_refresh_token(
         self, refresh_token: str, user_id: uuid.UUID, expiration: datetime.datetime
@@ -28,6 +29,8 @@ class Cache:
             "user_id": str(user_id),
             "expiration": str(int(expiration.timestamp())),
         }
+
+        # we may want to write these to the user db too.
 
         await self.redis.hset(token_key, mapping=token_data)
         await self.redis.expire(token_key, REFRESH_TOKEN_EXPIRATION_SECONDS)
@@ -40,7 +43,7 @@ class Cache:
         token_key = self._token_key(refresh_token=refresh_token)
 
         user_id_string = await self.redis.hget(token_key, "user_id")
-        if not user_id_string:
+        if user_id_string is None:
             return
 
         user_id = uuid.UUID(user_id_string)
@@ -54,12 +57,10 @@ class Cache:
         user_key = self._user_key(user_id=user_id)
         token_keys = await self.redis.hkeys(user_key)
 
-        await self.redis.delete(user_key)
-        if not token_keys:
-            return
-
         for token_key in token_keys:
             await self.redis.delete(token_key)
+
+        await self.redis.delete(user_key)
 
     async def fetch_user_id_from_valid_refresh_token(
         self, refresh_token: str
@@ -82,3 +83,17 @@ class Cache:
 
     def _user_key(self, user_id: uuid.UUID) -> str:
         return f"user_tokens-{str(user_id)}"
+
+
+class CacheManager:
+    def __init__(self) -> None:
+        self.cache: Cache | None = None
+
+    def get_cache(self) -> Cache:
+        if self.cache is None:
+            self.cache = Cache()
+
+        return self.cache
+
+
+global_cache_manager = CacheManager()

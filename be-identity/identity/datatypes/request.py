@@ -39,3 +39,8 @@ class RoleRequest(pydantic.BaseModel):
     user_id: uuid.UUID
     role: common.datatypes.domain.Role
     action: RoleAction
+
+
+class UsersRequest(pydantic.BaseModel):  # pylint: disable=no-member
+    page: int | None
+    email_filter: str

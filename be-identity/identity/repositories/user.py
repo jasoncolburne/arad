@@ -1,15 +1,16 @@
 import sqlalchemy
 import sqlmodel
 
-import common.datatypes.domain
-import common.mixins
 import database.models
+
+import identity.datatypes.domain
+import identity.mixins
 
 
 PAGE_SIZE_USER = 10
 
 
-class UserRepository(common.mixins.RolesForUserID):
+class UserRepository(identity.mixins.RolesForUserID):
     def __init__(self, _database: sqlmodel.Session):
         self.database = _database
 
@@ -28,7 +29,7 @@ class UserRepository(common.mixins.RolesForUserID):
 
     async def page(
         self, email_filter: str, number: int | None = 1
-    ) -> common.datatypes.domain.UserPage:
+    ) -> identity.datatypes.domain.UserPage:
         if number is None:
             raise Exception()
 
@@ -47,11 +48,11 @@ class UserRepository(common.mixins.RolesForUserID):
 
         result = await self.database.execute(query)  # type: ignore
         user_models = result.scalars().all()
-        users: list[common.datatypes.domain.User] = []
+        users: list[identity.datatypes.domain.User] = []
         for user_model in user_models:
             roles = await self.roles_for_user_id(user_id=user_model.id)
             users.append(
-                common.datatypes.domain.User(
+                identity.datatypes.domain.User(
                     id=user_model.id,
                     email=user_model.email,
                     roles=roles,
@@ -61,6 +62,6 @@ class UserRepository(common.mixins.RolesForUserID):
         total = await self._count(email_filter=email_filter)
         pages = (total - 1) / PAGE_SIZE_USER + 1
 
-        return common.datatypes.domain.UserPage(
+        return identity.datatypes.domain.UserPage(
             users=users, count=len(users), page=number, pages=pages
         )
