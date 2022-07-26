@@ -101,6 +101,18 @@ an article at most once.
 - comment: string
 - jargon: string[]
 
+## Analysis
+
+At this point, you may wonder what is connecting articles and users; the answer is that there are some user ids we'll
+need to track to enforce constraints in our application, but that's about it. This is why we can split one database
+into two, quite easily.
+
+Put more simply, user data lives in the user database, and article data lives in the application database. The identity
+service interacts with the user database, and the other services all use application database. Roles are a concept that
+exist across the ecosystem, but no database interaction with them is required outside identity. Thus, we can construct
+a tight security perimeter, containint all user data in the vertical stack below api that belongs to the identity
+service.
+
 ## Data Model
 
 The data model is composed of entities that represent abstract concepts and concerns related to the real world objects
