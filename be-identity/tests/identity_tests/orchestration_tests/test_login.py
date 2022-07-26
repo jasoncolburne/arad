@@ -20,7 +20,7 @@ import identity.services.auth
 
 @pytest.mark.asyncio
 async def test_arad_login__returns_service_results():
-    email = "address@arad.org"
+    email = "address@domain.org"
     refresh_token = secrets.token_urlsafe(identity.services.auth.REFRESH_TOKEN_BYTES)
     user = identity.datatypes.domain.User(
         id=uuid.uuid4(),
@@ -64,7 +64,7 @@ async def test_arad_login__returns_service_results():
 
 @pytest.mark.asyncio
 async def test_arad_login__denies_login_according_to_service_response():
-    email = "address@arad.org"
+    email = "address@domain.org"
     refresh_token = secrets.token_urlsafe(identity.services.auth.REFRESH_TOKEN_BYTES)
     user = identity.datatypes.domain.User(
         id=uuid.uuid4(),

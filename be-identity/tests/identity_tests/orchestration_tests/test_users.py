@@ -18,7 +18,7 @@ async def test_arad_users__returns_service_results():
     users = [
         identity.datatypes.domain.User(
             id=uuid.uuid4(),
-            email="address@arad.org",
+            email="address@domain.org",
             roles=[],
         )
     ]

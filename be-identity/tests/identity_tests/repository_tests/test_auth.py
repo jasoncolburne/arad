@@ -35,7 +35,7 @@ async def test_all_roles__returns_roles_from_cache() -> None:
 @pytest.mark.asyncio
 async def test_create_user__writes_user_and_default_roles_to_database() -> None:
     user_id = uuid.uuid4()
-    email = "address@arad.org"
+    email = "address@domain.org"
     hashed_passphrase = "hashed_passphrase"
     user_model = database.models.User(
         id=user_id,
@@ -87,7 +87,7 @@ async def test_create_user__writes_user_and_default_roles_to_database() -> None:
 @pytest.mark.asyncio
 async def test_verify_user_email_and_passphrase__returns_user() -> None:
     user_id = uuid.uuid4()
-    email = "address@arad.org"
+    email = "address@domain.org"
     passphrase = "passphrase"
     hashed_passphrase = "hashed_passphrase"
     roles = [
@@ -132,7 +132,7 @@ async def test_verify_user_email_and_passphrase__returns_user() -> None:
 @pytest.mark.asyncio
 async def test_verify_user_email_and_passphrase__raises_on_verification_failure() -> None:
     user_id = uuid.uuid4()
-    email = "address@arad.org"
+    email = "address@domain.org"
     passphrase = "passphrase"
     hashed_passphrase = "hashed_passphrase"
     roles = [

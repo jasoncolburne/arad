@@ -17,7 +17,7 @@ import identity.services.auth
 
 @pytest.mark.asyncio
 async def test_create_user_with_passphrase__calls_repository() -> None:
-    email = "address@arad.org"
+    email = "address@domain.org"
     passphrase = "passphrase"
     hashed_passphrase = "hashed_passphrase"
     user_id = uuid.uuid4()
@@ -63,7 +63,7 @@ async def test_create_user_with_passphrase__calls_repository() -> None:
 
 @pytest.mark.asyncio
 async def test_authenticate_user_by_email_and_passphrase__calls_repository() -> None:
-    email = "address@arad.org"
+    email = "address@domain.org"
     passphrase = "passphrase"
     user_id = uuid.uuid4()
 
@@ -280,7 +280,7 @@ async def test_verify_role_and_create_access_token__raises_when_role_requirement
 @pytest.mark.asyncio
 async def test_create_refresh_token__creates_and_stores_token() -> None:
     user_id = uuid.uuid4()
-    email = "address@arad.org"
+    email = "address@domain.org"
     user = identity.datatypes.domain.User(
         id=user_id,
         email=email,

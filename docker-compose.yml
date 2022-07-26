@@ -62,7 +62,7 @@ services:
     environment:
       <<: *common-environment
       CACHE_URL: redis://cache:6379/0
-      DEFAULT_ADMIN_EMAIL: admin@arad.org
+      DEFAULT_ADMIN_EMAIL: admin@domain.org
       ACCESS_TOKEN_PRIVATE_KEY_PEM: |
         -----BEGIN EC PRIVATE KEY-----
         MHcCAQEEIPDn6E30e3lwXXnW1GyYYH942x0OiU/lRhYKYh9IJReaoAoGCCqGSM49
