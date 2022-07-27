@@ -263,6 +263,9 @@ workflows:
       - black-reader:
           requires:
             - build-images
+      - black-core:
+          requires:
+            - build-images
       - pytest-identity:
           requires:
             - build-images
@@ -273,6 +276,9 @@ workflows:
           requires:
             - build-images
       - pytest-reader:
+          requires:
+            - build-images
+      - pytest-core:
           requires:
             - build-images
       - pylint-identity:
@@ -287,6 +293,9 @@ workflows:
       - pylint-reader:
           requires:
             - build-images
+      - pylint-core:
+          requires:
+            - build-images
       - mypy-identity:
           requires:
             - build-images
@@ -297,5 +306,8 @@ workflows:
           requires:
             - build-images
       - mypy-reader:
+          requires:
+            - build-images
+      - mypy-core:
           requires:
             - build-images
