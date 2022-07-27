@@ -16,8 +16,8 @@ x-black-steps: &black-steps
   - run:
       name: Blacken
       command: |
-        . $(./activate)
         cd /app
+        . $(./activate)
         [ -d database ] || mv {_,}database
         black --check .
 
@@ -26,6 +26,7 @@ x-pytest-steps: &pytest-steps
   - run:
       name: Pytest
       command: |
+        cd /app
         . $(./activate)
         [ -d database ] || mv {_,}database
         pytest .
@@ -35,6 +36,7 @@ x-pylint-steps: &pylint-steps
   - run:
       name: Pylint
       command: |
+        cd /app
         . $(./activate)
         [ -d database ] || mv {_,}database
         find . -maxdepth 1 -type d -not -name '.*' | xargs pylint
@@ -44,6 +46,7 @@ x-mypy-steps: &mypy-steps
   - run:
       name: Mypy
       command: |
+        cd /app
         . $(./activate)
         [ -d database ] || mv {_,}database
         mypy --install-types --non-interactive .
