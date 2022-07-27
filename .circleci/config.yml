@@ -176,6 +176,12 @@ jobs:
     docker:
       - image: ${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:core-${CIRCLE_BRANCH}-latest
         auth: *docker-auth
+    environment:
+      ACCESS_TOKEN_PUBLIC_KEY_PEM: |
+        -----BEGIN PUBLIC KEY-----
+        MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEnoH4lyjW4T0uUFbAYRL1G/3dxF1M
+        kak4CYTwDU8lSubpkIKXFqo7KtsWIycbTKbfLm2IdwNXDOO346u4OhCaBg==
+        -----END PUBLIC KEY-----
     steps: *pytest-steps
 
   pylint-identity:
