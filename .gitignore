@@ -1,40 +1,40 @@
 # Additional content resides in front-end/.gitignore
 
-administrator/common
-reviewer/common
-reader/common
-identity/common
+/administrator/common
+/reviewer/common
+/reader/common
+/identity/common
 
-administrator/database
-reviewer/database
-reader/database
+/administrator/database
+/reviewer/database
+/reader/database
 
-administrator/Dockerfile
-reviewer/Dockerfile
-reader/Dockerfile
-identity/Dockerfile
+/administrator/Dockerfile
+/reviewer/Dockerfile
+/reader/Dockerfile
+/identity/Dockerfile
 
-administrator/.dockerignore
-reviewer/.dockerignore
-reader/.dockerignore
-identity/.dockerignore
+/administrator/.dockerignore
+/reviewer/.dockerignore
+/reader/.dockerignore
+/identity/.dockerignore
 
-administrator/mypy.ini
-reviewer/mypy.ini
-reader/mypy.ini
-identity/mypy.ini
+/administrator/mypy.ini
+/reviewer/mypy.ini
+/reader/mypy.ini
+/identity/mypy.ini
 
-administrator/.pylintrc
-reviewer/.pylintrc
-reader/.pylintrc
-identity/.pylintrc
+/administrator/.pylintrc
+/reviewer/.pylintrc
+/reader/.pylintrc
+/identity/.pylintrc
 
-administrator/activate
-reviewer/activate
-reader/activate
-identity/activate
+/administrator/activate
+/reviewer/activate
+/reader/activate
+/identity/activate
 
-.pylintrc
-mypy.ini
+/.pylintrc
+/mypy.ini
 
 __pycache__

@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -eo pipefail
+
 BACKENDS=(identity reader reviewer administrator)
 DIRECTORIES=(common)
 FILES=(Dockerfile .dockerignore mypy.ini .pylintrc activate)
