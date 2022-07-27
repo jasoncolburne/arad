@@ -9,7 +9,7 @@ x-common-environment: &common-environment
     MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEnoH4lyjW4T0uUFbAYRL1G/3dxF1M
     kak4CYTwDU8lSubpkIKXFqo7KtsWIycbTKbfLm2IdwNXDOO346u4OhCaBg==
     -----END PUBLIC KEY-----
-  DATABASE_URL: postgresql+asyncpg://postgres:postgres@database:5432/arad
+  DATABASE_URL: postgresql+asyncpg://arad_application:arad_application@database:5432/arad_application
 
 x-be-healthcheck: &be-healthcheck
   test: ["CMD-SHELL", "curl http://localhost/health > /dev/null"]
@@ -61,6 +61,7 @@ services:
     restart: always
     environment:
       <<: *common-environment
+      DATABASE_URL: postgresql+asyncpg://arad_user:arad_user@database:5432/arad_user
       CACHE_URL: redis://cache:6379/0
       DEFAULT_ADMIN_EMAIL: admin@domain.org
       ACCESS_TOKEN_PRIVATE_KEY_PEM: |

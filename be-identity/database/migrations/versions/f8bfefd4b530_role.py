@@ -9,7 +9,7 @@ from alembic import op
 import sqlalchemy as sa
 import sqlmodel
 import fastapi_utils
-from common.datatypes.response import Role
+import common.datatypes.domain
 
 
 # revision identifiers, used by Alembic.
@@ -38,9 +38,9 @@ def upgrade() -> None:
         op.bulk_insert(
             table,
             [
-                {"name": Role.READER.value},
-                {"name": Role.REVIEWER.value},
-                {"name": Role.ADMINISTRATOR.value},
+                {"name": common.datatypes.domain.Role.READER.value},
+                {"name": common.datatypes.domain.Role.REVIEWER.value},
+                {"name": common.datatypes.domain.Role.ADMINISTRATOR.value},
             ],
         )
 

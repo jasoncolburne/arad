@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 BACKENDS=(identity reader reviewer administrator)
-DIRECTORIES=(common database)
+DIRECTORIES=(common)
 FILES=(Dockerfile .dockerignore mypy.ini .pylintrc activate)
 
 for BACKEND in "${BACKENDS[@]}"
@@ -19,10 +19,23 @@ do
   done
 done
 
+# These three services share a data model, but identity has its own.
+BACKENDS=(reader reviewer administrator)
+DIRECTORIES=(database)
+
+for BACKEND in "${BACKENDS[@]}"
+do
+  TARGET=be-${BACKEND}
+
+  for DIRECTORY in "${DIRECTORIES[@]}"
+  do
+    rsync -v -r -d --delete --delete-excluded be-common/${DIRECTORY} ${TARGET}
+  done
+done
+
 # reader is unauthenticated
 echo
 echo "removing unused files..."
 rm -fv be-reader/common/services/authorization.py
 rm -rfv be-reader/database/migrations
 rm -rfv be-reviewer/database/migrations
-rm -rfv be-administrator/database/migrations

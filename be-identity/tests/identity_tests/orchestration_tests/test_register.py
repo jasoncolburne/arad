@@ -55,7 +55,7 @@ async def test_arad_register__returns_service_results():
     mock_auth_service.create_user_with_passphrase.assert_awaited_once_with(
         email=user.email, passphrase=passphrase
     )
-    mock_auth_service.create_refresh_token.assert_awaited_once_with(user=user)
+    mock_auth_service.create_refresh_token.assert_awaited_once_with(user_id=user.id)
 
     assert response == fake_response
 
