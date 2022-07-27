@@ -11,7 +11,7 @@ from sqlmodel import SQLModel
 
 from alembic import context
 
-from database.models import * # pylint: disable=import-error,wildcard-import,no-name-in-module
+from database.models import *  # pylint: disable=import-error,wildcard-import,no-name-in-module
 
 # from database.models import ...
 
