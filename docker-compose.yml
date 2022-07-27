@@ -11,13 +11,13 @@ x-common-environment: &common-environment
     -----END PUBLIC KEY-----
   DATABASE_URL: postgresql+asyncpg://arad_application:arad_application@database:5432/arad_application
 
-x-be-healthcheck: &be-healthcheck
+x-healthcheck: &healthcheck
   test: ["CMD-SHELL", "curl http://localhost/health > /dev/null"]
   interval: 5s
   timeout: 5s
   retries: 5
 
-x-be-database-dependency: &database-dependency
+x-database-dependency: &database-dependency
   database:
     condition: service_healthy
 
@@ -38,13 +38,13 @@ services:
       context: api
       args: *common-args
     depends_on:
-      be-identity:
+      identity:
         condition: service_healthy
-      be-reader:
+      reader:
         condition: service_healthy
-      be-reviewer:
+      reviewer:
         condition: service_healthy
-      be-administrator:
+      administrator:
         condition: service_healthy
     healthcheck:
       test: ["CMD-SHELL", "curl http://localhost/health > /dev/null"]
@@ -54,9 +54,9 @@ services:
     ports:
       - "81:80" # this is how the front end talks to the api. port 80 is taken atm.
 
-  be-identity:
+  identity:
     build:
-      context: be-identity
+      context: identity
       args: *common-args
     restart: always
     environment:
@@ -71,51 +71,51 @@ services:
         KtsWIycbTKbfLm2IdwNXDOO346u4OhCaBg==
         -----END EC PRIVATE KEY-----
     volumes:
-      - './be-identity:/app'
+      - './identity:/app'
     depends_on:
       <<: *database-dependency
       cache:
         condition: service_healthy
-    healthcheck: *be-healthcheck
+    healthcheck: *healthcheck
     ports:
       - "8003:80" # for docs
 
-  be-reader:
+  reader:
     build:
-      context: be-reader
+      context: reader
       args: *common-args
     restart: always
     environment: *common-environment
     volumes:
-      - './be-reader:/app'
+      - './reader:/app'
     depends_on: *database-dependency
-    healthcheck: *be-healthcheck
+    healthcheck: *healthcheck
     ports:
       - "8002:80" # for docs
 
-  be-reviewer:
+  reviewer:
     build:
-      context: be-reviewer
+      context: reviewer
       args: *common-args
     restart: always
     environment: *common-environment
     volumes:
-      - './be-reviewer:/app'
+      - './reviewer:/app'
     depends_on: *database-dependency
-    healthcheck: *be-healthcheck
+    healthcheck: *healthcheck
     ports:
       - "8001:80" # for docs
 
-  be-administrator:
+  administrator:
     build:
-      context: be-administrator
+      context: administrator
       args: *common-args
     restart: always
     environment: *common-environment
     volumes:
-      - './be-administrator:/app'
+      - './administrator:/app'
     depends_on: *database-dependency
-    healthcheck: *be-healthcheck
+    healthcheck: *healthcheck
     ports:
       - "8000:80" # for docs
 

@@ -2,7 +2,7 @@
 
 ########################################
 # ARAD Dockerfile
-# * edit the source file in `be-common`
+# * edit the source file in `common`
 ########################################
 
 FROM python:slim-bullseye

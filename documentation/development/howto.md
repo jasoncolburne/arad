@@ -54,12 +54,12 @@ solitary dependencies as required is much safer.
 arad $ scripts/local relock
 ```
 
-#### be-exec
+#### exec
 
 This will execute a command in all backend services.
 
 ```
-arad $ scripts/local be-exec poetry env info
+arad $ scripts/local exec poetry env info
 ```
 
 #### prune
@@ -154,7 +154,7 @@ arad $ scripts/database empty-migration
 First we'll add the package without installing it, since the changes won't persist.
 
 ```
-arad $ scripts/local be-exec poetry add <package> -vv --lock
+arad $ scripts/local exec poetry add <package> -vv --lock
 ```
 
 To make these changes stick, we'll need to rebuild our images. Layer caching won't help us much, since thd slow step
@@ -171,7 +171,7 @@ That's it! You're ready to develop using your new package.
 Here we add `black` to `identity`, as a `test` dependency, without installing.
 
 ```
-docker compose run --rm be-identity poetry add black -vv --group test --lock
+docker compose run --rm identity poetry add black -vv --group test --lock
 ```
 
 Next, we'll want to rebuild:

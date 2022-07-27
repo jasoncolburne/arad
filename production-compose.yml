@@ -9,22 +9,22 @@ services:
       context: api
       args: *common-args
 
-  be-identity:
+  identity:
     build:
-      context: be-identity
+      context: identity
       args: *common-args
 
-  be-reader:
+  reader:
     build:
-      context: be-reader
+      context: reader
       args: *common-args
 
-  be-reviewer:
+  reviewer:
     build:
-      context: be-reviewer
+      context: reviewer
       args: *common-args
 
-  be-administrator:
+  administrator:
     build:
-      context: be-administrator
+      context: administrator
       args: *common-args

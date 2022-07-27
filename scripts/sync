@@ -6,16 +6,16 @@ FILES=(Dockerfile .dockerignore mypy.ini .pylintrc activate)
 
 for BACKEND in "${BACKENDS[@]}"
 do
-  TARGET=be-${BACKEND}
+  TARGET=${BACKEND}
 
   for DIRECTORY in "${DIRECTORIES[@]}"
   do
-    rsync -v -r -d --delete --delete-excluded be-common/${DIRECTORY} ${TARGET}
+    rsync -v -r -d --delete --delete-excluded common/${DIRECTORY} ${TARGET}
   done
 
   for FILE in "${FILES[@]}"
   do
-    cp -v be-common/${FILE} ${TARGET}
+    cp -v common/${FILE} ${TARGET}
   done
 done
 
@@ -25,17 +25,17 @@ DIRECTORIES=(database)
 
 for BACKEND in "${BACKENDS[@]}"
 do
-  TARGET=be-${BACKEND}
+  TARGET=${BACKEND}
 
   for DIRECTORY in "${DIRECTORIES[@]}"
   do
-    rsync -v -r -d --delete --delete-excluded be-common/${DIRECTORY} ${TARGET}
+    rsync -v -r -d --delete --delete-excluded common/${DIRECTORY} ${TARGET}
   done
 done
 
 # reader is unauthenticated
 echo
 echo "removing unused files..."
-rm -fv be-reader/common/services/authorization.py
-rm -rfv be-reader/database/migrations
-rm -rfv be-reviewer/database/migrations
+rm -fv reader/common/services/authorization.py
+rm -rfv reader/database/migrations
+rm -rfv reviewer/database/migrations

@@ -30,7 +30,7 @@ stack_build() {
 
 poetry_relock() {
   for BACKEND in "${BACKENDS[@]}"; do
-    docker compose run --rm be-$BACKEND bash -c "rm -f poetry.lock && poetry lock -vv"
+    docker compose run --rm $BACKEND bash -c "rm -f poetry.lock && poetry lock -vv"
   done
 }
 
@@ -38,7 +38,7 @@ be_exec() {
   local ARGUMENTS=$1
 
   for BACKEND in "${BACKENDS[@]}"; do
-    docker compose run --rm be-$BACKEND bash -c "${ARGUMENTS}"
+    docker compose run --rm $BACKEND bash -c "${ARGUMENTS}"
   done
 }
 
@@ -72,7 +72,7 @@ docker_compose_rm() {
 shell() {
   local SERVICE=$1
 
-  docker compose run --rm -it "be-${SERVICE}" bash
+  docker compose run --rm -it "${SERVICE}" bash
 }
 
 repl() {
@@ -85,7 +85,7 @@ PYTHONSTARTUP=${SERVICE}/repl.py ipython
 EOS
   set -e
 
-  docker compose run --rm -it "be-${SERVICE}" bash -c "${SHELL_SCRIPT}"
+  docker compose run --rm -it "${SERVICE}" bash -c "${SHELL_SCRIPT}"
 }
 
 # we can probably do the rest in a single line by eval or something
@@ -101,7 +101,7 @@ execute() {
     stack_build
   elif [[ "${COMMAND}" == "relock" ]]; then
     poetry_relock
-  elif [[ "${COMMAND}" == "be-exec" ]]; then
+  elif [[ "${COMMAND}" == "exec" ]]; then
     be_exec "${ARGUMENTS}"
   elif [[ "${COMMAND}" == "prune" ]]; then
     docker_image_prune
