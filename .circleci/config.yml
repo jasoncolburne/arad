@@ -6,9 +6,7 @@ x-docker-auth: &docker-auth
 
 x-install-python-test-dependencies: &install-python-test-dependencies
   name: Install test dependencies
-  command: |
-    cd /app
-    poetry install --no-root --with test
+  command: poetry install --no-root --with test
 
 
 x-black-steps: &black-steps
@@ -16,8 +14,8 @@ x-black-steps: &black-steps
   - run:
       name: Blacken
       command: |
-        . /root/.cache/pypoetry/virtualenvs/*/bin/activate
-        cd /app
+        . $(./activate)
+        [ -d database ] || mv {_,}database
         black --check .
 
 x-pytest-steps: &pytest-steps
@@ -25,8 +23,8 @@ x-pytest-steps: &pytest-steps
   - run:
       name: Pytest
       command: |
-        . /root/.cache/pypoetry/virtualenvs/*/bin/activate
-        cd /app
+        . $(./activate)
+        [ -d database ] || mv {_,}database
         pytest .
 
 x-pylint-steps: &pylint-steps
@@ -34,8 +32,8 @@ x-pylint-steps: &pylint-steps
   - run:
       name: Pylint
       command: |
-        . /root/.cache/pypoetry/virtualenvs/*/bin/activate
-        cd /app
+        . $(./activate)
+        [ -d database ] || mv {_,}database
         find . -maxdepth 1 -type d -not -name '.*' | xargs pylint
 
 x-mypy-steps: &mypy-steps
@@ -43,8 +41,8 @@ x-mypy-steps: &mypy-steps
   - run:
       name: Mypy
       command: |
-        . /root/.cache/pypoetry/virtualenvs/*/bin/activate
-        cd /app
+        . $(./activate)
+        [ -d database ] || mv {_,}database
         mypy --install-types --non-interactive .
 
 
@@ -73,7 +71,7 @@ jobs:
       - run:
           name: Tag images
           command: |
-            IMAGES=(identity reader reviewer administrator)
+            IMAGES=(api identity reader reviewer administrator core)
             for IMAGE in "${IMAGES[@]}"; do
               HASH_TAG="${IMAGE}-${CIRCLE_BRANCH}-$(git rev-parse --short HEAD)"
               LATEST_TAG="${IMAGE}-${CIRCLE_BRANCH}-latest"
@@ -81,18 +79,13 @@ jobs:
               docker tag "project_${IMAGE}:latest" "${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:${HASH_TAG}"
               docker tag "project_${IMAGE}:latest" "${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:${LATEST_TAG}"
             done
-
-            HASH_TAG="api-${CIRCLE_BRANCH}-$(git rev-parse --short HEAD)"
-            LATEST_TAG="api-${CIRCLE_BRANCH}-latest"
-            docker tag "project_api:latest" "${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:${HASH_TAG}"
-            docker tag "project_api:latest" "${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:${LATEST_TAG}"
       - run:
           name: Login to DockerHub
           command: docker login -u "${DOCKERHUB_USER}" -p "${DOCKERHUB_ACCESS_TOKEN}"
       - run:
           name: Push images
           command: |
-            IMAGES=(identity reader reviewer administrator)
+            IMAGES=(api identity reader reviewer administrator core)
             for IMAGE in "${IMAGES[@]}"; do
               HASH_TAG="${IMAGE}-${CIRCLE_BRANCH}-$(git rev-parse --short HEAD)"
               LATEST_TAG="${IMAGE}-${CIRCLE_BRANCH}-latest"
@@ -100,11 +93,6 @@ jobs:
               docker push "${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:${HASH_TAG}"
               docker push "${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:${LATEST_TAG}"
             done
-
-            HASH_TAG="api-${CIRCLE_BRANCH}-$(git rev-parse --short HEAD)"
-            LATEST_TAG="api-${CIRCLE_BRANCH}-latest"
-            docker push "${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:${HASH_TAG}"
-            docker push "${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:${LATEST_TAG}"
 
   black-identity:
     resource_class: small
@@ -131,6 +119,13 @@ jobs:
     resource_class: small
     docker:
       - image: ${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:reader-${CIRCLE_BRANCH}-latest
+        auth: *docker-auth
+    steps: *black-steps
+
+  black-core:
+    resource_class: small
+    docker:
+      - image: ${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:core-${CIRCLE_BRANCH}-latest
         auth: *docker-auth
     steps: *black-steps
 
@@ -170,6 +165,13 @@ jobs:
         auth: *docker-auth
     steps: *pytest-steps
 
+  pytest-core:
+    resource_class: small
+    docker:
+      - image: ${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:core-${CIRCLE_BRANCH}-latest
+        auth: *docker-auth
+    steps: *pytest-steps
+
   pylint-identity:
     resource_class: small
     docker:
@@ -198,6 +200,13 @@ jobs:
         auth: *docker-auth
     steps: *pylint-steps
 
+  pylint-core:
+    resource_class: small
+    docker:
+      - image: ${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:core-${CIRCLE_BRANCH}-latest
+        auth: *docker-auth
+    steps: *pylint-steps
+
   mypy-identity:
     resource_class: small
     docker:
@@ -223,6 +232,13 @@ jobs:
     resource_class: small
     docker:
       - image: ${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:reader-${CIRCLE_BRANCH}-latest
+        auth: *docker-auth
+    steps: *mypy-steps
+
+  mypy-core:
+    resource_class: small
+    docker:
+      - image: ${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:core-${CIRCLE_BRANCH}-latest
         auth: *docker-auth
     steps: *mypy-steps
 

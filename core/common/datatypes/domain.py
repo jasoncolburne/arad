@@ -15,5 +15,5 @@ class Role(enum.Enum):
 
 class Token(pydantic.BaseModel):
     sub: str
-    exp: str
+    exp: int
     scope: str

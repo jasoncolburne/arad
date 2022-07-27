@@ -28,3 +28,8 @@ services:
     build:
       context: administrator
       args: *common-args
+
+  core:
+    build:
+      context: core
+      args: *common-args
