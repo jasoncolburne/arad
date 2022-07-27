@@ -1,3 +1,5 @@
+# Make sure you are editing this file in arad/core
+
 import asyncio
 from logging.config import fileConfig
 
@@ -9,7 +11,7 @@ from sqlmodel import SQLModel
 
 from alembic import context
 
-from database.models import *
+from database.models import *  # pylint: disable=import-error,wildcard-import,no-name-in-module
 
 # from database.models import ...
 

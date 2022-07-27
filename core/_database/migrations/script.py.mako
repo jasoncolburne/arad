@@ -1,3 +1,5 @@
+# Make sure you are editing this file in arad/core
+
 """${message}
 
 Revision ID: ${up_revision}
@@ -16,7 +18,6 @@ revision = ${repr(up_revision)}
 down_revision = ${repr(down_revision)}
 branch_labels = ${repr(branch_labels)}
 depends_on = ${repr(depends_on)}
-
 
 def upgrade() -> None:
     ${upgrades if upgrades else "pass"}
