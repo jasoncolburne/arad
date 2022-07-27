@@ -53,7 +53,7 @@ all() {
   echo
   echo "moving black changes back into be-common..."
   echo
-  rsync -v -r -d be-identity/database be-common
+  rsync -v -r -d be-administrator/database be-common
   rsync -v -r -d be-identity/common be-common
   
   echo

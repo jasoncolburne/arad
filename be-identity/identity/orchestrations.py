@@ -40,8 +40,9 @@ async def arad_register(
         await auth_service.assign_role_for_user_id(
             user_id=user.id, role=common.datatypes.domain.Role.ADMINISTRATOR
         )
+        user.roles.append(common.datatypes.domain.Role.ADMINISTRATOR)
 
-    refresh_token = await auth_service.create_refresh_token(user=user)
+    refresh_token = await auth_service.create_refresh_token(user_id=user.id)
 
     return identity.datatypes.response.RegisterResponse(
         refresh_token=refresh_token,
@@ -69,7 +70,7 @@ async def arad_login(
     except sqlalchemy.exc.NoResultFound as ex:
         raise common.datatypes.exception.UnauthorizedException() from ex
 
-    refresh_token = await auth_service.create_refresh_token(user=user)
+    refresh_token = await auth_service.create_refresh_token(user_id=user.id)
 
     return identity.datatypes.response.LoginResponse(
         refresh_token=refresh_token,

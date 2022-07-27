@@ -111,12 +111,12 @@ class AuthService:
 
         return json_web_token
 
-    async def create_refresh_token(self, user: identity.datatypes.domain.User) -> str:
+    async def create_refresh_token(self, user_id: uuid.UUID) -> str:
         refresh_token = secrets.token_urlsafe(REFRESH_TOKEN_BYTES)
 
         await self.token_cache.store_refresh_token(
             refresh_token=refresh_token,
-            user_id=user.id,
+            user_id=user_id,
             expiration=(
                 datetime.datetime.utcnow()
                 + datetime.timedelta(days=identity.cache.REFRESH_TOKEN_EXPIRATION_DAYS)

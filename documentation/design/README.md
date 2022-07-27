@@ -46,7 +46,7 @@ By restricting reader instance access to the application database to read-only, 
 from being able to modify application data.
 
 By isolating the user database, we prevent a compromised administrator, reviewer or reader instance from modifying
-sensitive data. We also prevent exfiltration of password hashes by a compromised administrator, reviewer or reader
+sensitive data. We also prevent exfiltration of hashed passwords by a compromised administrator, reviewer or reader
 instance.
 
 ![Arad](./assets/arad-simple.png)
@@ -125,14 +125,14 @@ resources. Currently ES256 is employed. We should consider upgrading to ES512 to
 
 ## Infrastructure Layer
 
-The infrastructure is composed of the databases, and a distributed memory cache (not pictured) to improve performance.
+The infrastructure is composed of the databases, and a distributed memory cache to improve performance.
 
 By having only fewer hard dependencies for each service, we can be assured of a higher uptime ratio.
 
 ### Database
 
 The most useful and understood database type in this scenario is likely a relational database, but we are evaluating
-alternatives. The current developer stack relies on PostgreSQL.
+alternatives. The current implementation relies on PostgreSQL.
 
 ### Cache
 

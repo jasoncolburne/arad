@@ -280,12 +280,6 @@ async def test_verify_role_and_create_access_token__raises_when_role_requirement
 @pytest.mark.asyncio
 async def test_create_refresh_token__creates_and_stores_token() -> None:
     user_id = uuid.uuid4()
-    email = "address@domain.org"
-    user = identity.datatypes.domain.User(
-        id=user_id,
-        email=email,
-        roles=[],
-    )
     refresh_token = secrets.token_urlsafe(identity.services.auth.REFRESH_TOKEN_BYTES)
 
     mock_passphrase_context = passlib.context.CryptContext(
@@ -310,7 +304,7 @@ async def test_create_refresh_token__creates_and_stores_token() -> None:
         "identity.services.auth.secrets.token_urlsafe"
     ) as token_generator:
         token_generator.return_value = refresh_token
-        result = await auth_service.create_refresh_token(user=user)
+        result = await auth_service.create_refresh_token(user_id=user_id)
         token_generator.assert_called_once_with(
             identity.services.auth.REFRESH_TOKEN_BYTES
         )
