@@ -6,7 +6,9 @@ x-docker-auth: &docker-auth
 
 x-install-python-test-dependencies: &install-python-test-dependencies
   name: Install test dependencies
-  command: poetry install --no-root --with test
+  command: |
+    cd /app
+    poetry install --no-root --with test
 
 
 x-black-steps: &black-steps
@@ -15,6 +17,7 @@ x-black-steps: &black-steps
       name: Blacken
       command: |
         . $(./activate)
+        cd /app
         [ -d database ] || mv {_,}database
         black --check .
 
