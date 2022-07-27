@@ -125,14 +125,14 @@ resources. Currently ES256 is employed. We should consider upgrading to ES512 to
 
 ## Infrastructure Layer
 
-The infrastructure is composed of the databases, and a distributed memory cache (not pictured) to improve performance.
+The infrastructure is composed of the databases, and a distributed memory cache to improve performance.
 
 By having only fewer hard dependencies for each service, we can be assured of a higher uptime ratio.
 
 ### Database
 
 The most useful and understood database type in this scenario is likely a relational database, but we are evaluating
-alternatives. The current developer stack relies on PostgreSQL.
+alternatives. The current implementation relies on PostgreSQL.
 
 ### Cache
 
