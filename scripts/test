@@ -53,8 +53,10 @@ all() {
   echo
   echo "moving black changes back into common..."
   echo
-  rsync -v -r -d administrator/database common
+  mv administrator/{,_}database
+  rsync -v -r -d administrator/_database common
   rsync -v -r -d identity/common common
+  mv administrator/{_,}database
   
   echo
   echo "re-syncing"
