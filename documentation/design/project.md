@@ -92,15 +92,15 @@ src
 - `identification` identification features (login, registration, passphrase)
 - `core` primary application features (search, analytics, redirect.. probably want to put redirect in `components`)
 
-## A typical service (like arad/be-identity)
+## A typical service (like arad/identity)
 
-All back-end services are prefixed with `be-`. The only directory with this prefix that isn't an operational service is
-`be-common` which contains code common to all other back-end repositories.
+All back-end services are prefixed with ``. The only directory with this prefix that isn't an operational service is
+`common` which contains code common to all other back-end repositories.
 
-Here is `arad/be-identity/`:
+Here is `arad/identity/`:
 
 ```
-be-identity
+identity
 ├── common
 │   ├── __init__.py
 │   ├── app.py
@@ -150,7 +150,7 @@ be-identity
 └── pyproject.toml
 ```
 
-The identity specific code lives in `be-identity/identity`. `common` and `database` were both synced from `be-common`
+The identity specific code lives in `identity/identity`. `common` and `database` were both synced from `common`
 using the `sync` script.
 
 ## Scripts
@@ -185,7 +185,7 @@ arad $ ./local build
 arad $ ./local up
 arad $ ./local down
 arad $ ./local types
-arad $ ./local be-exec poetry add awesome-new-package
+arad $ ./local exec poetry add awesome-new-package
 ```
 
 The `local` script does various useful things.

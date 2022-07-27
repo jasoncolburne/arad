@@ -1,4 +1,4 @@
-# Make sure you are editing this file in be-common
+# Make sure you are editing this file in common
 
 from uuid import UUID
 

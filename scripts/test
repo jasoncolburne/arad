@@ -16,7 +16,7 @@ ${COMMAND_STRING}
 EOS
   set -e
 
-  docker compose run --rm -it "be-${SERVICE}" bash -c "${SHELL_SCRIPT}"
+  docker compose run --rm -it "${SERVICE}" bash -c "${SHELL_SCRIPT}"
 }
 
 pytest() {
@@ -51,10 +51,10 @@ all() {
   done
 
   echo
-  echo "moving black changes back into be-common..."
+  echo "moving black changes back into common..."
   echo
-  rsync -v -r -d be-administrator/database be-common
-  rsync -v -r -d be-identity/common be-common
+  rsync -v -r -d administrator/database common
+  rsync -v -r -d identity/common common
   
   echo
   echo "re-syncing"

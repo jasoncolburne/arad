@@ -57,7 +57,7 @@ PGPASSWORD=${DATABASE_PASSPHRASE} psql -U${DATABASE_USER} -h${APPLICATION_DATABA
 EOS
   set -e
 
-  docker compose run --rm be-identity bash -c "${CREATE_SCRIPT}"
+  docker compose run --rm identity bash -c "${CREATE_SCRIPT}"
 }
 
 drop() {
@@ -71,7 +71,7 @@ PGPASSWORD=${DATABASE_PASSPHRASE} psql -U${DATABASE_USER} -h${APPLICATION_DATABA
 EOS
   set -e
 
-  docker compose run --rm be-identity bash -c "${DROP_SCRIPT}"
+  docker compose run --rm identity bash -c "${DROP_SCRIPT}"
 }
 
 migrate() {
@@ -82,7 +82,7 @@ alembic upgrade head
 EOS
   set -e
 
-  docker compose run --rm be-identity bash -c "${MIGRATE_SCRIPT}"
+  docker compose run --rm identity bash -c "${MIGRATE_SCRIPT}"
 }
 
 generate_migrations() {
@@ -102,7 +102,7 @@ chown $(id -u):$(id -g) database/migrations/versions/*
 EOS
   set -e
 
-  docker compose run --rm be-identity bash -c "${GENERATION_SCRIPT}"
+  docker compose run --rm identity bash -c "${GENERATION_SCRIPT}"
 }
 
 empty_migration() {
@@ -122,7 +122,7 @@ chown $(id -u):$(id -g) database/migrations/versions/*
 EOS
   set -e
 
-  docker compose run --rm be-identity bash -c "${GENERATION_SCRIPT}"
+  docker compose run --rm identity bash -c "${GENERATION_SCRIPT}"
 }
 
 # we can probably do the rest in a single line by eval or something
