@@ -1,0 +1,136 @@
+version: "3.9"
+
+x-common-args: &common-args
+  DEPLOYMENT_ENVIRONMENT: development
+
+x-common-environment: &common-environment
+  ACCESS_TOKEN_PUBLIC_KEY_PEM: |
+    -----BEGIN PUBLIC KEY-----
+    MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEnoH4lyjW4T0uUFbAYRL1G/3dxF1M
+    kak4CYTwDU8lSubpkIKXFqo7KtsWIycbTKbfLm2IdwNXDOO346u4OhCaBg==
+    -----END PUBLIC KEY-----
+  DATABASE_URL: postgresql+asyncpg://arad_application:arad_application@database:5432/arad_application
+
+x-healthcheck: &healthcheck
+  test: ["CMD-SHELL", "curl http://localhost/health > /dev/null"]
+  interval: 5s
+  timeout: 5s
+  retries: 5
+
+x-database-dependency: &database-dependency
+  database:
+    condition: service_healthy
+
+services:
+  front-end:
+    image: "${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:front-end-${CIRCLE_BRANCH}-latest"
+    depends_on:
+      api:
+        condition: service_healthy
+    ports:
+      - "3000:3000" # for websockets
+      - "80:3000"
+
+  api:
+    image: "${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:api-${CIRCLE_BRANCH}-latest"
+    depends_on:
+      identity:
+        condition: service_healthy
+      reader:
+        condition: service_healthy
+      reviewer:
+        condition: service_healthy
+      administrator:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl http://localhost/health > /dev/null"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    ports:
+      - "81:80" # this is how the front end talks to the api. port 80 is taken atm.
+
+  identity:
+    image: "${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:identity-${CIRCLE_BRANCH}-latest"
+    restart: always
+    environment:
+      <<: *common-environment
+      DATABASE_URL: postgresql+asyncpg://arad_user:arad_user@database:5432/arad_user
+      CACHE_URL: redis://cache:6379/0
+      DEFAULT_ADMIN_EMAIL: admin@domain.org
+      ACCESS_TOKEN_PRIVATE_KEY_PEM: |
+        -----BEGIN EC PRIVATE KEY-----
+        MHcCAQEEIPDn6E30e3lwXXnW1GyYYH942x0OiU/lRhYKYh9IJReaoAoGCCqGSM49
+        AwEHoUQDQgAEnoH4lyjW4T0uUFbAYRL1G/3dxF1Mkak4CYTwDU8lSubpkIKXFqo7
+        KtsWIycbTKbfLm2IdwNXDOO346u4OhCaBg==
+        -----END EC PRIVATE KEY-----
+    volumes:
+      - './identity:/app'
+    depends_on:
+      <<: *database-dependency
+      cache:
+        condition: service_healthy
+    healthcheck: *healthcheck
+    ports:
+      - "8003:80" # for docs
+
+  reader:
+    image: "${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:reader-${CIRCLE_BRANCH}-latest"
+    restart: always
+    environment: *common-environment
+    volumes:
+      - './reader:/app'
+    depends_on: *database-dependency
+    healthcheck: *healthcheck
+    ports:
+      - "8002:80" # for docs
+
+  reviewer:
+    image: "${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:reviewer-${CIRCLE_BRANCH}-latest"
+    restart: always
+    environment: *common-environment
+    volumes:
+      - './reviewer:/app'
+    depends_on: *database-dependency
+    healthcheck: *healthcheck
+    ports:
+      - "8001:80" # for docs
+
+  administrator:
+    image: "${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:administrator-${CIRCLE_BRANCH}-latest"
+    restart: always
+    environment: *common-environment
+    volumes:
+      - './administrator:/app'
+    depends_on: *database-dependency
+    healthcheck: *healthcheck
+    ports:
+      - "8000:80" # for docs
+
+  cache:
+    image: "redis:bullseye"
+    restart: always
+    volumes:
+      - 'cache:/bitnami/redis/data'
+    healthcheck:
+      test: [ "CMD", "redis-cli", "--raw", "incr", "ping" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  database:
+    image: "postgres:bullseye"
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - 'database:/var/lib/postgresql/data'
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  cache:
+  database:
