@@ -56,7 +56,7 @@ const Register = () => {
             email
             <InputGroup size='2xl'>
               <Input
-                id='email'
+                id='register-email'
                 type='email'
                 borderRadius="lg"
                 paddingLeft="4px"
@@ -68,7 +68,7 @@ const Register = () => {
             passphrase
             <InputGroup size='2xl'>
               <Input
-                id='passphrase'
+                id='register-passphrase'
                 type='password'
                 borderRadius="lg"
                 paddingLeft="4px"
@@ -80,7 +80,7 @@ const Register = () => {
             verification
             <InputGroup size='2xl'>
               <Input
-                id='verification'
+                id='register-verification'
                 type='password'
                 borderRadius="lg"
                 paddingLeft="4px"
@@ -91,6 +91,7 @@ const Register = () => {
             </InputGroup>
           </FormControl>
           <Button
+            id='register-submit'
             width="full"
             type="submit"
             size="2xl"  // should try and override Button to add 2xl, removing padding

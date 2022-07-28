@@ -1,3 +1,5 @@
+import { currentHostname } from "../Arad";
+
 const Api = () => {
   const createHeaders = (token: String | null, body: Object | null) => {
     const result: HeadersInit = {};
@@ -24,11 +26,12 @@ const Api = () => {
         options.body = JSON.stringify(body);
       }
 
-      const response = await fetch(`http://localhost:81/api/v1/${endpoint}`, options);
+      const url = `http://${currentHostname === 'localhost' ? 'localhost:81' : 'api'}/api/v1/${endpoint}`;
+      const response = await fetch(url, options);
 
       if (!response.ok) {
-        handleErrors(response);
-        throw new Error(`error fetching ${endpoint}: ${response.status}, ${response.statusText}`)
+        handleErrors(response)
+        console.error(`error fetching ${endpoint}: ${response.status}, ${response.statusText}`);
       }
 
       return await response.json()

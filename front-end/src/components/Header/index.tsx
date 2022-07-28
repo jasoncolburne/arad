@@ -10,13 +10,17 @@ import "./index.css"
 
 const authentication = (
   <>
-    <Link to="/login">Login</Link>{" / "}
-    <Link to="/register">Register</Link>
+    <Link id='arad-loginLink' to="/login">Login</Link>{" / "}
+    <Link id='arad-registerLink' to="/register">Register</Link>
   </>
 );
 
-const clickableEmail = (email: string) => {
-  return <Link to="/passphrase">{email}</Link>;
+const clickableEmail = (email: string | undefined) => {
+  return (
+    email === undefined ?
+    null :
+    <Link id='arad-passphraseLink' to="/passphrase">{email}</Link>
+  );
 }
 
 const Header = () => {
@@ -38,7 +42,7 @@ const Header = () => {
         <Navigation />
       </div>
       <div className="right">
-        {loggedIn(state.credentials!) ? clickableEmail(state.user!.email) : authentication}
+        {loggedIn(state.credentials!) ? clickableEmail(state.user?.email) : authentication}
       </div>
     </header>
   )

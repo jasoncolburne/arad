@@ -6,7 +6,11 @@ BACKENDS=(administrator reviewer reader identity)
 ACTIVATE_SCRIPT=". \$(./activate)"
 
 stack_up() {
-  docker compose up
+  docker compose up --remove-orphans
+}
+
+stack_daemonize() {
+  docker compose up -d --remove-orphans
 }
 
 stack_down() {
@@ -112,6 +116,8 @@ execute() {
 
   if [[ "${COMMAND}" == "up" ]]; then
     stack_up
+  elif [[ "${COMMAND}" == "daemonize" ]]; then
+    stack_daemonize
   elif [[ "${COMMAND}" == "down" ]]; then
     stack_down
   elif [[ "${COMMAND}" == "build" ]]; then

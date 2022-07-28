@@ -34,7 +34,12 @@
 /reader/activate
 /identity/activate
 
+/front-end/cypress/screenshots
+/front-end/cypress/videos
+/front-end/cypress/downloads
+
 /.pylintrc
 /mypy.ini
+/.eslintrc
 
 __pycache__

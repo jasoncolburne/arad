@@ -17,7 +17,7 @@ const Navigation = () => {
     <header>
       <nav>
         <Link to="/search">Search</Link>
-        {isAdministrator(state.user!.roles) ? adminLinks : null}
+        {state.user !== undefined && isAdministrator(state.user.roles) ? adminLinks : null}
       </nav>
     </header>
   );
