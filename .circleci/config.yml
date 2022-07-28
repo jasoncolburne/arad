@@ -119,11 +119,15 @@ jobs:
           name: Sync common code
           command: ./scripts/sync
       - run:
+          name: Login to DockerHub
+          command: docker login -u "${DOCKERHUB_USER}" -p "${DOCKERHUB_ACCESS_TOKEN}"
+      - run:
           name: End to End Tests
           command: |
             echo "DOCKERHUB_USER=${DOCKERHUB_USER}" > .env
             echo "CIRCLE_PROJECT_REPONAME=${CIRCLE_PROJECT_REPONAME}" >> .env
             echo "CIRCLE_BRANCH=${CIRCLE_BRANCH}" >> .env
+
             docker compose -f ci-compose.yml up -d
             docker compose run --rm front-end bash -c "yarn cypress:run"
 
