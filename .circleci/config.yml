@@ -290,6 +290,9 @@ workflows:
       - build-images:
           requires:
             - hold
+      - end-to-end:
+          requires:
+            - build-images
       - black-identity:
           requires:
             - build-images
