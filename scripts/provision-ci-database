@@ -56,7 +56,7 @@ PGPASSWORD=${DATABASE_PASSPHRASE} psql -U${DATABASE_USER} -h${APPLICATION_DATABA
 EOS
 set -e
 
-docker compose run --rm identity bash -c "${CREATE_SCRIPT}"
+docker compose -f ci-compose.yml run --rm identity bash -c "${CREATE_SCRIPT}"
 
 set +e
 read -r -d '' MIGRATE_SCRIPT << EOS
@@ -65,4 +65,4 @@ alembic upgrade head
 EOS
 set -e
 
-docker compose run --rm identity bash -c "${MIGRATE_SCRIPT}"
+docker compose -f ci-compose.yml run --rm identity bash -c "${MIGRATE_SCRIPT}"
