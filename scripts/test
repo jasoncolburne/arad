@@ -2,37 +2,67 @@
 
 set -eo pipefail
 
-BACKENDS=(administrator reviewer reader identity)
+BACKENDS=(administrator reviewer reader identity core)
 ACTIVATE_SCRIPT=". \$(./activate)"
 
-simple_command() {
-  local SERVICE=$1
-  local COMMAND_STRING=$2
+# core meaning the directory, arad/core. it's harder to test this code as we aren't deploying an image of it
+core_command() {
+  local COMMAND_STRING=$1
 
   set +e
   read -r -d '' SHELL_SCRIPT << EOS
 ${ACTIVATE_SCRIPT}
 ${COMMAND_STRING}
 EOS
+  read -r -d '' ACCESS_TOKEN_PUBLIC_KEY_PEM << EOV
+-----BEGIN PUBLIC KEY-----
+MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEnoH4lyjW4T0uUFbAYRL1G/3dxF1M
+kak4CYTwDU8lSubpkIKXFqo7KtsWIycbTKbfLm2IdwNXDOO346u4OhCaBg==
+-----END PUBLIC KEY-----
+EOV
   set -e
+  export ACCESS_TOKEN_PUBLIC_KEY_PEM
 
-  docker compose run --rm -it "${SERVICE}" bash -c "${SHELL_SCRIPT}"
+  docker run --rm -v "$(pwd)/core:/app" -e ACCESS_TOKEN_PUBLIC_KEY_PEM arad_core-test bash -c "${SHELL_SCRIPT}"
+}
+
+simple_compose_command() {
+  local SERVICE=$1
+  local COMMAND_STRING=$2
+
+  if [[ "${SERVICE}" == "core" ]]
+  then
+    # I really hate this
+    mv core/{_,}database || true
+    core_command "${COMMAND_STRING}"
+    mv core/{,_}database || true
+  else
+    set +e
+    read -r -d '' SHELL_SCRIPT << EOS
+${ACTIVATE_SCRIPT}
+${COMMAND_STRING}
+EOS
+    set -e
+
+    docker compose run --rm "${SERVICE}" bash -c "${SHELL_SCRIPT}"
+  fi
 }
 
 pytest() {
-  simple_command $1 "pytest ."
+
+  simple_compose_command $1 "pytest ."
 }
 
 black() {
-  simple_command $1 "black ."
+  simple_compose_command $1 "black ."
 }
 
 pylint() {
-  simple_command $1 "find . -maxdepth 1 -type d -not -name '.*' | xargs pylint"
+  simple_compose_command $1 "find . -maxdepth 1 -type d -not -name '.*' | xargs pylint"
 }
 
 mypy() {
-  simple_command $1 "mypy --install-types --non-interactive ."
+  simple_compose_command $1 "mypy --install-types --non-interactive ."
 }
 
 all() {

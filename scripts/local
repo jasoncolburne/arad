@@ -14,12 +14,29 @@ stack_down() {
 }
 
 stack_build() {
+  echo
+  echo "bringing down running instances..."
+  echo
   docker compose down
+
+  echo
+  echo "syncing code..."
+  echo
+  scripts/sync
+
+  echo
+  echo "building from compose..."
+  echo
   docker compose build
 
   echo
-  echo "copying node_modules to host (this takes a bit)..."
+  echo "building snowflake core testing image..."
+  echo
+  docker build --build-arg DEPLOYMENT_ENVIRONMENT=development -f core/Dockerfile -t arad_core-test core
 
+  echo
+  echo "copying node_modules to host (this takes a bit)..."
+  echo
   # this is required since we mount the volume in the same directory, meaning that the node_modules
   # directory on the container would be erased when it launched if we didn't do this
   rm -rf front-end/node_modules

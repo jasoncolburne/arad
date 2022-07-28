@@ -104,7 +104,7 @@ class AuthService:
         expires = datetime.datetime.utcnow() + datetime.timedelta(
             minutes=ACCESS_TOKEN_EXPIRATION_MINUTES
         )
-        token.update({"exp": expires.timestamp()})
+        token.update({"exp": int(expires.timestamp())})
         json_web_token = jwt.encode(
             token, ACCESS_TOKEN_PRIVATE_KEY, algorithm=ACCESS_TOKEN_ALGORITHM
         )
