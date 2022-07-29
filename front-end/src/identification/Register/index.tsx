@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import React from "react";
+
 import { useNavigate } from "react-router";
 
 import { Box, Center } from "@chakra-ui/layout";
@@ -13,14 +14,14 @@ import { loggedIn } from "../../utility/authorization";
 
 const Register = () => {
   const { state, setState } = useGlobalState();
-  const [email, setEmail] = useState('');
-  const [passphrase, setPassphrase] = useState('');
-  const [verification, setVerification] = useState('');
-  const [errorMessage, setErrorMessage] = useState('');
+  const [email, setEmail] = React.useState('');
+  const [passphrase, setPassphrase] = React.useState('');
+  const [verification, setVerification] = React.useState('');
+  const [errorMessage, setErrorMessage] = React.useState('');
 
   const navigate = useNavigate();
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (loggedIn(state.credentials!)) {
       navigate("/");
     }
@@ -56,7 +57,7 @@ const Register = () => {
             email
             <InputGroup size='2xl'>
               <Input
-                id='email'
+                id='register-email'
                 type='email'
                 borderRadius="lg"
                 paddingLeft="4px"
@@ -68,7 +69,7 @@ const Register = () => {
             passphrase
             <InputGroup size='2xl'>
               <Input
-                id='passphrase'
+                id='register-passphrase'
                 type='password'
                 borderRadius="lg"
                 paddingLeft="4px"
@@ -80,7 +81,7 @@ const Register = () => {
             verification
             <InputGroup size='2xl'>
               <Input
-                id='verification'
+                id='register-verification'
                 type='password'
                 borderRadius="lg"
                 paddingLeft="4px"
@@ -91,6 +92,7 @@ const Register = () => {
             </InputGroup>
           </FormControl>
           <Button
+            id='register-submit'
             width="full"
             type="submit"
             size="2xl"  // should try and override Button to add 2xl, removing padding

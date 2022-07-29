@@ -77,7 +77,7 @@ jobs:
       - run:
           name: Tag images
           command: |
-            IMAGES=(api identity reader reviewer administrator core)
+            IMAGES=(api identity reader reviewer administrator core front-end)
             for IMAGE in "${IMAGES[@]}"; do
               HASH_TAG="${IMAGE}-${CIRCLE_BRANCH}-$(git rev-parse --short HEAD)"
               LATEST_TAG="${IMAGE}-${CIRCLE_BRANCH}-latest"
@@ -91,14 +91,52 @@ jobs:
       - run:
           name: Push images
           command: |
-            IMAGES=(api identity reader reviewer administrator core)
+            IMAGES=(api identity reader reviewer administrator core front-end)
             for IMAGE in "${IMAGES[@]}"; do
               HASH_TAG="${IMAGE}-${CIRCLE_BRANCH}-$(git rev-parse --short HEAD)"
               LATEST_TAG="${IMAGE}-${CIRCLE_BRANCH}-latest"
 
-              docker push "${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:${HASH_TAG}"
-              docker push "${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:${LATEST_TAG}"
+              docker push "${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:${HASH_TAG}" --quiet
+              docker push "${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:${LATEST_TAG}" --quiet
             done
+
+  end-to-end:
+    resource_class: large
+    docker:
+      - image: cimg/base:stable
+    steps:
+      - checkout
+      - setup_remote_docker:
+          docker_layer_caching: true
+          version: 20.10.14
+      - run:
+          name: Update package manager
+          command: sudo apt-get update
+      - run:
+          name: Install dependencies
+          command: sudo apt-get -y install rsync
+      - run:
+          name: Sync common code
+          command: ./scripts/sync
+      - run:
+          name: Login to DockerHub
+          command: docker login -u "${DOCKERHUB_USER}" -p "${DOCKERHUB_ACCESS_TOKEN}"
+      - run:
+          name: Create .env file
+          command: |
+            echo "DOCKERHUB_USER=${DOCKERHUB_USER}" > .env
+            echo "CIRCLE_PROJECT_REPONAME=${CIRCLE_PROJECT_REPONAME}" >> .env
+            echo "CIRCLE_BRANCH=${CIRCLE_BRANCH}" >> .env
+      - run:
+          name: Provision Database
+          command: ./scripts/provision-ci-database
+      - run:
+          name: End to End Tests
+          command: |
+            docker compose -f ci-compose.yml up -d
+            echo "waiting 30 seconds for front-end..."
+            sleep 30
+            docker compose -f ci-compose.yml run --rm front-end bash -c "yarn cypress:ci"
 
   black-identity:
     resource_class: small
@@ -263,6 +301,9 @@ workflows:
       - build-images:
           requires:
             - hold
+      - end-to-end:
+          requires:
+            - build-images
       - black-identity:
           requires:
             - build-images

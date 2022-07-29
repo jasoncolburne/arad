@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 
-# TODO see if we can turn -e back on and make read work
 set -eo pipefail
 
 USER_DATABASE_HOST=database

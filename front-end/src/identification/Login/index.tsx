@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React from 'react';
 import { useNavigate } from "react-router";
 
 import { Box, Center } from "@chakra-ui/layout";
@@ -13,13 +13,13 @@ import { loggedIn } from "../../utility/authorization";
 
 const Login = () => {
   const { state, setState } = useGlobalState();
-  const [email, setEmail] = useState('');
-  const [passphrase, setPassphrase] = useState('');
-  const [errorMessage, setErrorMessage] = useState('');
+  const [email, setEmail] = React.useState('');
+  const [passphrase, setPassphrase] = React.useState('');
+  const [errorMessage, setErrorMessage] = React.useState('');
 
   const navigate = useNavigate();
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (loggedIn(state.credentials!)) {
       navigate("/");
     }
@@ -53,7 +53,7 @@ const Login = () => {
             email
             <InputGroup size='2xl'>
               <Input
-                id='email'
+                id='login-email'
                 type='email'
                 borderRadius="lg"
                 paddingLeft="4px"
@@ -65,7 +65,7 @@ const Login = () => {
             passphrase
             <InputGroup size='2xl'>
               <Input
-                id='passphrase'
+                id='login-passphrase'
                 type='password'
                 borderRadius="lg"
                 paddingLeft="4px"
@@ -76,6 +76,7 @@ const Login = () => {
             </InputGroup>
           </FormControl>
           <Button
+            id='login-submit'
             width="full"
             type="submit"
             size="2xl"  // should try and override Button to add 2xl, removing padding

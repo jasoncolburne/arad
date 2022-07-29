@@ -28,6 +28,7 @@ def get_application() -> FastAPI:
 
     origins = [
         "http://localhost",
+        "http://front-end:3000",
     ]
 
     app.add_middleware(

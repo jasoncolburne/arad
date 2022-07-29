@@ -49,7 +49,6 @@ EOS
 }
 
 pytest() {
-
   simple_compose_command $1 "pytest ."
 }
 
@@ -63,6 +62,12 @@ pylint() {
 
 mypy() {
   simple_compose_command $1 "mypy --install-types --non-interactive ."
+}
+
+e2e() {
+  unset ACTIVATE_SCRIPT
+  ./scripts/local daemonize
+  simple_compose_command front-end "yarn cypress:run"
 }
 
 all() {
@@ -133,6 +138,8 @@ execute() {
     pylint "${ARGUMENTS}"
   elif [[ "${COMMAND}" == "mypy" ]]; then
     mypy "${ARGUMENTS}"
+  elif [[ "${COMMAND}" == "e2e" ]]; then
+    e2e
   elif [[ "${COMMAND}" == "all" ]]; then
     all
   else

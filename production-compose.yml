@@ -33,3 +33,8 @@ services:
     build:
       context: core
       args: *common-args
+
+  front-end:
+    build:
+      context: front-end
+      args: *common-args

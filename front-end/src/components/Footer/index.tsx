@@ -35,13 +35,13 @@ const Footer = () => {
     resetStateAndRedirectHome();
   };
 
-  const logoutLink = <Link onClick={logoutAction} to="/logout">Logout</Link>;
+  const logoutLink = <Link id='arad-logoutLink' onClick={logoutAction} to="/logout">Logout</Link>;
 
   return (
     <footer>
       <div className="footer">
         <div className="left">
-          <Link to="/code">Accessible Research Article Database</Link>
+          <Link id='arad-codeLink' to="/code">Accessible Research Article Database</Link>
         </div>
         <div className="right">
           {loggedIn(state.credentials!) ? logoutLink : null}
