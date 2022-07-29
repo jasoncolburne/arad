@@ -134,7 +134,9 @@ jobs:
           name: End to End Tests
           command: |
             docker compose -f ci-compose.yml up -d
-            docker compose -f ci-compose.yml run --rm front-end bash -c "yarn cypress:run"
+            echo "waiting 30 seconds for front-end..."
+            sleep 30
+            docker compose -f ci-compose.yml run --rm front-end bash -c "yarn cypress:ci"
 
   black-identity:
     resource_class: small

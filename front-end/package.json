@@ -21,7 +21,8 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "cypress:run": "cypress run"
+    "cypress:run": "cypress run",
+    "cypress:ci": "cypress run --config cypress.config.ci.ts"
   },
   "eslintConfig": {
     "extends": "react-app"
