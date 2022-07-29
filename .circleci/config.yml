@@ -73,7 +73,7 @@ jobs:
           command: ./scripts/sync
       - run:
           name: Build images from docker-compose.yml
-          command: docker compose -f production-compose.yml build --quiet
+          command: docker compose -f production-compose.yml build
       - run:
           name: Tag images
           command: |
