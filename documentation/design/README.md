@@ -133,7 +133,7 @@ By having only fewer hard dependencies for each service, we can be assured of a 
 
 ### Database
 
-A relational database will give us the performance we need in this setup. PostgreSQL in specific allows creation of
+Relational databases will give us the performance we need in this setup. PostgreSQL in specific allows creation of
 UUIDs (a type of entity identifier) within the database itself.
 
 ### Cache

@@ -23,7 +23,7 @@ describe('login', () => {
           .pathShouldEqual('/login');
     });
 
-    it('redirects to root when logged in', () => {
+    it('redirects when logged in', () => {
         const email = randomEmail();
         const passphrase = 'passphrase';
 

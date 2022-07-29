@@ -1,10 +1,10 @@
+import React from "react";
 import { Input, Table, Tbody, Td, Tr } from '@chakra-ui/react';
 import { Role, User } from '../../../api/types/friendly';
 
 import { UserListRow } from "./UserListRow";
 
 import { Paginator } from '../../../components/Paginator';
-import { ChangeEvent, useState } from 'react';
 
 interface UserListProps {
     users: User[];
@@ -17,9 +17,9 @@ interface UserListProps {
 
 const UserList = (props: UserListProps) => {
     const { users, roles, setFilterText, page, setPage, totalPages } = props;
-    const [currentTimer, setCurrentTimer] = useState<NodeJS.Timeout | null>(null);
+    const [currentTimer, setCurrentTimer] = React.useState<NodeJS.Timeout | null>(null);
 
-    const delayFilterChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const delayFilterChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         if (currentTimer) {
             clearTimeout(currentTimer);
         }
@@ -40,6 +40,7 @@ const UserList = (props: UserListProps) => {
                     <Tr>
                         <Td key='email-filter'>
                             <Input
+                                id='users-filter'
                                 borderRadius="lg"
                                 focusBorderColor="black"
                                 placeholder='email filter'

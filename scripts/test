@@ -32,10 +32,7 @@ simple_compose_command() {
 
   if [[ "${SERVICE}" == "core" ]]
   then
-    # I really hate this
-    mv core/{_,}database || true
     core_command "${COMMAND_STRING}"
-    mv core/{,_}database || true
   else
     set +e
     read -r -d '' SHELL_SCRIPT << EOS
@@ -88,10 +85,8 @@ all() {
   echo
   echo "moving black changes back into common..."
   echo
-  mv administrator/{,_}database
-  rsync -v -r -d administrator/_database core
+  rsync -v -r -d administrator/database core
   rsync -v -r -d identity/common core
-  mv administrator/{_,}database
   
   echo
   echo "re-syncing"

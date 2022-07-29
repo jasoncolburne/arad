@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Navigation } from "../../administration/Navigation";
+import { Navigation } from "./components/Navigation";
 import { ApplicationState } from "../../datatypes/ApplicationState";
 
 import { useGlobalState } from "../../GlobalState";
