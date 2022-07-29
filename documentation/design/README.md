@@ -45,9 +45,11 @@ changes in user behaviour.
 By restricting reader instance access to the application database to read-only, we prevent our most exposed service
 from being able to modify application data.
 
-By isolating the user database, we prevent a compromised administrator, reviewer or reader instance from modifying
-sensitive data. We also prevent exfiltration of hashed passwords by a compromised administrator, reviewer or reader
-instance.
+By isolating the user database, we prevent a compromised `administrator`, `reviewer` or `reader` instance from modifying
+sensitive data. We also prevent exfiltration of hashed passwords by a compromised `administrator`, `reviewer` or
+`reader` instance.
+
+Similarly, for sensitive refresh tokens, only the `identity` service will access them (using the cache).
 
 ![Arad](./assets/arad-simple.png)
 
@@ -131,8 +133,8 @@ By having only fewer hard dependencies for each service, we can be assured of a 
 
 ### Database
 
-The most useful and understood database type in this scenario is likely a relational database, but we are evaluating
-alternatives. The current implementation relies on PostgreSQL.
+A relational database will give us the performance we need in this setup. PostgreSQL in specific allows creation of
+UUIDs (a type of entity identifier) within the database itself.
 
 ### Cache
 

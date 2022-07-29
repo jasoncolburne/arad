@@ -1,6 +1,6 @@
 [arad](../../../../) / [documentation](../README.md) / [development](./README.md)
 
-# HOWTO
+# How To?
 
 This document describes how to perform common tasks while developing ARAD.
 
