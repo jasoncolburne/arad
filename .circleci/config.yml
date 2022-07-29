@@ -134,7 +134,7 @@ jobs:
           name: End to End Tests
           command: |
             docker compose -f ci-compose.yml up -d
-            docker compose -f ci-compose run --rm front-end bash -c "yarn cypress:run"
+            docker compose -f ci-compose.yml run --rm front-end bash -c "yarn cypress:run"
 
   black-identity:
     resource_class: small
