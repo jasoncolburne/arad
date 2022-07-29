@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -exo pipefail
+set -eo pipefail
 
 USER_DATABASE_HOST=database
 USER_DATABASE_NAME=arad_user
@@ -60,7 +60,7 @@ docker compose -f ci-compose.yml run --rm identity bash -c "${CREATE_SCRIPT}"
 set +e
 read -r -d '' MIGRATE_SCRIPT << EOS
 cd /app
-ls
+echo \$(pwd)
 ${ACTIVATE_SCRIPT}
 alembic upgrade head
 EOS
