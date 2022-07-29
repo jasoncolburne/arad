@@ -64,8 +64,6 @@ services:
         AwEHoUQDQgAEnoH4lyjW4T0uUFbAYRL1G/3dxF1Mkak4CYTwDU8lSubpkIKXFqo7
         KtsWIycbTKbfLm2IdwNXDOO346u4OhCaBg==
         -----END EC PRIVATE KEY-----
-    volumes:
-      - './identity:/app'
     depends_on:
       <<: *database-dependency
       cache:
@@ -78,8 +76,6 @@ services:
     image: "${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:reader-${CIRCLE_BRANCH}-latest"
     restart: always
     environment: *common-environment
-    volumes:
-      - './reader:/app'
     depends_on: *database-dependency
     healthcheck: *healthcheck
     ports:
@@ -89,8 +85,6 @@ services:
     image: "${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:reviewer-${CIRCLE_BRANCH}-latest"
     restart: always
     environment: *common-environment
-    volumes:
-      - './reviewer:/app'
     depends_on: *database-dependency
     healthcheck: *healthcheck
     ports:
@@ -100,8 +94,6 @@ services:
     image: "${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:administrator-${CIRCLE_BRANCH}-latest"
     restart: always
     environment: *common-environment
-    volumes:
-      - './administrator:/app'
     depends_on: *database-dependency
     healthcheck: *healthcheck
     ports:

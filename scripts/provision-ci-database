@@ -59,8 +59,6 @@ docker compose -f ci-compose.yml run --rm identity bash -c "${CREATE_SCRIPT}"
 
 set +e
 read -r -d '' MIGRATE_SCRIPT << EOS
-cd /app
-echo \$(pwd)
 ${ACTIVATE_SCRIPT}
 alembic upgrade head
 EOS
