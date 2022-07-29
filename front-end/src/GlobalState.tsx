@@ -1,6 +1,8 @@
 import { useState, createContext, useContext, SetStateAction, Dispatch } from "react"
+import { LoginResponse, Role, Roles } from "./api/types/friendly";
 
 import { ApplicationState } from "./datatypes/ApplicationState"
+import { emptyCredentials } from "./datatypes/Credentials";
 
 const GlobalContext = createContext({
   state: {} as Partial<ApplicationState>,
@@ -15,7 +17,11 @@ const GlobalState = ({
   children: React.ReactNode;
   value?: Partial<ApplicationState>;
 }) => {
-  const [state, setState] = useState(value);
+  const [state, setStateCore] = useState(value);
+  const setState: Dispatch<SetStateAction<Partial<ApplicationState>>> = (new_state) => {
+    localStorage.setItem('state', JSON.stringify(new_state));
+    setStateCore(new_state);
+  };
 
   return (
     <GlobalContext.Provider value={{ state, setState }}>
@@ -34,4 +40,53 @@ const useGlobalState = () => {
   return context;
 };
 
-export { GlobalState, useGlobalState };
+const modifyAccessToken = (state: Partial<ApplicationState>, scope: Role, token_value: string): ApplicationState => {
+  if (scope === Roles.Administrator) {
+    return {
+      credentials: {
+        refresh_token: state.credentials!.refresh_token,
+        access_tokens: {
+          reader: state.credentials!.access_tokens.reader,
+          reviewer: state.credentials!.access_tokens.reviewer,
+          administrator: token_value,
+        },
+      },
+      user: state.user!,
+    };
+  }
+
+  if (scope === Roles.Reviewer) {
+    return {
+      credentials: {
+        refresh_token: state.credentials!.refresh_token,
+        access_tokens: {
+          reader: state.credentials!.access_tokens.reader,
+          reviewer: token_value,
+          administrator: state.credentials!.access_tokens.administrator,
+        },
+      },
+      user: state.user!,
+    };
+  }
+
+  return {
+    credentials: state.credentials!,
+    user: state.user!,
+  };
+};
+
+// we are using LoginResponse as a type here and really we sometimes pass an identical RegisterResponse
+// this isn't great and should be fixed
+const stateFromAuthenticationResponseData = (response: LoginResponse): ApplicationState => {
+  return {
+    credentials: {
+      ...emptyCredentials,
+      refresh_token: response.refresh_token,
+    },
+    user: response.user,
+  };
+};
+
+
+
+export { GlobalState, useGlobalState, modifyAccessToken, stateFromAuthenticationResponseData };

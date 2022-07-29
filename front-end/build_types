@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+OUTPUT_DIR=src/api/types
+
+mkdir -p $OUTPUT_DIR
+npx openapi-typescript http://host.docker.internal:8000/openapi.json --output "${OUTPUT_DIR}/administrate.ts"
+npx openapi-typescript http://host.docker.internal:8001/openapi.json --output "${OUTPUT_DIR}/review.ts"
+npx openapi-typescript http://host.docker.internal:8002/openapi.json --output "${OUTPUT_DIR}/read.ts"
+npx openapi-typescript http://host.docker.internal:8003/openapi.json --output "${OUTPUT_DIR}/identify.ts"

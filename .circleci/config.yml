@@ -1,0 +1,366 @@
+version: 2.1
+
+x-docker-auth: &docker-auth
+  username: $DOCKERHUB_USER
+  password: $DOCKERHUB_ACCESS_TOKEN
+
+x-install-python-test-dependencies: &install-python-test-dependencies
+  name: Install test dependencies
+  command: |
+    cd /app
+    poetry install --no-root --with test
+
+
+x-black-steps: &black-steps
+  - run: *install-python-test-dependencies
+  - run:
+      name: Blacken
+      command: |
+        cd /app
+        . $(./activate)
+        [ -d database ] || mv {_,}database
+        black --check .
+
+x-pytest-steps: &pytest-steps
+  - run: *install-python-test-dependencies
+  - run:
+      name: Pytest
+      command: |
+        cd /app
+        . $(./activate)
+        [ -d database ] || mv {_,}database
+        pytest .
+
+x-pylint-steps: &pylint-steps
+  - run: *install-python-test-dependencies
+  - run:
+      name: Pylint
+      command: |
+        cd /app
+        . $(./activate)
+        [ -d database ] || mv {_,}database
+        find . -maxdepth 1 -type d -not -name '.*' | xargs pylint
+
+x-mypy-steps: &mypy-steps
+  - run: *install-python-test-dependencies
+  - run:
+      name: Mypy
+      command: |
+        cd /app
+        . $(./activate)
+        [ -d database ] || mv {_,}database
+        mypy --install-types --non-interactive .
+
+
+jobs:
+  build-images:
+    resource_class: large
+    docker:
+      - image: cimg/base:stable
+    steps:
+      - checkout
+      - setup_remote_docker:
+          docker_layer_caching: true
+          version: 20.10.14
+      - run:
+          name: Update package manager
+          command: sudo apt-get update
+      - run:
+          name: Install dependencies
+          command: sudo apt-get -y install rsync
+      - run:
+          name: Sync common code
+          command: ./scripts/sync
+      - run:
+          name: Build images from docker-compose.yml
+          command: docker compose -f production-compose.yml build
+      - run:
+          name: Tag images
+          command: |
+            IMAGES=(api identity reader reviewer administrator core front-end)
+            for IMAGE in "${IMAGES[@]}"; do
+              HASH_TAG="${IMAGE}-${CIRCLE_BRANCH}-$(git rev-parse --short HEAD)"
+              LATEST_TAG="${IMAGE}-${CIRCLE_BRANCH}-latest"
+
+              docker tag "project_${IMAGE}:latest" "${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:${HASH_TAG}"
+              docker tag "project_${IMAGE}:latest" "${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:${LATEST_TAG}"
+            done
+      - run:
+          name: Login to DockerHub
+          command: docker login -u "${DOCKERHUB_USER}" -p "${DOCKERHUB_ACCESS_TOKEN}"
+      - run:
+          name: Push images
+          command: |
+            IMAGES=(api identity reader reviewer administrator core front-end)
+            for IMAGE in "${IMAGES[@]}"; do
+              HASH_TAG="${IMAGE}-${CIRCLE_BRANCH}-$(git rev-parse --short HEAD)"
+              LATEST_TAG="${IMAGE}-${CIRCLE_BRANCH}-latest"
+
+              docker push "${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:${HASH_TAG}" --quiet
+              docker push "${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:${LATEST_TAG}" --quiet
+            done
+
+  end-to-end:
+    resource_class: large
+    docker:
+      - image: cimg/base:stable
+    steps:
+      - checkout
+      - setup_remote_docker:
+          docker_layer_caching: true
+          version: 20.10.14
+      - run:
+          name: Update package manager
+          command: sudo apt-get update
+      - run:
+          name: Install dependencies
+          command: sudo apt-get -y install rsync
+      - run:
+          name: Sync common code
+          command: ./scripts/sync
+      - run:
+          name: Login to DockerHub
+          command: docker login -u "${DOCKERHUB_USER}" -p "${DOCKERHUB_ACCESS_TOKEN}"
+      - run:
+          name: Create .env file
+          command: |
+            echo "DOCKERHUB_USER=${DOCKERHUB_USER}" > .env
+            echo "CIRCLE_PROJECT_REPONAME=${CIRCLE_PROJECT_REPONAME}" >> .env
+            echo "CIRCLE_BRANCH=${CIRCLE_BRANCH}" >> .env
+      - run:
+          name: Provision Database
+          command: ./scripts/provision-ci-database
+      - run:
+          name: End to End Tests
+          command: |
+            docker compose -f ci-compose.yml up -d
+            echo "waiting 30 seconds for front-end..."
+            sleep 30
+            docker compose -f ci-compose.yml run --rm front-end bash -c "yarn cypress:ci"
+
+  black-identity:
+    resource_class: small
+    docker:
+      - image: ${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:identity-${CIRCLE_BRANCH}-latest
+        auth: *docker-auth
+    steps: *black-steps
+
+  black-administrator:
+    resource_class: small
+    docker:
+      - image: ${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:administrator-${CIRCLE_BRANCH}-latest
+        auth: *docker-auth
+    steps: *black-steps
+
+  black-reviewer:
+    resource_class: small
+    docker:
+      - image: ${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:reviewer-${CIRCLE_BRANCH}-latest
+        auth: *docker-auth
+    steps: *black-steps
+
+  black-reader:
+    resource_class: small
+    docker:
+      - image: ${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:reader-${CIRCLE_BRANCH}-latest
+        auth: *docker-auth
+    steps: *black-steps
+
+  black-core:
+    resource_class: small
+    docker:
+      - image: ${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:core-${CIRCLE_BRANCH}-latest
+        auth: *docker-auth
+    steps: *black-steps
+
+  pytest-identity:
+    resource_class: small
+    docker:
+      - image: ${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:identity-${CIRCLE_BRANCH}-latest
+        auth: *docker-auth
+    environment:
+      ACCESS_TOKEN_PRIVATE_KEY_PEM: |
+        -----BEGIN EC PRIVATE KEY-----
+        MHcCAQEEIPDn6E30e3lwXXnW1GyYYH942x0OiU/lRhYKYh9IJReaoAoGCCqGSM49
+        AwEHoUQDQgAEnoH4lyjW4T0uUFbAYRL1G/3dxF1Mkak4CYTwDU8lSubpkIKXFqo7
+        KtsWIycbTKbfLm2IdwNXDOO346u4OhCaBg==
+        -----END EC PRIVATE KEY-----
+      DEFAULT_ADMIN_EMAIL: admin@domain.org
+    steps: *pytest-steps
+
+  pytest-administrator:
+    resource_class: small
+    docker:
+      - image: ${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:administrator-${CIRCLE_BRANCH}-latest
+        auth: *docker-auth
+    steps: *pytest-steps
+
+  pytest-reviewer:
+    resource_class: small
+    docker:
+      - image: ${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:reviewer-${CIRCLE_BRANCH}-latest
+        auth: *docker-auth
+    steps: *pytest-steps
+
+  pytest-reader:
+    resource_class: small
+    docker:
+      - image: ${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:reader-${CIRCLE_BRANCH}-latest
+        auth: *docker-auth
+    steps: *pytest-steps
+
+  pytest-core:
+    resource_class: small
+    docker:
+      - image: ${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:core-${CIRCLE_BRANCH}-latest
+        auth: *docker-auth
+    environment:
+      ACCESS_TOKEN_PUBLIC_KEY_PEM: |
+        -----BEGIN PUBLIC KEY-----
+        MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEnoH4lyjW4T0uUFbAYRL1G/3dxF1M
+        kak4CYTwDU8lSubpkIKXFqo7KtsWIycbTKbfLm2IdwNXDOO346u4OhCaBg==
+        -----END PUBLIC KEY-----
+    steps: *pytest-steps
+
+  pylint-identity:
+    resource_class: small
+    docker:
+      - image: ${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:identity-${CIRCLE_BRANCH}-latest
+        auth: *docker-auth
+    steps: *pylint-steps
+
+  pylint-administrator:
+    resource_class: small
+    docker:
+      - image: ${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:administrator-${CIRCLE_BRANCH}-latest
+        auth: *docker-auth
+    steps: *pylint-steps
+
+  pylint-reviewer:
+    resource_class: small
+    docker:
+      - image: ${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:reviewer-${CIRCLE_BRANCH}-latest
+        auth: *docker-auth
+    steps: *pylint-steps
+
+  pylint-reader:
+    resource_class: small
+    docker:
+      - image: ${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:reader-${CIRCLE_BRANCH}-latest
+        auth: *docker-auth
+    steps: *pylint-steps
+
+  pylint-core:
+    resource_class: small
+    docker:
+      - image: ${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:core-${CIRCLE_BRANCH}-latest
+        auth: *docker-auth
+    steps: *pylint-steps
+
+  mypy-identity:
+    resource_class: small
+    docker:
+      - image: ${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:identity-${CIRCLE_BRANCH}-latest
+        auth: *docker-auth
+    steps: *mypy-steps
+
+  mypy-administrator:
+    resource_class: small
+    docker:
+      - image: ${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:administrator-${CIRCLE_BRANCH}-latest
+        auth: *docker-auth
+    steps: *mypy-steps
+
+  mypy-reviewer:
+    resource_class: small
+    docker:
+      - image: ${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:reviewer-${CIRCLE_BRANCH}-latest
+        auth: *docker-auth
+    steps: *mypy-steps
+
+  mypy-reader:
+    resource_class: small
+    docker:
+      - image: ${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:reader-${CIRCLE_BRANCH}-latest
+        auth: *docker-auth
+    steps: *mypy-steps
+
+  mypy-core:
+    resource_class: small
+    docker:
+      - image: ${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:core-${CIRCLE_BRANCH}-latest
+        auth: *docker-auth
+    steps: *mypy-steps
+
+
+workflows:
+  everything:
+    jobs:
+      - hold:
+          type: approval
+      - build-images:
+          requires:
+            - hold
+      - end-to-end:
+          requires:
+            - build-images
+      - black-identity:
+          requires:
+            - build-images
+      - black-administrator:
+          requires:
+            - build-images
+      - black-reviewer:
+          requires:
+            - build-images
+      - black-reader:
+          requires:
+            - build-images
+      - black-core:
+          requires:
+            - build-images
+      - pytest-identity:
+          requires:
+            - build-images
+      - pytest-administrator:
+          requires:
+            - build-images
+      - pytest-reviewer:
+          requires:
+            - build-images
+      - pytest-reader:
+          requires:
+            - build-images
+      - pytest-core:
+          requires:
+            - build-images
+      - pylint-identity:
+          requires:
+            - build-images
+      - pylint-administrator:
+          requires:
+            - build-images
+      - pylint-reviewer:
+          requires:
+            - build-images
+      - pylint-reader:
+          requires:
+            - build-images
+      - pylint-core:
+          requires:
+            - build-images
+      - mypy-identity:
+          requires:
+            - build-images
+      - mypy-administrator:
+          requires:
+            - build-images
+      - mypy-reviewer:
+          requires:
+            - build-images
+      - mypy-reader:
+          requires:
+            - build-images
+      - mypy-core:
+          requires:
+            - build-images

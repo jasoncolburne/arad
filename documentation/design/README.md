@@ -1,7 +1,10 @@
-[arad](../../../../)/[documentation](../)
+[arad](../../../../) / [documentation](../README.md)
 
 # Design
 
+## Table of Contents
+
+- [Overview](#overview)
 - [Front-end Layer](#front-end-layer)
 - [API Layer](#api-layer)
 - [Service Layer](#service-layer)
@@ -12,6 +15,18 @@
 - [Infrastructure Layer](#infrastructure-layer)
     - [Database](#database)
     - [Cache](#cache)
+
+### Further reading
+
+- [The Anatomy of an Arad Production Deployment](./deployment.md)
+- [How an Arad service node is architected](./service.md)
+- [Domain and Data Model](./domain-data.md)
+- [Project Structure](./project.md)
+- [Front-end Architecture](./front-end.md)
+- [The API nginx proxy](./api.md)
+- [Endpoint Design](./endpoint.md)
+
+## Overview
 
 `Arad` is designed in layers. A layer receives a request from above, does some processing and makes requests to the
 layer below to compose a response to return to the layer above. By enforcing this architecture (easy enough in this
@@ -27,14 +42,22 @@ maintain state during orchestration.
 By grouping functionality by user type/concern, we can scale components of the system independently, reacting to
 changes in user behaviour.
 
+By restricting reader instance access to the application database to read-only, we prevent our most exposed service
+from being able to modify application data.
+
+By isolating the user database, we prevent a compromised administrator, reviewer or reader instance from modifying
+sensitive data. We also prevent exfiltration of hashed passwords by a compromised administrator, reviewer or reader
+instance.
+
 ![Arad](./assets/arad-simple.png)
 
 ## Front-end Layer
-The top layer, the [`front-end`](https://en.wikipedia.org/wiki/Frontend_and_backend), is located in the `client`. The
-client may take many forms. Some examples include web browsers, mobile phones, or a variety of
-[headless](https://en.wikipedia.org/wiki/Headless_computer) clients.
-
-The `front-end` is a [React](https://reactjs.org/) [Single Page Application](https://en.wikipedia.org/wiki/Single-page_application).
+The top layer, the [`front-end`](https://en.wikipedia.org/wiki/Frontend_and_backend), is a [React](https://reactjs.org/)
+[Single Page Application](https://en.wikipedia.org/wiki/Single-page_application) located in a web browser. The
+`client` may take many forms. Some examples include web browsers, mobile phones, or a variety of
+[headless](https://en.wikipedia.org/wiki/Headless_computer) clients. Perhaps a remote [cli](https://en.wikipedia.org/wiki/Command-line_interface).
+In most of these documents, we assume the `client` is our SPA code running a web browser, but there is nothing
+preventing other consumers of the API from utilizing it.
 
 ## API Layer
 The `front-end` commmunicates with the `back-end` stack (everything else) through the internet, and ultimately, an
@@ -50,92 +73,68 @@ Additionally, they do not use any sophistocated mechanisms to transfer data and 
 application state is stored in a relational database and cached in a distributed memory store where appropriate. This
 eliminates several operational problems and should work well for this simple, read-heavy application.
 
-### Identity
-`identity` is the foundational piece of the service layer, providing authentication and authorization capabilities to
-permit [RBAC](https://en.wikipedia.org/wiki/Role-based_access_control). As there is no interservice communication,
-we rely on other mechanisms to authorize user actions.
+### Services
 
-#### Authentication
+#### Identity
+[identity](./services/identity.md) is the foundational piece of the service layer, providing authentication and
+authorization capabilities to permit [RBAC](https://en.wikipedia.org/wiki/Role-based_access_control). As there is no
+inter-service communication, we rely on other mechanisms ([JWTs](#authentication-in-the-service-layer)) to authorize
+user actions.
+
+#### Reader
+
+The [reader](./services/reader.md) service is where most of the run-time compute resources for Arad will be consumed.
+This service responds to requests from everyone, both authenticated and unauthenticated. A `reader` role has been
+included in the RBAC model for completeness but due to the nature of `Reader` access, it will rarely be used.
+
+#### Reviewer
+
+The [reviewer](./services/reviewer.md) service will allow `Reviewers` to submit reviews about articles.
+
+#### Administrator
+
+The [administrator](./services/administrator.md) service will allow `Administrators` to modify information about
+articles and users.
+
+### Authentication in the Service Layer
 Two forms of authentication exist in identity. Short-lived and long-lived. Access is controlled by short-lived tokens
-that are generated using a long-lived refresh token that is aquired through user authentication (password, sso, etc).
+that are generated using a long-lived refresh token that is acquired through user authentication (password, sso, etc).
 
 [Here](https://www.oauth.com/oauth2-servers/making-authenticated-requests/refreshing-an-access-token/) is an example of
 such a scheme.
 
 For example, one scenario requiring protection is the ability of an `Administrator` to list users. We cannot allow
-`Reviewers` or `Readers` to manage or view other user accounts. To accomplish this, we will use a concept of `roles`
-named `reader`, `reviewer`, and `administrator`. The roles are not exclusive. Each short-lived access token can be
-assigned a `scope` that corresponds to a `role`. This permits modularity of composition when applying RBAC.
+users without `Administrator` priveleges to manage or view other user accounts. To accomplish this, we will use a
+concept of `roles` named `reader`, `reviewer`, and `administrator`. The roles are not exclusive. Each short-lived access
+token can be assigned a `scope` that corresponds to a `role`. This permits modularity of composition when applying RBAC.
 
 When an `Administrator` clicks `Manage Users`, for example, the `front-end` will:
 1. Examine its local data store for a valid, short-lived, `administrator`-scoped token.
-1. Depending on the result, it will use that token to access the resource, or the `front-end` will:
-    1. Use or acquire a valid refresh token to procure a short-lived `administrator`-scoped access token from `identity`.
+1. Depending on the result the `front-end` will:
+    1. Attempt to retreive another access token with the current refresh token. Depending on the result:
+        1. Use the short-lived token to access the resource.
+        1. Redirect back to the login page.
     1. Use the short-lived token to access the resource.
 
-This kind of separation of concerns allows us to easily implement password auth when acquiring an `administrator` token,
-but not when requiring a `reviewer` token. If we have need for higher security in the future, additional protocols can
-be layered on as the system is extended.
+This kind of separation of concerns allows us to easily implement additional authentication when acquiring an
+`administrator` token, for example, and easily not requiring authentication when requiring a `reviewer` token. If we
+have need for higher security in the future, additional protocols can be layered on as the system is extended.
 
-From what I have seen, it looks like the signing mechanism in the typical JWT flow uses a symmetric key. This is bizarre
-to me. I want to fix this, so that we can reduce our attack surface by storing the private portion of an asymmetric
-keypair in `identity` and only public portions in all the other services. This is indicated by coloring in the diagram
-above. This method of verifying authorization doesn't require database or cache reads, and it's possible to invalidate
-all tokens instantly by updating the public keys in the non-`identity` services. In fact, the system could be built
-with backup keys in place and a rollover switch so that there is very little downtime due to a desync between `identity`
-and the other services.
+Arad uses asymmetric keys for JWTs. This permits a 'contactless', least privlege authorization mechanism for remote
+resources. Currently ES256 is employed. We should consider upgrading to ES512 to increase the longevity of the keys.
 
-#### Endpoints
+## Infrastructure Layer
 
-- login
-- logout
-- passphrase_reset
-- passphrase_change (request and confirm)
-- roles
-- token
+The infrastructure is composed of the databases, and a distributed memory cache to improve performance.
 
-### Reader
+By having only fewer hard dependencies for each service, we can be assured of a higher uptime ratio.
 
-The `reader` service is where most of the run-time compute resources for Arad will be consumed. This service responds
-to requests from everyone, both authenticated and unauthenticated. A `reader` role has been included in the RBAC model
-for completeness but due to the nature of `Reader` access, it will be rarely used.
-
-#### Endpoints
-
-- search
-- analytics aka search/:article_id
-
-### Reviewer
-
-The `reviewer` service will allow `Reviewers` to submit reviews about articles.
-
-#### Endpoints
-
-- review
-
-### Administrator
-
-The `administrator` service will allow `Administrators` to modify information about articles and users.
-
-#### Endpoints
-
-- articles
-- articles/:article_id
-- users
-- users/:user_id
-
-# Infrastructure Layer
-
-The infrastructure is composed of the database, and a distributed memory cache (not pictured) to improve performance.
-
-By having only a single hard dependency, we can be assured of a higher uptime/downtime ratio.
-
-## Database
+### Database
 
 The most useful and understood database type in this scenario is likely a relational database, but we are evaluating
-alternatives. The current developer stack relies on PostgreSQL.
+alternatives. The current implementation relies on PostgreSQL.
 
-## Cache
+### Cache
 
-To allow higher performance we can cache some database objects in memory (particularly, things like refresh tokens
-where only `identity` can access the cache).
+To allow higher performance we can cache some database objects in memory (particularly, things like refresh tokens,
+allowing only `identity` to access the cache).

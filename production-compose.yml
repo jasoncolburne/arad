@@ -1,0 +1,40 @@
+version: "3.9"
+
+x-common-args: &common-args
+  DEPLOYMENT_ENVIRONMENT: production
+
+services:
+  api:
+    build:
+      context: api
+      args: *common-args
+
+  identity:
+    build:
+      context: identity
+      args: *common-args
+
+  reader:
+    build:
+      context: reader
+      args: *common-args
+
+  reviewer:
+    build:
+      context: reviewer
+      args: *common-args
+
+  administrator:
+    build:
+      context: administrator
+      args: *common-args
+
+  core:
+    build:
+      context: core
+      args: *common-args
+
+  front-end:
+    build:
+      context: front-end
+      args: *common-args

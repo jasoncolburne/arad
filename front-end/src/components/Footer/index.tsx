@@ -1,39 +1,50 @@
 import { Link, useNavigate } from "react-router-dom";
-import { User } from "../../datatypes/User";
+import { Api } from "../../api/Api";
+import { LogoutRequest } from "../../api/types/friendly";
+import { emptyState } from "../../datatypes/ApplicationState";
 import { useGlobalState } from "../../GlobalState";
+import { loggedIn } from "../../utility/authorization";
 
 import "./index.css"
 
-const emptyUser: User = {
-  id: '',
-  email: '',
-}
 
 const Footer = () => {
   const { state, setState } = useGlobalState();
   const navigate = useNavigate();
 
-  const loggedIn = state.roles!.length > 0;
-
-  const logoutAction = (event: React.MouseEvent<HTMLAnchorElement>) => {
-    event.preventDefault();
-
-    const newState = { ...state, user: emptyUser, roles: [] };
-    setState(newState);
-
+  const resetStateAndRedirectHome = () => {
+    setState(emptyState);
     navigate("/");
   };
 
-  const logoutLink = <Link onClick={logoutAction} to="/logout">Logout</Link>;
+  const handleErrors = (response: Response) => {
+    if ([401, 403].includes(response.status)) {
+      resetStateAndRedirectHome();
+    } else {
+      // TODO think about this
+      resetStateAndRedirectHome();
+    }
+  };
+
+  const logoutAction = async (event: React.MouseEvent<HTMLAnchorElement>) => {
+    event.preventDefault();
+
+    const request: LogoutRequest = { refresh_token: state.credentials!.refresh_token };
+    await Api().post('identify/logout', null, request, handleErrors);
+
+    resetStateAndRedirectHome();
+  };
+
+  const logoutLink = <Link id='arad-logoutLink' onClick={logoutAction} to="/logout">Logout</Link>;
 
   return (
     <footer>
       <div className="footer">
         <div className="left">
-          <Link to="/code">Accessible Research Article Database</Link>
+          <Link id='arad-codeLink' to="/code">Accessible Research Article Database</Link>
         </div>
         <div className="right">
-          {loggedIn ? logoutLink : null}
+          {loggedIn(state.credentials!) ? logoutLink : null}
         </div>
       </div>
     </footer>

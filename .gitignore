@@ -1,28 +1,45 @@
 # Additional content resides in front-end/.gitignore
 
-node-administrator/common
-node-reviewer/common
-node-reader/common
-node-identity/common
+/administrator/common
+/reviewer/common
+/reader/common
+/identity/common
 
-node-administrator/database
-node-reviewer/database
-node-reader/database
-node-identity/database
+/administrator/database
+/reviewer/database
+/reader/database
 
-node-administrator/Dockerfile
-node-reviewer/Dockerfile
-node-reader/Dockerfile
-node-identity/Dockerfile
+/administrator/Dockerfile
+/reviewer/Dockerfile
+/reader/Dockerfile
+/identity/Dockerfile
 
-node-administrator/.dockerignore
-node-reviewer/.dockerignore
-node-reader/.dockerignore
-node-identity/.dockerignore
+/administrator/.dockerignore
+/reviewer/.dockerignore
+/reader/.dockerignore
+/identity/.dockerignore
 
-node-administrator/alembic.ini
-node-reviewer/alembic.ini
-node-reader/alembic.ini
-node-identity/alembic.ini
+/administrator/mypy.ini
+/reviewer/mypy.ini
+/reader/mypy.ini
+/identity/mypy.ini
+
+/administrator/.pylintrc
+/reviewer/.pylintrc
+/reader/.pylintrc
+/identity/.pylintrc
+
+/administrator/activate
+/reviewer/activate
+/reader/activate
+/identity/activate
+
+/front-end/cypress/screenshots
+/front-end/cypress/videos
+/front-end/cypress/downloads
+
+/.pylintrc
+/mypy.ini
+/.eslintrc
 
 __pycache__

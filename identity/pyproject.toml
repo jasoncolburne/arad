@@ -1,0 +1,37 @@
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry]
+name = "identity"
+version = "0.1.0"
+description = "Identity Service"
+authors = ["Jason Colburne <j.colburne@gmail.com>"]
+
+[tool.poetry.dependencies]
+python = ">=3.10,<3.11"
+fastapi = "*"
+uvicorn = "*"
+gunicorn = "*"
+toml = "*"
+asyncpg = "*"
+sqlmodel = "*"
+python-multipart = "*"
+python-jose = {extras = ["cryptography"], version = "*"}
+passlib = {extras = ["argon2"], version = "*"}
+pydantic = {extras = ["email"], version = "*"}
+aioredis = "*"
+fastapi-utils = "*"
+alembic = "*"
+ipython = "*"
+
+[tool.poetry.group.test.dependencies]
+pytest = "*"
+black = "*"
+pylint = "*"
+mypy = "*"
+asyncpg-stubs = "*"
+pytest-asyncio = "*"
+
+[tool.poetry.scripts]
+start = "common.main:start"

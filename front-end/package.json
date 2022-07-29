@@ -6,14 +6,8 @@
     "@chakra-ui/react": "^2.2.1",
     "@emotion/react": "^11.9.3",
     "@emotion/styled": "^11.9.3",
-    "@testing-library/jest-dom": "^5.16.4",
-    "@testing-library/react": "^13.3.0",
-    "@testing-library/user-event": "^14.2.1",
-    "@types/jest": "^25.2.3",
-    "@types/node": "^12.20.55",
-    "@types/react": "^18.0.15",
-    "@types/react-dom": "^18.0.6",
     "framer-motion": "^6.4.3",
+    "jwt-decode": "^3.1.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-icons": "^3.11.0",
@@ -26,7 +20,9 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "cypress:run": "cypress run",
+    "cypress:ci": "cypress run --config-file ./cypress.config.ci.ts"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -42,5 +38,17 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@testing-library/jest-dom": "^5.16.4",
+    "@testing-library/react": "^13.3.0",
+    "@testing-library/user-event": "^14.2.1",
+    "@types/jest": "^28.1.6",
+    "@types/node": "^18.6.2",
+    "@types/react": "^18.0.15",
+    "@types/react-dom": "^18.0.6",
+    "cypress": "^10.3.1",
+    "eslint-plugin-cypress": "^2.12.1",
+    "openapi-typescript": "^5.4.1"
   }
 }

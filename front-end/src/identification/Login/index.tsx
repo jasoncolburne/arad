@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React from 'react';
 import { useNavigate } from "react-router";
 
 import { Box, Center } from "@chakra-ui/layout";
@@ -6,28 +6,24 @@ import { FormControl, Button } from '@chakra-ui/react';
 import { Input, InputGroup } from "@chakra-ui/input";
 
 import { Api } from "../../api/Api";
-import { ApplicationState } from "../../datatypes/ApplicationState";
-import { useGlobalState } from "../../GlobalState";
+import { LoginRequest, LoginResponse } from "../../api/types/friendly";
+import { stateFromAuthenticationResponseData, useGlobalState } from "../../GlobalState";
+import { loggedIn } from "../../utility/authorization";
 
-interface LoginPayload {
-  email: String;
-  passphrase: String;
-}
 
 const Login = () => {
   const { state, setState } = useGlobalState();
-  const [email, setEmail] = useState('');
-  const [passphrase, setPassphrase] = useState('');
-  const [errorMessage, setErrorMessage] = useState('');
+  const [email, setEmail] = React.useState('');
+  const [passphrase, setPassphrase] = React.useState('');
+  const [errorMessage, setErrorMessage] = React.useState('');
 
   const navigate = useNavigate();
-  const loggedIn = state.roles!.length > 0;
 
-  useEffect(() => {
-    if (loggedIn) {
+  React.useEffect(() => {
+    if (loggedIn(state.credentials!)) {
       navigate("/");
     }
-  }, [loggedIn, navigate])
+  }, [state.credentials, navigate])
 
   const handleErrors = (response: Response) => {
     if ([401, 403].includes(response.status)) {
@@ -42,9 +38,9 @@ const Login = () => {
     if ([email, passphrase].includes('')) {
       setErrorMessage('cannot be blank');
     } else {
-      const payload: LoginPayload = { email, passphrase };
-      const response: ApplicationState = await Api().post('identify/login', null, payload, handleErrors);
-      const newState: ApplicationState = { ...state, ...response };
+      const request: LoginRequest = { email, passphrase };
+      const response: LoginResponse = await Api().post('identify/login', null, request, handleErrors);
+      const newState = stateFromAuthenticationResponseData(response);
       setState(newState);
     }
   }
@@ -57,7 +53,7 @@ const Login = () => {
             email
             <InputGroup size='2xl'>
               <Input
-                id='email'
+                id='login-email'
                 type='email'
                 borderRadius="lg"
                 paddingLeft="4px"
@@ -69,7 +65,7 @@ const Login = () => {
             passphrase
             <InputGroup size='2xl'>
               <Input
-                id='passphrase'
+                id='login-passphrase'
                 type='password'
                 borderRadius="lg"
                 paddingLeft="4px"
@@ -80,6 +76,7 @@ const Login = () => {
             </InputGroup>
           </FormControl>
           <Button
+            id='login-submit'
             width="full"
             type="submit"
             size="2xl"  // should try and override Button to add 2xl, removing padding

@@ -1,15 +1,23 @@
 version: "3.9"
 
-x-common-environment: &common-environment
-  DATABASE_URL: postgresql+asyncpg://postgres:postgres@database:5432/arad
+x-common-args: &common-args
+  DEPLOYMENT_ENVIRONMENT: development
 
-x-node-healthcheck: &node-healthcheck
-  test: ["CMD-SHELL", "curl http://localhost:8000/health > /dev/null"]
+x-common-environment: &common-environment
+  ACCESS_TOKEN_PUBLIC_KEY_PEM: |
+    -----BEGIN PUBLIC KEY-----
+    MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEnoH4lyjW4T0uUFbAYRL1G/3dxF1M
+    kak4CYTwDU8lSubpkIKXFqo7KtsWIycbTKbfLm2IdwNXDOO346u4OhCaBg==
+    -----END PUBLIC KEY-----
+  DATABASE_URL: postgresql+asyncpg://arad_application:arad_application@database:5432/arad_application
+
+x-healthcheck: &healthcheck
+  test: ["CMD-SHELL", "curl http://localhost/health > /dev/null"]
   interval: 5s
   timeout: 5s
   retries: 5
 
-x-node-database-dependency: &node-database-dependency
+x-database-dependency: &database-dependency
   database:
     condition: service_healthy
 
@@ -19,68 +27,108 @@ services:
     volumes:
       - './front-end:/app'
     depends_on:
-      - node-api
+      api:
+        condition: service_healthy
     ports:
       - "3000:3000" # for websockets
       - "80:3000"
 
-  node-api:
-    build: node-api
+  api:
+    build:
+      context: api
+      args: *common-args
     depends_on:
-      node-identity:
+      identity:
         condition: service_healthy
-      node-reader:
+      reader:
         condition: service_healthy
-      node-reviewer:
+      reviewer:
         condition: service_healthy
-      node-administrator:
+      administrator:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl http://localhost/health > /dev/null"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
     ports:
       - "81:80" # this is how the front end talks to the api. port 80 is taken atm.
 
-  node-identity:
-    build: node-identity
+  identity:
+    build:
+      context: identity
+      args: *common-args
     restart: always
-    environment: *common-environment
+    environment:
+      <<: *common-environment
+      DATABASE_URL: postgresql+asyncpg://arad_user:arad_user@database:5432/arad_user
+      CACHE_URL: redis://cache:6379/0
+      DEFAULT_ADMIN_EMAIL: admin@domain.org
+      ACCESS_TOKEN_PRIVATE_KEY_PEM: |
+        -----BEGIN EC PRIVATE KEY-----
+        MHcCAQEEIPDn6E30e3lwXXnW1GyYYH942x0OiU/lRhYKYh9IJReaoAoGCCqGSM49
+        AwEHoUQDQgAEnoH4lyjW4T0uUFbAYRL1G/3dxF1Mkak4CYTwDU8lSubpkIKXFqo7
+        KtsWIycbTKbfLm2IdwNXDOO346u4OhCaBg==
+        -----END EC PRIVATE KEY-----
     volumes:
-      - './node-identity:/app'
-    depends_on: *node-database-dependency
-    healthcheck: *node-healthcheck
+      - './identity:/app'
+    depends_on:
+      <<: *database-dependency
+      cache:
+        condition: service_healthy
+    healthcheck: *healthcheck
     ports:
-      - "8003:8000" # for docs
+      - "8003:80" # for docs
 
-  node-reader:
-    build: node-reader
+  reader:
+    build:
+      context: reader
+      args: *common-args
     restart: always
     environment: *common-environment
     volumes:
-      - './node-reader:/app'
-    depends_on: *node-database-dependency
-    healthcheck: *node-healthcheck
+      - './reader:/app'
+    depends_on: *database-dependency
+    healthcheck: *healthcheck
     ports:
-      - "8002:8000" # for docs
+      - "8002:80" # for docs
 
-  node-reviewer:
-    build: node-reviewer
+  reviewer:
+    build:
+      context: reviewer
+      args: *common-args
     restart: always
     environment: *common-environment
     volumes:
-      - './node-reviewer:/app'
-    depends_on: *node-database-dependency
-    healthcheck: *node-healthcheck
+      - './reviewer:/app'
+    depends_on: *database-dependency
+    healthcheck: *healthcheck
     ports:
-      - "8001:8000" # for docs
+      - "8001:80" # for docs
 
-  node-administrator:
-    build: node-administrator
+  administrator:
+    build:
+      context: administrator
+      args: *common-args
     restart: always
     environment: *common-environment
     volumes:
-      - './node-administrator:/app'
-    depends_on: *node-database-dependency
-    healthcheck: *node-healthcheck
+      - './administrator:/app'
+    depends_on: *database-dependency
+    healthcheck: *healthcheck
     ports:
-      - "8000:8000" # for docs
+      - "8000:80" # for docs
+
+  cache:
+    image: "redis:bullseye"
+    restart: always
+    volumes:
+      - 'cache:/bitnami/redis/data'
+    healthcheck:
+      test: [ "CMD", "redis-cli", "--raw", "incr", "ping" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   database:
     image: "postgres:bullseye"
@@ -96,4 +144,5 @@ services:
       retries: 5
 
 volumes:
+  cache:
   database:

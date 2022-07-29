@@ -1,0 +1,147 @@
+#!/usr/bin/env bash
+
+set -eo pipefail
+
+BACKENDS=(administrator reviewer reader identity)
+ACTIVATE_SCRIPT=". \$(./activate)"
+
+stack_up() {
+  docker compose up --remove-orphans
+}
+
+stack_daemonize() {
+  docker compose up -d --remove-orphans
+}
+
+stack_down() {
+  docker compose down
+}
+
+stack_build() {
+  echo
+  echo "bringing down running instances..."
+  echo
+  docker compose down
+
+  echo
+  echo "syncing code..."
+  echo
+  scripts/sync
+
+  echo
+  echo "building from compose..."
+  echo
+  docker compose build
+
+  echo
+  echo "building snowflake core testing image..."
+  echo
+  docker build --build-arg DEPLOYMENT_ENVIRONMENT=development -f core/Dockerfile -t arad_core-test core
+
+  echo
+  echo "copying node_modules to host (this takes a bit)..."
+  echo
+  # this is required since we mount the volume in the same directory, meaning that the node_modules
+  # directory on the container would be erased when it launched if we didn't do this
+  rm -rf front-end/node_modules
+  CONTAINER_ID=$(docker run --rm -d arad_front-end sleep 600)
+  docker cp $CONTAINER_ID:/app/node_modules front-end
+  docker kill $CONTAINER_ID
+}
+
+poetry_relock() {
+  for BACKEND in "${BACKENDS[@]}"; do
+    docker compose run --rm $BACKEND bash -c "rm -f poetry.lock && poetry lock -vv"
+  done
+}
+
+be_exec() {
+  local ARGUMENTS=$1
+
+  for BACKEND in "${BACKENDS[@]}"; do
+    docker compose run --rm $BACKEND bash -c "${ARGUMENTS}"
+  done
+}
+
+types() {
+  docker compose run --rm front-end ./build_types
+}
+
+nuke() {
+  ./local down
+  ./sync
+  ./local build
+  ./database drop || true
+  ./database create
+  ./database migrate
+
+  echo
+  echo "Arad database wiped. Set or use the configured DEFAULT_ADMIN_EMAIL to create an admin account."
+  echo "In production, DEFAULT_ADMIN_EMAIL should be unset after it is used."
+}
+
+docker_image_prune() {
+  # prune dangling images
+  docker image prune -f
+}
+
+docker_compose_rm() {
+  # remove one off containers
+  docker compose rm
+}
+
+shell() {
+  local SERVICE=$1
+
+  docker compose run --rm -it "${SERVICE}" bash
+}
+
+repl() {
+  local SERVICE=$1
+
+  set +e
+  read -r -d '' SHELL_SCRIPT << EOS
+${ACTIVATE_SCRIPT}
+PYTHONSTARTUP=${SERVICE}/repl.py ipython
+EOS
+  set -e
+
+  docker compose run --rm -it "${SERVICE}" bash -c "${SHELL_SCRIPT}"
+}
+
+# we can probably do the rest in a single line by eval or something
+execute() {
+  local COMMAND=$1
+  local ARGUMENTS=$(echo $2 | sed "s/^ *//" | sed "s/ *\$//")
+
+  if [[ "${COMMAND}" == "up" ]]; then
+    stack_up
+  elif [[ "${COMMAND}" == "daemonize" ]]; then
+    stack_daemonize
+  elif [[ "${COMMAND}" == "down" ]]; then
+    stack_down
+  elif [[ "${COMMAND}" == "build" ]]; then
+    stack_build
+  elif [[ "${COMMAND}" == "relock" ]]; then
+    poetry_relock
+  elif [[ "${COMMAND}" == "exec" ]]; then
+    be_exec "${ARGUMENTS}"
+  elif [[ "${COMMAND}" == "prune" ]]; then
+    docker_image_prune
+  elif [[ "${COMMAND}" == "rm" ]]; then
+    docker_compose_rm
+  elif [[ "${COMMAND}" == "types" ]]; then
+    types
+  elif [[ "${COMMAND}" == "nuke" ]]; then
+    nuke
+  elif [[ "${COMMAND}" == "shell" ]]; then
+    shell "${ARGUMENTS}"
+  elif [[ "${COMMAND}" == "repl" ]]; then
+    repl "${ARGUMENTS}"
+  else
+    echo "unknown command ${COMMAND}"
+    exit 1
+  fi
+}
+
+execute "$1" "$2 $3 $4 $5 $6 $7 $8 $9"

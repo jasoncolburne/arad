@@ -1,0 +1,151 @@
+#!/usr/bin/env bash
+
+set -eo pipefail
+
+BACKENDS=(administrator reviewer reader identity core)
+ACTIVATE_SCRIPT=". \$(./activate)"
+
+# core meaning the directory, arad/core. it's harder to test this code as we aren't deploying an image of it
+core_command() {
+  local COMMAND_STRING=$1
+
+  set +e
+  read -r -d '' SHELL_SCRIPT << EOS
+${ACTIVATE_SCRIPT}
+${COMMAND_STRING}
+EOS
+  read -r -d '' ACCESS_TOKEN_PUBLIC_KEY_PEM << EOV
+-----BEGIN PUBLIC KEY-----
+MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEnoH4lyjW4T0uUFbAYRL1G/3dxF1M
+kak4CYTwDU8lSubpkIKXFqo7KtsWIycbTKbfLm2IdwNXDOO346u4OhCaBg==
+-----END PUBLIC KEY-----
+EOV
+  set -e
+  export ACCESS_TOKEN_PUBLIC_KEY_PEM
+
+  docker run --rm -v "$(pwd)/core:/app" -e ACCESS_TOKEN_PUBLIC_KEY_PEM arad_core-test bash -c "${SHELL_SCRIPT}"
+}
+
+simple_compose_command() {
+  local SERVICE=$1
+  local COMMAND_STRING=$2
+
+  if [[ "${SERVICE}" == "core" ]]
+  then
+    # I really hate this
+    mv core/{_,}database || true
+    core_command "${COMMAND_STRING}"
+    mv core/{,_}database || true
+  else
+    set +e
+    read -r -d '' SHELL_SCRIPT << EOS
+${ACTIVATE_SCRIPT}
+${COMMAND_STRING}
+EOS
+    set -e
+
+    docker compose run --rm "${SERVICE}" bash -c "${SHELL_SCRIPT}"
+  fi
+}
+
+pytest() {
+  simple_compose_command $1 "pytest ."
+}
+
+black() {
+  simple_compose_command $1 "black ."
+}
+
+pylint() {
+  simple_compose_command $1 "find . -maxdepth 1 -type d -not -name '.*' | xargs pylint"
+}
+
+mypy() {
+  simple_compose_command $1 "mypy --install-types --non-interactive ."
+}
+
+e2e() {
+  unset ACTIVATE_SCRIPT
+  ./scripts/local daemonize
+  simple_compose_command front-end "yarn cypress:run"
+}
+
+all() {
+  # sync first so that common changes don't get blown away during this process
+  echo "syncing code"
+  echo
+
+  ./scripts/sync
+
+  echo
+  echo "running black on all services"
+  echo
+
+  for BACKEND in "${BACKENDS[@]}"; do
+    ./scripts/test black "${BACKEND}"
+  done
+
+  echo
+  echo "moving black changes back into common..."
+  echo
+  mv administrator/{,_}database
+  rsync -v -r -d administrator/_database core
+  rsync -v -r -d identity/common core
+  mv administrator/{_,}database
+  
+  echo
+  echo "re-syncing"
+  echo
+  ./scripts/sync
+
+  echo
+  echo "running pylint on all services"
+  echo
+  for BACKEND in "${BACKENDS[@]}"; do
+    ./scripts/test pylint "${BACKEND}"
+  done
+
+  echo
+  echo "running mypy on all services"
+  echo
+  for BACKEND in "${BACKENDS[@]}"; do
+    ./scripts/test mypy "${BACKEND}"
+  done
+
+  echo
+  echo "running pytest on all services"
+  echo
+  for BACKEND in "${BACKENDS[@]}"; do
+    ./scripts/test pytest "${BACKEND}"
+  done
+
+  echo
+  echo "all tests passed!"
+}
+
+# we can probably do the rest in a single line by eval or something
+execute() {
+  local COMMAND=$1
+  local ARGUMENTS=$(echo $2 | sed "s/^ *//" | sed "s/ *\$//")
+
+  if [[ "${COMMAND}" == "behave" ]]; then
+    behave "${ARGUMENTS}"
+  elif [[ "${COMMAND}" == "pytest" ]]; then
+    pytest "${ARGUMENTS}"
+  elif [[ "${COMMAND}" == "black" ]]; then
+    black "${ARGUMENTS}"
+  elif [[ "${COMMAND}" == "pylint" ]]; then
+    pylint "${ARGUMENTS}"
+  elif [[ "${COMMAND}" == "mypy" ]]; then
+    mypy "${ARGUMENTS}"
+  elif [[ "${COMMAND}" == "e2e" ]]; then
+    e2e
+  elif [[ "${COMMAND}" == "all" ]]; then
+    all
+  else
+    echo "unknown command ${COMMAND}"
+    exit 1
+  fi
+}
+
+execute "$1" "$2 $3 $4 $5 $6 $7 $8 $9"

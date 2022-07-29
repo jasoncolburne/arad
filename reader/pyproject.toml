@@ -1,0 +1,32 @@
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry]
+name = "reader"
+version = "0.1.0"
+description = "Reader Service"
+authors = ["Jason Colburne <j.colburne@gmail.com>"]
+
+[tool.poetry.dependencies]
+python = ">=3.10,<3.11"
+fastapi = "*"
+uvicorn = "*"
+gunicorn = "*"
+toml = "*"
+asyncpg = "*"
+sqlmodel = "*"
+pydantic = {extras = ["email"], version = "*"}
+fastapi-utils = "*"
+ipython = "*"
+
+[tool.poetry.group.test.dependencies]
+pytest = "*"
+black = "*"
+pylint = "*"
+mypy = "*"
+asyncpg-stubs = "*"
+pytest-asyncio = "*"
+
+[tool.poetry.scripts]
+start = "common.main:start"
