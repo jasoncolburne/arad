@@ -11,3 +11,6 @@ for motivation behind this directory.
 - [003: Provide Mechanism to Invalidate Refresh Token](./003-invalidate-refresh-token.md)
 - [004: fastapi/sqlmodel/asyncpg/aioredis for Back-end Stack](./004-stack-for-backend-services.md)
 - [005: Comment Table to Establish Sentiment Metric](./005-use-comment-table.md)
+- [006: Isolate User Data in Identity](./006-isolate-user-data-in-identity.md)
+- [007: Employ End-to-End Testing](./007-employ-end-to-end-testing.md)
+- [008: Read-Only Access for Reader Service](./008-read-only-access-for-reader.md)
