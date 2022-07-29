@@ -62,7 +62,7 @@ const Login = () => {
                 onChange={(event) => { setEmail(event.target.value) }}
               />
             </InputGroup>
-            passphrase
+            password
             <InputGroup size='2xl'>
               <Input
                 id='login-passphrase'

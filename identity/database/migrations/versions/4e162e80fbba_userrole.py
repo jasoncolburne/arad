@@ -1,3 +1,5 @@
+# pylint: disable=no-member,invalid-name,unused-import
+
 """UserRole
 
 Revision ID: 4e162e80fbba

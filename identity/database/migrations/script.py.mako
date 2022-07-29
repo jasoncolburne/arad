@@ -1,3 +1,5 @@
+# pylint: disable=no-member,invalid-name,unused-import
+
 """${message}
 
 Revision ID: ${up_revision}

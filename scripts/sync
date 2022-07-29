@@ -21,8 +21,6 @@ do
   done
 done
 
-mv core/{_,}database
-
 # These three services share a data model, but identity has its own.
 BACKENDS=(reader reviewer administrator)
 DIRECTORIES=(database)
@@ -36,8 +34,6 @@ do
     rsync -v -r -d --delete --delete-excluded core/${DIRECTORY} ${TARGET}
   done
 done
-
-mv core/{,_}database
 
 # reader is unauthenticated
 echo

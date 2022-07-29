@@ -1,4 +1,4 @@
-/// <reference types="../cypress" />
+/// <reference types="cypress" />
 
 const register = (email: string, passphrase: string, verification: string | null = null): Cypress.Chainable<JQuery<HTMLElement>> => {
   return cy.get('#arad-registerLink').should('be.visible').click()

@@ -38,8 +38,6 @@
 /front-end/cypress/videos
 /front-end/cypress/downloads
 
-/.pylintrc
-/mypy.ini
-/.eslintrc
+/.vscode
 
 __pycache__

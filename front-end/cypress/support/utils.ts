@@ -3,4 +3,9 @@ const randomEmail = (prefix: string = 'user', domain: string = 'domain.org') => 
     return `${prefix}+${randomId}@${domain}`;
 };
 
-export { randomEmail };
+const administratorCredentials = {
+    email: 'admin@domain.org',
+    passphrase: 'admin_passphrase'
+}
+
+export { randomEmail, administratorCredentials };

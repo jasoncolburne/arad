@@ -1,5 +1,5 @@
+import React from "react";
 import { Box, Center } from "@chakra-ui/layout";
-import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { Api } from "../../api/Api";
@@ -12,21 +12,24 @@ import { UserList } from "./components/UserList";
 
 const Users = () => {
   const { state, setState } = useGlobalState();
-  const [users, setUsers] = useState<User[]>([]);
-  const [roles, setRoles] = useState<Role[]>([]);
-  const [errorMessage, setErrorMessage] = useState('');
+  const [users, setUsers] = React.useState<User[]>([]);
+  const [roles, setRoles] = React.useState<Role[]>([]);
+  const [errorMessage, setErrorMessage] = React.useState('');
   // TODO: remove this disable once we are using pagination on the front end
   // eslint-disable-next-line
-  const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [filterText, setFilterText] = useState('');
-  const [fetchingAccessToken, setFetchingAccessToken] = useState(false);
+  const [page, setPage] = React.useState(1);
+  const [totalPages, setTotalPages] = React.useState(1);
+  const [filterText, setFilterText] = React.useState('');
+  const [fetchingAccessToken, setFetchingAccessToken] = React.useState(false);
   const navigate = useNavigate();
 
-  const authorized = loggedIn(state.credentials!) && isAdministrator(state.user!.roles);
+  const authorized = state.credentials &&
+                     state.user &&
+                     loggedIn(state.credentials) && 
+                     isAdministrator(state.user.roles);
   const accessTokenValid = authorized && jwtValid(state.credentials!.access_tokens.administrator);
 
-  useEffect(() => {
+  React.useEffect(() => {
     const handleAccessErrors = (response: Response) => {
       if ([401, 403].includes(response.status)) {
         setState(emptyState);
@@ -58,7 +61,7 @@ const Users = () => {
     navigate,
   ]);
 
-  useEffect(() => {
+  React.useEffect(() => {
     const handleErrors = (response: Response) => {
       if ([401, 403].includes(response.status)) {
         const newState = modifyAccessToken(state, Roles.Administrator, '');
@@ -88,7 +91,7 @@ const Users = () => {
     setState,
   ]);
 
-  useEffect(() => {
+  React.useEffect(() => {
     const handleErrors = (response: Response) => {
       if ([401, 403].includes(response.status)) {
         const newState = modifyAccessToken(state, Roles.Administrator, '');
