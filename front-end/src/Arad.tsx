@@ -18,7 +18,7 @@ const Arad = () => {
       <ChakraProvider theme={theme}>
         <Box className="arad">
           <Header />
-          <Box className="content">
+          <Box className="content" overflowY="auto">
             <Outlet />
           </Box>
           <Footer />

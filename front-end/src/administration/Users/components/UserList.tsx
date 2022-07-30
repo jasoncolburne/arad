@@ -1,9 +1,9 @@
 import React from "react";
 import { Input, Table, Tbody, Td, Tr } from '@chakra-ui/react';
+
 import { Role, User } from '../../../api/types/friendly';
 
 import { UserListRow } from "./UserListRow";
-
 import { Paginator } from '../../../components/Paginator';
 
 interface UserListProps {

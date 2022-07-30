@@ -23,6 +23,19 @@ describe('registration', () => {
           .pathShouldEqual('/register');
     });
 
+    it('fails if email already registered', () => {
+      const email = randomEmail();
+      const passphrase = 'passphrase';
+
+      // TODO fix error messaging
+      cy.register(email, passphrase)
+        .logout()
+        .register(email, passphrase)
+        .get('#register-errorMessage').contains('please enter a valid email address')
+        .refreshToken().should('be.empty')
+        .pathShouldEqual('/register');
+    });
+
     it('redirects when logged in', () => {
         const email = randomEmail();
         const passphrase = 'passphrase';

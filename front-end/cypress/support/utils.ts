@@ -1,6 +1,7 @@
+import { v4 as uuidv4 } from 'uuid';
+
 const randomEmail = (prefix: string = 'user', domain: string = 'domain.org') => {
-    const randomId = Math.ceil(Math.random() * 1000000);
-    return `${prefix}+${randomId}@${domain}`;
+    return `${prefix}+${uuidv4()}@${domain}`;
 };
 
 const administratorCredentials = {

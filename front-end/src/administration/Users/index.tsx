@@ -140,8 +140,8 @@ const Users = () => {
 
   if (authorized && errorMessage === '') {
       return (
-      <Center h="100%">
-        <Box w="container.lg">
+      <Center>
+        <Box w="container.xlg" h="100%">
           <UserList
             users={users}
             roles={roles}
