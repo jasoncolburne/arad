@@ -1,11 +1,11 @@
+import React from "react";
+
 const Article = () => {
   return (
     <div className="Article">
-      <p>
-        Article
-      </p>
+      <p>Article</p>
     </div>
   );
-}
+};
 
 export { Article };

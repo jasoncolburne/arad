@@ -8,14 +8,14 @@
   background-color: black;
 }
 
-.header>.right {
+.header > .right {
   float: right;
   flex: 1;
   text-align: right;
   padding: 3mm;
 }
 
-.header>.left {
+.header > .left {
   float: left;
   flex: 1;
   padding: 3mm;

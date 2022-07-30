@@ -18,7 +18,6 @@ x-black-steps: &black-steps
       command: |
         cd /app
         . $(./activate)
-        [ -d database ] || mv {_,}database
         black --check .
 
 x-pytest-steps: &pytest-steps
@@ -28,7 +27,6 @@ x-pytest-steps: &pytest-steps
       command: |
         cd /app
         . $(./activate)
-        [ -d database ] || mv {_,}database
         pytest .
 
 x-pylint-steps: &pylint-steps
@@ -38,7 +36,6 @@ x-pylint-steps: &pylint-steps
       command: |
         cd /app
         . $(./activate)
-        [ -d database ] || mv {_,}database
         find . -maxdepth 1 -type d -not -name '.*' | xargs pylint
 
 x-mypy-steps: &mypy-steps
@@ -48,7 +45,6 @@ x-mypy-steps: &mypy-steps
       command: |
         cd /app
         . $(./activate)
-        [ -d database ] || mv {_,}database
         mypy --install-types --non-interactive .
 
 
@@ -77,13 +73,13 @@ jobs:
       - run:
           name: Tag images
           command: |
-            IMAGES=(api identity reader reviewer administrator core front-end)
+            IMAGES=(front-end identity reader reviewer administrator core api)
             for IMAGE in "${IMAGES[@]}"; do
-              HASH_TAG="${IMAGE}-${CIRCLE_BRANCH}-$(git rev-parse --short HEAD)"
               LATEST_TAG="${IMAGE}-${CIRCLE_BRANCH}-latest"
+              HASH_TAG="${IMAGE}-${CIRCLE_BRANCH}-$(git rev-parse --short HEAD)"
 
-              docker tag "project_${IMAGE}:latest" "${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:${HASH_TAG}"
               docker tag "project_${IMAGE}:latest" "${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:${LATEST_TAG}"
+              docker tag "project_${IMAGE}:latest" "${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:${HASH_TAG}"
             done
       - run:
           name: Login to DockerHub
@@ -91,13 +87,13 @@ jobs:
       - run:
           name: Push images
           command: |
-            IMAGES=(api identity reader reviewer administrator core front-end)
+            IMAGES=(front-end identity reader reviewer administrator core api)
             for IMAGE in "${IMAGES[@]}"; do
-              HASH_TAG="${IMAGE}-${CIRCLE_BRANCH}-$(git rev-parse --short HEAD)"
               LATEST_TAG="${IMAGE}-${CIRCLE_BRANCH}-latest"
+              HASH_TAG="${IMAGE}-${CIRCLE_BRANCH}-$(git rev-parse --short HEAD)"
 
-              docker push "${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:${HASH_TAG}" --quiet
               docker push "${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:${LATEST_TAG}" --quiet
+              docker push "${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:${HASH_TAG}" --quiet
             done
 
   end-to-end:
@@ -114,7 +110,7 @@ jobs:
           command: sudo apt-get update
       - run:
           name: Install dependencies
-          command: sudo apt-get -y install rsync
+          command: sudo apt-get -y install rsync git
       - run:
           name: Sync common code
           command: ./scripts/sync
@@ -134,8 +130,8 @@ jobs:
           name: End to End Tests
           command: |
             docker compose -f ci-compose.yml up -d
-            echo "waiting 30 seconds for front-end..."
-            sleep 30
+            echo "waiting 45 seconds for front-end..."
+            sleep 45
             docker compose -f ci-compose.yml run --rm front-end bash -c "yarn cypress:ci"
 
   black-identity:
@@ -292,6 +288,43 @@ jobs:
         auth: *docker-auth
     steps: *mypy-steps
 
+  eslint-front-end:
+    resource_class: small
+    docker:
+      - image: ${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:front-end-${CIRCLE_BRANCH}-latest
+        auth: *docker-auth
+    steps:
+      - run:
+          name: Eslint
+          command: |
+            cd /app
+            yarn run eslint --max-warnings=0 .
+
+  prettier-front-end:
+    resource_class: small
+    docker:
+      - image: ${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:front-end-${CIRCLE_BRANCH}-latest
+        auth: *docker-auth
+    steps:
+      - run:
+          name: Prettier
+          command: |
+            cd /app
+            yarn run prettier --check src
+
+  typecheck-front-end:
+    resource_class: small
+    docker:
+      - image: ${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:front-end-${CIRCLE_BRANCH}-latest
+        auth: *docker-auth
+    steps:
+      - run:
+          name: Typecheck
+          command: |
+            cd /app
+            yarn run tsc --strict
+
+
 
 workflows:
   everything:
@@ -362,5 +395,14 @@ workflows:
           requires:
             - build-images
       - mypy-core:
+          requires:
+            - build-images
+      - typecheck-front-end:
+          requires:
+            - build-images
+      - eslint-front-end:
+          requires:
+            - build-images
+      - prettier-front-end:
           requires:
             - build-images
