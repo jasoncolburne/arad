@@ -77,10 +77,17 @@ const pathShouldNotEqual = (path: string): Cypress.Chainable<string> => {
   return cy.location('pathname').should('not.equal', path);
 };
 
+const applicationState = (): Cypress.Chainable<ApplicationState> => {
+  return cy.wrap(getState());
+}
+
 const refreshToken = (): Cypress.Chainable<string> => {
-  const state = getState();
-  return cy.wrap(state.credentials.refresh_token);
+  return cy.applicationState().its('credentials.refresh_token');
 };
+
+const accessToken = (scope: Role): Cypress.Chainable<string> => {
+  return cy.applicationState().its(`credentials.access_tokens.${scope.toLowerCase()}`);
+}
 
 declare namespace Cypress {
   interface Chainable<Subject> {
@@ -117,11 +124,23 @@ declare namespace Cypress {
     pathShouldNotEqual: typeof pathShouldNotEqual;
 
     /**
-     * Ensure the path is as expected, and not the given value
+     * The current application state, read from local storage
+     * @example
+     * cy.applicationState().its('user.email').should('equal', email);
+     */
+    applicationState: typeof applicationState;
+     /**
+     * The current refreshToken
      * @example
      * cy.refreshToken().should('be.not.empty');
      */
     refreshToken: typeof refreshToken;
+    /**
+     * A current access token
+     * @example
+     * cy.accessToken('ADMINISTRATOR').should('be.not.empty');
+     */
+    accessToken: typeof accessToken;
   }
 };
 
@@ -134,6 +153,8 @@ Cypress.Commands.addAll(
     pathShouldEqual,
     pathShouldNotEqual,
 
-    refreshToken
+    applicationState,
+    refreshToken,
+    accessToken
   }
 );

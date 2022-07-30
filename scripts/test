@@ -62,12 +62,16 @@ mypy() {
 }
 
 e2e() {
-  unset ACTIVATE_SCRIPT
   ./scripts/local nuke
   ./scripts/local down
   ./scripts/local daemonize
   echo "pausing for 45 seconds to let front end spin up"
   sleep 45
+  ./scripts/test fast-e2e
+}
+
+fast_e2e() {
+  unset ACTIVATE_SCRIPT
   simple_compose_command front-end "yarn cypress:run"
 }
 
@@ -139,6 +143,8 @@ execute() {
     mypy "${ARGUMENTS}"
   elif [[ "${COMMAND}" == "e2e" ]]; then
     e2e
+  elif [[ "${COMMAND}" == "fast-e2e" ]]; then
+    fast_e2e
   elif [[ "${COMMAND}" == "all" ]]; then
     all
   else

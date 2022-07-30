@@ -8,6 +8,7 @@ import { emptyState } from "../../datatypes/ApplicationState";
 import { useGlobalState, modifyAccessToken } from "../../GlobalState";
 import { isAdministrator, jwtValid, loggedIn } from "../../utility/authorization";
 import { UserList } from "./components/UserList";
+import { Spinner } from "@chakra-ui/react";
 
 
 const Users = () => {
@@ -138,7 +139,7 @@ const Users = () => {
     setState,
   ]);
 
-  if (authorized && errorMessage === '') {
+  if (authorized && errorMessage === '' && usersFetched && rolesFetched) {
       return (
       <Center>
         <Box w="container.xlg" h="100%">
@@ -153,9 +154,15 @@ const Users = () => {
         </Box>
       </Center>
     );
+  } if (authorized && errorMessage === '') {
+    return (
+      <Center h="100%">
+        <Spinner id='users-loadingSpinner' />
+      </Center>
+    );
   } else {
     return (
-      <Center h="100%">{errorMessage === '' ? 'not authorized' : errorMessage}</Center>
+      <Center id='users-errorMessage' h="100%">{errorMessage === '' ? 'not authorized' : errorMessage}</Center>
     )
   }
 }

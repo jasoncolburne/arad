@@ -50,7 +50,8 @@ describe('registration', () => {
         const { email, passphrase } = administratorCredentials;
 
         cy.register(email, passphrase)
-          .get('#arad-usersLink').should('be.visible');
+          .get('#arad-usersLink').should('be.visible')
+          .accessToken('ADMINISTRATOR').should('be.not.empty');
     });
 
     it('for user email, does not grant administrator privleges', () => {
@@ -58,6 +59,7 @@ describe('registration', () => {
       const passphrase = 'passphrase';
 
       cy.register(email, passphrase)
-        .get('#arad-usersLink').should('not.exist');
+        .get('#arad-usersLink').should('not.exist')
+        .accessToken('ADMINISTRATOR').should('be.empty');
     });
 });
