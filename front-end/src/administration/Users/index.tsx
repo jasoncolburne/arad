@@ -57,6 +57,7 @@ const Users = () => {
       setFetchingAccessToken(true);
       fetchAccessToken(request);
     }
+  // eslint-disable-next-line
   }, [
     authorized,
     accessTokenValid,
@@ -98,6 +99,7 @@ const Users = () => {
       setFetchingUsers(true);
       fetchUsers(request, state.credentials!.access_tokens.administrator);
     }
+  // eslint-disable-next-line
   }, [
     page,
     filterText,
@@ -134,6 +136,7 @@ const Users = () => {
       setFetchingRoles(true);
       fetchRoles(state.credentials!.access_tokens.administrator);
     }
+  // eslint-disable-next-line
   }, [
     accessTokenValid,
     setState,
