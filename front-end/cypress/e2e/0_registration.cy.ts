@@ -27,10 +27,19 @@ describe("registration", () => {
     const email = randomEmail();
     const passphrase = "passphrase";
 
-    // TODO fix error messaging
     cy.register(email, passphrase)
       .logout()
       .register(email, passphrase)
+      .get("#register-errorMessage").contains("email address unavailable")
+      .refreshToken().should("be.empty")
+      .pathShouldEqual("/register");
+  });
+
+  it("fails if email address not an email address", () => {
+    const email = 'invalid_email_address';
+    const passphrase = "passphrase";
+
+    cy.register(email, passphrase)
       .get("#register-errorMessage").contains("email address unavailable")
       .refreshToken().should("be.empty")
       .pathShouldEqual("/register");
