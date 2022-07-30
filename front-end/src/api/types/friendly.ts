@@ -5,7 +5,7 @@ export type Role = identify["schemas"]["Role"];
 
 // these is fragile. if we ever update the back-end, we must adjust here
 export enum Roles {
-  Administrator = 'ADMINISTRATOR',
+  Administrator = "ADMINISTRATOR",
   Reviewer = "REVIEWER",
   Reader = "READER",
 }

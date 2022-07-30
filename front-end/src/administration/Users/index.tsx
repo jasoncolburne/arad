@@ -124,6 +124,7 @@ const Users = () => {
       setFetchingUsers(true);
       fetchUsers(request, state.credentials!.access_tokens.administrator);
     }
+    // eslint-disable-next-line
   }, [page, filterText, accessTokenValid, setState]);
 
   React.useEffect(() => {
