@@ -77,13 +77,13 @@ jobs:
       - run:
           name: Tag images
           command: |
-            IMAGES=(api identity reader reviewer administrator core front-end)
+            IMAGES=(front-end identity reader reviewer administrator core api)
             for IMAGE in "${IMAGES[@]}"; do
-              HASH_TAG="${IMAGE}-${CIRCLE_BRANCH}-$(git rev-parse --short HEAD)"
               LATEST_TAG="${IMAGE}-${CIRCLE_BRANCH}-latest"
+              HASH_TAG="${IMAGE}-${CIRCLE_BRANCH}-$(git rev-parse --short HEAD)"
 
-              docker tag "project_${IMAGE}:latest" "${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:${HASH_TAG}"
               docker tag "project_${IMAGE}:latest" "${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:${LATEST_TAG}"
+              docker tag "project_${IMAGE}:latest" "${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:${HASH_TAG}"
             done
       - run:
           name: Login to DockerHub
@@ -91,13 +91,13 @@ jobs:
       - run:
           name: Push images
           command: |
-            IMAGES=(api identity reader reviewer administrator core front-end)
+            IMAGES=(front-end identity reader reviewer administrator core api)
             for IMAGE in "${IMAGES[@]}"; do
-              HASH_TAG="${IMAGE}-${CIRCLE_BRANCH}-$(git rev-parse --short HEAD)"
               LATEST_TAG="${IMAGE}-${CIRCLE_BRANCH}-latest"
+              HASH_TAG="${IMAGE}-${CIRCLE_BRANCH}-$(git rev-parse --short HEAD)"
 
-              docker push "${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:${HASH_TAG}" --quiet
               docker push "${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:${LATEST_TAG}" --quiet
+              docker push "${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:${HASH_TAG}" --quiet
             done
 
   end-to-end:
@@ -114,7 +114,7 @@ jobs:
           command: sudo apt-get update
       - run:
           name: Install dependencies
-          command: sudo apt-get -y install rsync
+          command: sudo apt-get -y install rsync git
       - run:
           name: Sync common code
           command: ./scripts/sync
