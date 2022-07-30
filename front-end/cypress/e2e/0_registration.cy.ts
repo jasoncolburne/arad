@@ -55,7 +55,7 @@ describe("registration", () => {
       .pathShouldNotEqual("/register");
   });
 
-  it("for DEFAULT_ADMIN_EMAIL grants administrator privleges", () => {
+  it("for DEFAULT_ADMIN_EMAIL, grants administrator privleges", () => {
     const { email, passphrase } = administratorCredentials;
 
     cy.register(email, passphrase)
