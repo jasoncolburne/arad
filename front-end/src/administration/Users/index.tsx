@@ -21,19 +21,19 @@ const Users = () => {
   const [totalPages, setTotalPages] = React.useState(1);
   const [filterText, setFilterText] = React.useState('');
   const [fetchingAccessToken, setFetchingAccessToken] = React.useState(false);
+  const [fetchingRoles, setFetchingRoles] = React.useState(false);
+  const [fetchingUsers, setFetchingUsers] = React.useState(false);
+  const [rolesFetched, setRolesFetched] = React.useState(false);
+  const [usersFetched, setUsersFetched] = React.useState(false);
   const navigate = useNavigate();
 
-  const authorized = state.credentials &&
-                     state.user &&
-                     loggedIn(state.credentials) && 
-                     isAdministrator(state.user.roles);
+  const authorized = loggedIn(state.credentials!) && isAdministrator(state.user!.roles);
   const accessTokenValid = authorized && jwtValid(state.credentials!.access_tokens.administrator);
 
   React.useEffect(() => {
     const handleAccessErrors = (response: Response) => {
       if ([401, 403].includes(response.status)) {
         setState(emptyState);
-        setFetchingAccessToken(false);
         navigate("/login");
       } else {
         setErrorMessage('something went wrong');
@@ -41,9 +41,13 @@ const Users = () => {
     };
 
     const fetchAccessToken = async (request: TokenRequest) => {
-      const response: TokenResponse = await Api().post('identify/token', null, request, handleAccessErrors);
-      const newState = modifyAccessToken(state, Roles.Administrator, response.access_token);
-      setState(newState);
+      const response: TokenResponse | undefined = await Api().post('identify/token', null, request, handleAccessErrors);
+
+      if (response !== undefined) {
+        const newState = modifyAccessToken(state, Roles.Administrator, response.access_token);
+        setState(newState);
+      }
+
       setFetchingAccessToken(false);
     }
 
@@ -56,7 +60,6 @@ const Users = () => {
     authorized,
     accessTokenValid,
     fetchingAccessToken,
-    state,
     setState,
     navigate,
   ]);
@@ -73,21 +76,31 @@ const Users = () => {
     };
 
     const fetchUsers = async (request: UsersRequest, accessToken: string) => {
-      const response: UsersResponse = await Api().post('identify/users', accessToken, request, handleErrors);
-      setUsers(response.users);
-      setTotalPages(response.pages);
-      setErrorMessage('');
+      const response: UsersResponse | undefined = await Api().post('identify/users', accessToken, request, handleErrors);
+
+      if (response !== undefined) {
+        setUsers(response.users);
+        setTotalPages(response.pages);
+        setUsersFetched(true);
+
+        if (rolesFetched) {
+          setErrorMessage('');
+        }
+      }
+
+      setFetchingUsers(false);
     };
   
-    if (accessTokenValid) {
+    if (accessTokenValid && !fetchingUsers) {
       const request: UsersRequest = { email_filter: filterText, page };
+      setUsersFetched(false);
+      setFetchingUsers(true);
       fetchUsers(request, state.credentials!.access_tokens.administrator);
     }
   }, [
     page,
     filterText,
     accessTokenValid,
-    state,
     setState,
   ]);
 
@@ -103,19 +116,25 @@ const Users = () => {
     };
 
     const fetchRoles = async (access_token: string) => {
-      const response: RolesResponse = await Api().get('identify/roles', access_token, null, handleErrors);
-      setRoles(response.roles);
-      // this can't be good, we're doing it twice in parallel, so the state of the variable will change
-      // before we know that the other instance is ready
-      setErrorMessage('');
+      const response: RolesResponse | undefined = await Api().get('identify/roles', access_token, null, handleErrors);
+
+      if (response !== undefined) {
+        setRoles(response.roles);
+        setRolesFetched(true);
+        if (usersFetched) {
+          setErrorMessage('');
+        }
+      }
+
+      setFetchingRoles(false);
     };
   
-    if (accessTokenValid) {
+    if (accessTokenValid && !rolesFetched && !fetchingRoles) {
+      setFetchingRoles(true);
       fetchRoles(state.credentials!.access_tokens.administrator);
     }
   }, [
     accessTokenValid,
-    state,
     setState,
   ]);
 
@@ -136,7 +155,7 @@ const Users = () => {
     );
   } else {
     return (
-      <Center h="100%">{errorMessage === '' ? 'unauthorized' : errorMessage}</Center>
+      <Center h="100%">{errorMessage === '' ? 'not authorized' : errorMessage}</Center>
     )
   }
 }

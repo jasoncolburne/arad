@@ -1,3 +1,5 @@
+import React from "react";
+
 import { Checkbox, Td, Tr } from "@chakra-ui/react";
 import { Api } from "../../../api/Api";
 import { Role, RoleActions, RoleRequest, Roles, User } from "../../../api/types/friendly";

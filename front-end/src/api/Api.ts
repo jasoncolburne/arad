@@ -30,8 +30,9 @@ const Api = () => {
       const response = await fetch(url, options);
 
       if (!response.ok) {
-        handleErrors(response)
         console.error(`error fetching ${endpoint}: ${response.status}, ${response.statusText}`);
+        handleErrors(response);
+        return undefined;
       }
 
       return await response.json()

@@ -39,9 +39,12 @@ const Login = () => {
       setErrorMessage('cannot be blank');
     } else {
       const request: LoginRequest = { email, passphrase };
-      const response: LoginResponse = await Api().post('identify/login', null, request, handleErrors);
-      const newState = stateFromAuthenticationResponseData(response);
-      setState(newState);
+      const response: LoginResponse | undefined = await Api().post('identify/login', null, request, handleErrors);
+      
+      if (response !== undefined) {
+        const newState = stateFromAuthenticationResponseData(response);
+        setState(newState);
+      }
     }
   }
 
@@ -92,7 +95,7 @@ const Login = () => {
           >
             Login
           </Button>
-          <Center>{errorMessage !== '' ? errorMessage : null}</Center>
+          <Center id='login-errorMessage'>{errorMessage !== '' ? errorMessage : null}</Center>
         </form>
       </Box>
     </Center>

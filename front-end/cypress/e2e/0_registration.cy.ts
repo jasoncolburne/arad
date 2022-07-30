@@ -7,6 +7,8 @@ describe('registration', () => {
         const passphrase = 'passphrase';
 
         cy.register(email, passphrase)
+          .get('#arad-logoutLink').should('be.visible')
+          .refreshToken().should('be.not.empty')
           .pathShouldNotEqual('/register')
     });
 
@@ -16,6 +18,8 @@ describe('registration', () => {
         const verification = 'passphr4se';
 
         cy.register(email, passphrase, verification)
+          .get('#register-errorMessage').contains('passphrases must match')
+          .refreshToken().should('be.empty')
           .pathShouldEqual('/register');
     });
 
@@ -24,7 +28,8 @@ describe('registration', () => {
         const passphrase = 'passphrase';
 
         cy.register(email, passphrase)
-          .get('#arad-logoutLink').should('be.visible').visit('/register')
+          .get('#arad-logoutLink').should('be.visible')
+          .visit('/register')
           .pathShouldNotEqual('/register');
     });
 

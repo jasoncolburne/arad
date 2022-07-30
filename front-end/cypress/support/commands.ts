@@ -1,5 +1,55 @@
 /// <reference types="cypress" />
 
+interface Credentials {
+  refresh_token: string;
+  access_tokens: {
+      reader: string;
+      reviewer: string;
+      administrator: string;
+  }
+};
+
+type Role = "READER" | "REVIEWER" | "ADMINISTRATOR";
+
+interface User {
+  id: string;
+  email: string;
+  roles: Role[];
+};
+
+interface ApplicationState {
+  credentials: Credentials;
+  user: User;
+};
+
+
+const emptyUser: User = {
+  id: '',
+  email: '',
+  roles: []
+};
+
+const emptyCredentials: Credentials = {
+  refresh_token: '',
+  access_tokens: {
+    administrator: '',
+    reviewer: '',
+    reader: ''
+  }
+}
+
+const emptyState: ApplicationState = {
+  credentials: emptyCredentials,
+  user: emptyUser
+}
+
+const getState = (): ApplicationState => {
+  const _state = localStorage.getItem('state');
+  const state: ApplicationState = _state == undefined ? emptyState : JSON.parse(_state);
+  return state;
+};
+
+
 const register = (email: string, passphrase: string, verification: string | null = null): Cypress.Chainable<JQuery<HTMLElement>> => {
   return cy.get('#arad-registerLink').should('be.visible').click()
            .get('#register-email').should('be.visible').type(email)
@@ -25,6 +75,11 @@ const pathShouldEqual = (path: string): Cypress.Chainable<string> => {
 
 const pathShouldNotEqual = (path: string): Cypress.Chainable<string> => {
   return cy.location('pathname').should('not.equal', path);
+};
+
+const refreshToken = (): Cypress.Chainable<string> => {
+  const state = getState();
+  return cy.wrap(state.credentials.refresh_token);
 };
 
 declare namespace Cypress {
@@ -60,6 +115,13 @@ declare namespace Cypress {
      * cy.pathShouldNotEqual('/login');
      */
     pathShouldNotEqual: typeof pathShouldNotEqual;
+
+    /**
+     * Ensure the path is as expected, and not the given value
+     * @example
+     * cy.refreshToken().should('be.not.empty');
+     */
+    refreshToken: typeof refreshToken;
   }
 };
 
@@ -70,6 +132,8 @@ Cypress.Commands.addAll(
     logout,
 
     pathShouldEqual,
-    pathShouldNotEqual
+    pathShouldNotEqual,
+
+    refreshToken
   }
 );

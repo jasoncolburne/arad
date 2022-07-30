@@ -43,9 +43,12 @@ const Register = () => {
       setErrorMessage('cannot be blank');
     } else {
       const request: RegisterRequest = { email, passphrase };
-      const response: RegisterResponse = await Api().post('identify/register', null, request, handleErrors)
-      const newState = stateFromAuthenticationResponseData(response);
-      setState(newState);
+      const response: RegisterResponse | undefined = await Api().post('identify/register', null, request, handleErrors)
+      
+      if (response !== undefined) {
+        const newState = stateFromAuthenticationResponseData(response);
+        setState(newState);
+      }
     }
   }
 
@@ -108,7 +111,7 @@ const Register = () => {
           >
             Register
           </Button>
-          <Center>{errorMessage !== '' ? errorMessage : null}</Center>
+          <Center id='register-errorMessage'>{errorMessage !== '' ? errorMessage : null}</Center>
         </form>
       </Box>
     </Center>
