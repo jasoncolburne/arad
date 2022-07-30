@@ -59,8 +59,6 @@ describe("registration", () => {
     cy.register(email, passphrase)
       .get("#arad-usersLink")
       .should("be.visible")
-      .accessToken("ADMINISTRATOR")
-      .should("be.not.empty");
   });
 
   it("for user email, does not grant administrator privleges", () => {
@@ -70,7 +68,5 @@ describe("registration", () => {
     cy.register(email, passphrase)
       .get("#arad-usersLink")
       .should("not.exist")
-      .accessToken("ADMINISTRATOR")
-      .should("be.empty");
   });
 });
