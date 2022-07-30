@@ -3,11 +3,9 @@ import React from "react";
 const Articles = () => {
   return (
     <div className="Articles">
-      <p>
-        Articles
-      </p>
+      <p>Articles</p>
     </div>
   );
-}
+};
 
 export { Articles };

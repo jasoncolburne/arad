@@ -1,16 +1,16 @@
 import React from "react";
 
-import { Box, ChakraProvider, theme } from '@chakra-ui/react';
-import { Outlet } from 'react-router-dom';
+import { Box, ChakraProvider, theme } from "@chakra-ui/react";
+import { Outlet } from "react-router-dom";
 
-import { Header } from './components/Header';
-import { Footer } from './components/Footer';
+import { Header } from "./components/Header";
+import { Footer } from "./components/Footer";
 
-import { emptyState } from './datatypes/ApplicationState';
+import { emptyState } from "./datatypes/ApplicationState";
 
-import { GlobalState } from './GlobalState';
+import { GlobalState } from "./GlobalState";
 
-import './Arad.css';
+import "./Arad.css";
 
 const currentHostname = window.location.hostname;
 
@@ -28,6 +28,6 @@ const Arad = () => {
       </ChakraProvider>
     </GlobalState>
   );
-}
+};
 
 export { Arad, currentHostname };

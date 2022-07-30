@@ -3,24 +3,36 @@ import { Box, Center } from "@chakra-ui/layout";
 import { useNavigate } from "react-router-dom";
 
 import { Api } from "../../api/Api";
-import { Role, Roles, RolesResponse, TokenRequest, TokenResponse, User, UsersRequest, UsersResponse } from "../../api/types/friendly";
+import {
+  Role,
+  Roles,
+  RolesResponse,
+  TokenRequest,
+  TokenResponse,
+  User,
+  UsersRequest,
+  UsersResponse,
+} from "../../api/types/friendly";
 import { emptyState } from "../../datatypes/ApplicationState";
 import { useGlobalState, modifyAccessToken } from "../../GlobalState";
-import { isAdministrator, jwtValid, loggedIn } from "../../utility/authorization";
+import {
+  isAdministrator,
+  jwtValid,
+  loggedIn,
+} from "../../utility/authorization";
 import { UserList } from "./components/UserList";
 import { Spinner } from "@chakra-ui/react";
-
 
 const Users = () => {
   const { state, setState } = useGlobalState();
   const [users, setUsers] = React.useState<User[]>([]);
   const [roles, setRoles] = React.useState<Role[]>([]);
-  const [errorMessage, setErrorMessage] = React.useState('');
+  const [errorMessage, setErrorMessage] = React.useState("");
   // TODO: remove this disable once we are using pagination on the front end
   // eslint-disable-next-line
   const [page, setPage] = React.useState(1);
   const [totalPages, setTotalPages] = React.useState(1);
-  const [filterText, setFilterText] = React.useState('');
+  const [filterText, setFilterText] = React.useState("");
   const [fetchingAccessToken, setFetchingAccessToken] = React.useState(false);
   const [fetchingRoles, setFetchingRoles] = React.useState(false);
   const [fetchingUsers, setFetchingUsers] = React.useState(false);
@@ -28,8 +40,10 @@ const Users = () => {
   const [usersFetched, setUsersFetched] = React.useState(false);
   const navigate = useNavigate();
 
-  const authorized = loggedIn(state.credentials!) && isAdministrator(state.user!.roles);
-  const accessTokenValid = authorized && jwtValid(state.credentials!.access_tokens.administrator);
+  const authorized =
+    loggedIn(state.credentials!) && isAdministrator(state.user!.roles);
+  const accessTokenValid =
+    authorized && jwtValid(state.credentials!.access_tokens.administrator);
 
   React.useEffect(() => {
     const handleAccessErrors = (response: Response) => {
@@ -37,48 +51,59 @@ const Users = () => {
         setState(emptyState);
         navigate("/login");
       } else {
-        setErrorMessage('something went wrong');
+        setErrorMessage("something went wrong");
       }
     };
 
     const fetchAccessToken = async (request: TokenRequest) => {
-      const response: TokenResponse | undefined = await Api().post('identify/token', null, request, handleAccessErrors);
+      const response: TokenResponse | undefined = await Api().post(
+        "identify/token",
+        null,
+        request,
+        handleAccessErrors
+      );
 
       if (response !== undefined) {
-        const newState = modifyAccessToken(state, Roles.Administrator, response.access_token);
+        const newState = modifyAccessToken(
+          state,
+          Roles.Administrator,
+          response.access_token
+        );
         setState(newState);
       }
 
       setFetchingAccessToken(false);
-    }
+    };
 
     if (authorized && !accessTokenValid && !fetchingAccessToken) {
-      const request: TokenRequest = { refresh_token: state.credentials!.refresh_token, scope: Roles.Administrator }
+      const request: TokenRequest = {
+        refresh_token: state.credentials!.refresh_token,
+        scope: Roles.Administrator,
+      };
       setFetchingAccessToken(true);
       fetchAccessToken(request);
     }
-  // eslint-disable-next-line
-  }, [
-    authorized,
-    accessTokenValid,
-    fetchingAccessToken,
-    setState,
-    navigate,
-  ]);
+    // eslint-disable-next-line
+  }, [authorized, accessTokenValid, fetchingAccessToken, setState, navigate]);
 
   React.useEffect(() => {
     const handleErrors = (response: Response) => {
       if ([401, 403].includes(response.status)) {
-        const newState = modifyAccessToken(state, Roles.Administrator, '');
+        const newState = modifyAccessToken(state, Roles.Administrator, "");
         setState(newState);
-        setErrorMessage('not authorized');
+        setErrorMessage("not authorized");
       } else {
-        setErrorMessage('something went wrong');
+        setErrorMessage("something went wrong");
       }
     };
 
     const fetchUsers = async (request: UsersRequest, accessToken: string) => {
-      const response: UsersResponse | undefined = await Api().post('identify/users', accessToken, request, handleErrors);
+      const response: UsersResponse | undefined = await Api().post(
+        "identify/users",
+        accessToken,
+        request,
+        handleErrors
+      );
 
       if (response !== undefined) {
         setUsers(response.users);
@@ -86,64 +111,60 @@ const Users = () => {
         setUsersFetched(true);
 
         if (rolesFetched) {
-          setErrorMessage('');
+          setErrorMessage("");
         }
       }
 
       setFetchingUsers(false);
     };
-  
+
     if (accessTokenValid && !fetchingUsers) {
       const request: UsersRequest = { email_filter: filterText, page };
       setUsersFetched(false);
       setFetchingUsers(true);
       fetchUsers(request, state.credentials!.access_tokens.administrator);
     }
-  // eslint-disable-next-line
-  }, [
-    page,
-    filterText,
-    accessTokenValid,
-    setState,
-  ]);
+  }, [page, filterText, accessTokenValid, setState]);
 
   React.useEffect(() => {
     const handleErrors = (response: Response) => {
       if ([401, 403].includes(response.status)) {
-        const newState = modifyAccessToken(state, Roles.Administrator, '');
+        const newState = modifyAccessToken(state, Roles.Administrator, "");
         setState(newState);
-        setErrorMessage('not authorized');
+        setErrorMessage("not authorized");
       } else {
-        setErrorMessage('something went wrong');
+        setErrorMessage("something went wrong");
       }
     };
 
     const fetchRoles = async (access_token: string) => {
-      const response: RolesResponse | undefined = await Api().get('identify/roles', access_token, null, handleErrors);
+      const response: RolesResponse | undefined = await Api().get(
+        "identify/roles",
+        access_token,
+        null,
+        handleErrors
+      );
 
       if (response !== undefined) {
         setRoles(response.roles);
         setRolesFetched(true);
         if (usersFetched) {
-          setErrorMessage('');
+          setErrorMessage("");
         }
       }
 
       setFetchingRoles(false);
     };
-  
+
     if (accessTokenValid && !rolesFetched && !fetchingRoles) {
       setFetchingRoles(true);
       fetchRoles(state.credentials!.access_tokens.administrator);
     }
-  // eslint-disable-next-line
-  }, [
-    accessTokenValid,
-    setState,
-  ]);
+    // eslint-disable-next-line
+  }, [accessTokenValid, setState]);
 
-  if (authorized && errorMessage === '' && usersFetched && rolesFetched) {
-      return (
+  if (authorized && errorMessage === "" && usersFetched && rolesFetched) {
+    return (
       <Center>
         <Box w="container.xlg" h="100%">
           <UserList
@@ -157,17 +178,20 @@ const Users = () => {
         </Box>
       </Center>
     );
-  } if (authorized && errorMessage === '') {
+  }
+  if (authorized && errorMessage === "") {
     return (
       <Center h="100%">
-        <Spinner id='users-loadingSpinner' />
+        <Spinner id="users-loadingSpinner" />
       </Center>
     );
   } else {
     return (
-      <Center id='users-errorMessage' h="100%">{errorMessage === '' ? 'not authorized' : errorMessage}</Center>
-    )
+      <Center id="users-errorMessage" h="100%">
+        {errorMessage === "" ? "not authorized" : errorMessage}
+      </Center>
+    );
   }
-}
+};
 
 export { Users };

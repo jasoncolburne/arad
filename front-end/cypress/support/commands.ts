@@ -3,11 +3,11 @@
 interface Credentials {
   refresh_token: string;
   access_tokens: {
-      reader: string;
-      reviewer: string;
-      administrator: string;
-  }
-};
+    reader: string;
+    reviewer: string;
+    administrator: string;
+  };
+}
 
 type Role = "READER" | "REVIEWER" | "ADMINISTRATOR";
 
@@ -15,81 +15,103 @@ interface User {
   id: string;
   email: string;
   roles: Role[];
-};
+}
 
 interface ApplicationState {
   credentials: Credentials;
   user: User;
-};
-
+}
 
 const emptyUser: User = {
-  id: '',
-  email: '',
-  roles: []
+  id: "",
+  email: "",
+  roles: [],
 };
 
 const emptyCredentials: Credentials = {
-  refresh_token: '',
+  refresh_token: "",
   access_tokens: {
-    administrator: '',
-    reviewer: '',
-    reader: ''
-  }
-}
+    administrator: "",
+    reviewer: "",
+    reader: "",
+  },
+};
 
 const emptyState: ApplicationState = {
   credentials: emptyCredentials,
-  user: emptyUser
-}
+  user: emptyUser,
+};
 
 const getState = (): ApplicationState => {
-  const _state = localStorage.getItem('state');
-  const state: ApplicationState = _state == undefined ? emptyState : JSON.parse(_state);
+  const _state = localStorage.getItem("state");
+  const state: string =
+    _state === null ? emptyState : JSON.parse(_state);
   return state;
 };
 
-
-const register = (email: string, passphrase: string, verification: string | null = null): Cypress.Chainable<JQuery<HTMLElement>> => {
-  return cy.get('#arad-registerLink').should('be.visible').click()
-           .get('#register-email').should('be.visible').type(email)
-           .get('#register-passphrase').type(passphrase)
-           .get('#register-verification').type(verification ? verification : passphrase)
-           .type('{enter}');
+const register = (
+  email: string,
+  passphrase: string,
+  verification: string | null = null
+): Cypress.Chainable<JQuery<HTMLElement>> => {
+  return cy
+    .get("#arad-registerLink")
+    .should("be.visible")
+    .click()
+    .get("#register-email")
+    .should("be.visible")
+    .type(email)
+    .get("#register-passphrase")
+    .type(passphrase)
+    .get("#register-verification")
+    .type(verification ? verification : passphrase)
+    .type("{enter}");
 };
 
-const login = (email: string, passphrase: string): Cypress.Chainable<JQuery<HTMLElement>> => {
-  return cy.get('#arad-loginLink').should('be.visible').click()
-           .get('#login-email').should('be.visible').type(email)
-           .get('#login-passphrase').type(passphrase)
-           .type('{enter}');
+const login = (
+  email: string,
+  passphrase: string
+): Cypress.Chainable<JQuery<HTMLElement>> => {
+  return cy
+    .get("#arad-loginLink")
+    .should("be.visible")
+    .click()
+    .get("#login-email")
+    .should("be.visible")
+    .type(email)
+    .get("#login-passphrase")
+    .type(passphrase)
+    .type("{enter}");
 };
 
 const logout = (): Cypress.Chainable<JQuery<HTMLElement>> => {
-  return cy.get('#arad-logoutLink').should('be.visible').click();
+  return cy.get("#arad-logoutLink").should("be.visible").click();
 };
 
 const pathShouldEqual = (path: string): Cypress.Chainable<string> => {
-  return cy.location('pathname').should('equal', path);
+  return cy.location("pathname").should("equal", path);
 };
 
 const pathShouldNotEqual = (path: string): Cypress.Chainable<string> => {
-  return cy.location('pathname').should('not.equal', path);
+  return cy.location("pathname").should("not.equal", path);
 };
 
 const applicationState = (): Cypress.Chainable<ApplicationState> => {
   return cy.wrap(getState());
-}
+};
 
 const refreshToken = (): Cypress.Chainable<string> => {
-  return cy.applicationState().its('credentials.refresh_token');
+  return cy.applicationState().its("credentials.refresh_token");
 };
 
 const accessToken = (scope: Role): Cypress.Chainable<string> => {
-  return cy.applicationState().its(`credentials.access_tokens.${scope.toLowerCase()}`);
-}
+  return cy
+    .applicationState()
+    .its(`credentials.access_tokens.${scope.toLowerCase()}`);
+};
 
 declare namespace Cypress {
+  // eslint-disable-next-line
   interface Chainable<Subject> {
     /**
      * Register to use the application. Null `verification` will verify with `passphrase`.
@@ -129,7 +151,7 @@ declare namespace Cypress {
      * cy.applicationState().its('user.email').should('equal', email);
      */
     applicationState: typeof applicationState;
-     /**
+    /**
      * The current refreshToken
      * @example
      * cy.refreshToken().should('be.not.empty');
@@ -142,19 +164,17 @@ declare namespace Cypress {
      */
     accessToken: typeof accessToken;
   }
-};
+}
 
-Cypress.Commands.addAll(
-  {
-    register,
-    login,
-    logout,
+Cypress.Commands.addAll({
+  register,
+  login,
+  logout,
 
-    pathShouldEqual,
-    pathShouldNotEqual,
+  pathShouldEqual,
+  pathShouldNotEqual,
 
-    applicationState,
-    refreshToken,
-    accessToken
-  }
-);
+  applicationState,
+  refreshToken,
+  accessToken,
+});

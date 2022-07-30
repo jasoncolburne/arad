@@ -61,6 +61,21 @@ mypy() {
   simple_compose_command $1 "mypy --install-types --non-interactive ."
 }
 
+eslint() {
+  unset ACTIVATE_SCRIPT
+  simple_compose_command front-end "yarn run eslint --max-warnings=0 ."
+}
+
+tsc() {
+  unset ACTIVATE_SCRIPT
+  simple_compose_command front-end "yarn run tsc --strict"
+}
+
+prettier() {
+  unset ACTIVATE_SCRIPT
+  simple_compose_command front-end "yarn run prettier --write ."
+}
+
 e2e() {
   ./scripts/local nuke
   ./scripts/local down
@@ -75,7 +90,7 @@ fast_e2e() {
   simple_compose_command front-end "yarn cypress:run"
 }
 
-all() {
+back_end() {
   # sync first so that common changes don't get blown away during this process
   echo "syncing code"
   echo
@@ -126,6 +141,12 @@ all() {
   echo "all tests passed!"
 }
 
+front_end() {
+  ./scripts/test tsc
+  ./scripts/test eslint
+  ./scripts/test prettier
+}
+
 # we can probably do the rest in a single line by eval or something
 execute() {
   local COMMAND=$1
@@ -141,12 +162,20 @@ execute() {
     pylint "${ARGUMENTS}"
   elif [[ "${COMMAND}" == "mypy" ]]; then
     mypy "${ARGUMENTS}"
+  elif [[ "${COMMAND}" == "eslint" ]]; then
+    eslint
+  elif [[ "${COMMAND}" == "tsc" ]]; then
+    tsc
+  elif [[ "${COMMAND}" == "prettier" ]]; then
+    prettier
   elif [[ "${COMMAND}" == "e2e" ]]; then
     e2e
   elif [[ "${COMMAND}" == "fast-e2e" ]]; then
     fast_e2e
-  elif [[ "${COMMAND}" == "all" ]]; then
-    all
+  elif [[ "${COMMAND}" == "back-end" ]]; then
+    back_end
+  elif [[ "${COMMAND}" == "front-end" ]]; then
+    front_end
   else
     echo "unknown command ${COMMAND}"
     exit 1

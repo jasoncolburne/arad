@@ -1,9 +1,9 @@
 import React from "react";
 
-import { render, screen } from '@testing-library/react';
-import { Arad } from './Arad';
+import { render, screen } from "@testing-library/react";
+import { Arad } from "./Arad";
 
-test('renders name', () => {
+test("renders name", () => {
   render(<Arad />);
   const linkElement = screen.getByText(/Accessible Research Article Database/);
   expect(linkElement).toBeInTheDocument();

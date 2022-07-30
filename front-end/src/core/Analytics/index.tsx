@@ -3,11 +3,9 @@ import React from "react";
 const Analytics = () => {
   return (
     <div className="Analytics">
-      <p>
-        Analytics
-      </p>
+      <p>Analytics</p>
     </div>
   );
-}
+};
 
 export { Analytics };

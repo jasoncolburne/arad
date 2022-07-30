@@ -5,18 +5,23 @@ const Api = () => {
     const result: HeadersInit = {};
 
     if (token) {
-      result['Authorization'] = `Bearer ${token}`;
+      result["Authorization"] = `Bearer ${token}`;
     }
 
     if (body) {
-      result['Content-Type'] = 'application/json';
+      result["Content-Type"] = "application/json";
     }
 
     return result;
   };
 
   const request = (method: string) => {
-    const wrapper = async (endpoint: String, token: String | null, body: Object | null = null, handleErrors: Function) => {
+    const wrapper = async (
+      endpoint: String,
+      token: String | null,
+      body: Object | null = null,
+      handleErrors: Function
+    ) => {
       const options: RequestInit = {
         method,
         headers: createHeaders(token, body),
@@ -26,17 +31,21 @@ const Api = () => {
         options.body = JSON.stringify(body);
       }
 
-      const url = `http://${currentHostname === 'localhost' ? 'localhost:81' : 'api'}/api/v1/${endpoint}`;
+      const url = `http://${
+        currentHostname === "localhost" ? "localhost:81" : "api"
+      }/api/v1/${endpoint}`;
       const response = await fetch(url, options);
 
       if (!response.ok) {
-        console.error(`error fetching ${endpoint}: ${response.status}, ${response.statusText}`);
+        console.error(
+          `error fetching ${endpoint}: ${response.status}, ${response.statusText}`
+        );
         handleErrors(response);
         return undefined;
       }
 
-      return await response.json()
-    }
+      return await response.json();
+    };
 
     return wrapper;
   };

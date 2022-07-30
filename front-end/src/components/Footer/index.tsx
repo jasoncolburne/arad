@@ -7,8 +7,7 @@ import { emptyState } from "../../datatypes/ApplicationState";
 import { useGlobalState } from "../../GlobalState";
 import { loggedIn } from "../../utility/authorization";
 
-import "./index.css"
-
+import "./index.css";
 
 const Footer = () => {
   const { state, setState } = useGlobalState();
@@ -31,19 +30,27 @@ const Footer = () => {
   const logoutAction = async (event: React.MouseEvent<HTMLAnchorElement>) => {
     event.preventDefault();
 
-    const request: LogoutRequest = { refresh_token: state.credentials!.refresh_token };
-    await Api().post('identify/logout', null, request, handleErrors);
+    const request: LogoutRequest = {
+      refresh_token: state.credentials!.refresh_token,
+    };
+    await Api().post("identify/logout", null, request, handleErrors);
 
     resetStateAndRedirectHome();
   };
 
-  const logoutLink = <Link id='arad-logoutLink' onClick={logoutAction} to="/logout">Logout</Link>;
+  const logoutLink = (
+    <Link id="arad-logoutLink" onClick={logoutAction} to="/logout">
+      Logout
+    </Link>
+  );
 
   return (
     <footer>
       <div className="footer">
         <div className="left">
-          <Link id='arad-codeLink' to="/code">Accessible Research Article Database</Link>
+          <Link id="arad-codeLink" to="/code">
+            Accessible Research Article Database
+          </Link>
         </div>
         <div className="right">
           {loggedIn(state.credentials!) ? logoutLink : null}
@@ -51,6 +58,6 @@ const Footer = () => {
       </div>
     </footer>
   );
-}
+};
 
 export { Footer };

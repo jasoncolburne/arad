@@ -18,7 +18,6 @@ x-black-steps: &black-steps
       command: |
         cd /app
         . $(./activate)
-        [ -d database ] || mv {_,}database
         black --check .
 
 x-pytest-steps: &pytest-steps
@@ -28,7 +27,6 @@ x-pytest-steps: &pytest-steps
       command: |
         cd /app
         . $(./activate)
-        [ -d database ] || mv {_,}database
         pytest .
 
 x-pylint-steps: &pylint-steps
@@ -38,7 +36,6 @@ x-pylint-steps: &pylint-steps
       command: |
         cd /app
         . $(./activate)
-        [ -d database ] || mv {_,}database
         find . -maxdepth 1 -type d -not -name '.*' | xargs pylint
 
 x-mypy-steps: &mypy-steps
@@ -48,7 +45,6 @@ x-mypy-steps: &mypy-steps
       command: |
         cd /app
         . $(./activate)
-        [ -d database ] || mv {_,}database
         mypy --install-types --non-interactive .
 
 
@@ -291,6 +287,43 @@ jobs:
       - image: ${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:core-${CIRCLE_BRANCH}-latest
         auth: *docker-auth
     steps: *mypy-steps
+
+  eslint-front-end:
+    resource_class: small
+    docker:
+      - image: ${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:front-end-${CIRCLE_BRANCH}-latest
+        auth: *docker-auth
+    steps:
+      - run:
+          name: Eslint
+          command: |
+            cd /app
+            yarn run eslint --max-warnings=0 .
+
+  prettier-front-end:
+    resource_class: small
+    docker:
+      - image: ${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:front-end-${CIRCLE_BRANCH}-latest
+        auth: *docker-auth
+    steps:
+      - run:
+          name: Prettier
+          command: |
+            cd /app
+            yarn run prettier --check .
+
+  typecheck-front-end:
+    resource_class: small
+    docker:
+      - image: ${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:front-end-${CIRCLE_BRANCH}-latest
+        auth: *docker-auth
+    steps:
+      - run:
+          name: Typecheck
+          command: |
+            cd /app
+            yarn run tsc --strict
+
 
 
 workflows:

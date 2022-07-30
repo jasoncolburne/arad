@@ -1,7 +1,13 @@
-import { useState, createContext, useContext, SetStateAction, Dispatch } from "react"
+import {
+  useState,
+  createContext,
+  useContext,
+  SetStateAction,
+  Dispatch,
+} from "react";
 import { LoginResponse, Role, Roles } from "./api/types/friendly";
 
-import { ApplicationState } from "./datatypes/ApplicationState"
+import { ApplicationState } from "./datatypes/ApplicationState";
 import { emptyCredentials } from "./datatypes/Credentials";
 
 const GlobalContext = createContext({
@@ -18,8 +24,10 @@ const GlobalState = ({
   value?: Partial<ApplicationState>;
 }) => {
   const [state, setStateCore] = useState(value);
-  const setState: Dispatch<SetStateAction<Partial<ApplicationState>>> = (new_state) => {
-    localStorage.setItem('state', JSON.stringify(new_state));
+  const setState: Dispatch<SetStateAction<Partial<ApplicationState>>> = (
+    new_state
+  ) => {
+    localStorage.setItem("state", JSON.stringify(new_state));
     setStateCore(new_state);
   };
 
@@ -40,7 +48,11 @@ const useGlobalState = () => {
   return context;
 };
 
-const modifyAccessToken = (state: Partial<ApplicationState>, scope: Role, token_value: string): ApplicationState => {
+const modifyAccessToken = (
+  state: Partial<ApplicationState>,
+  scope: Role,
+  token_value: string
+): ApplicationState => {
   if (scope === Roles.Administrator) {
     return {
       credentials: {
@@ -77,7 +89,9 @@ const modifyAccessToken = (state: Partial<ApplicationState>, scope: Role, token_
 
 // we are using LoginResponse as a type here and really we sometimes pass an identical RegisterResponse
 // this isn't great and should be fixed
-const stateFromAuthenticationResponseData = (response: LoginResponse): ApplicationState => {
+const stateFromAuthenticationResponseData = (
+  response: LoginResponse
+): ApplicationState => {
   return {
     credentials: {
       ...emptyCredentials,
@@ -87,6 +101,9 @@ const stateFromAuthenticationResponseData = (response: LoginResponse): Applicati
   };
 };
 
-
-
-export { GlobalState, useGlobalState, modifyAccessToken, stateFromAuthenticationResponseData };
+export {
+  GlobalState,
+  useGlobalState,
+  modifyAccessToken,
+  stateFromAuthenticationResponseData,
+};

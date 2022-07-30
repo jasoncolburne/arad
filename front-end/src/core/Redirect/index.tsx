@@ -15,9 +15,7 @@ const Redirect = (props: RedirectProps) => {
 
   return (
     <ChakraProvider theme={theme}>
-      <Center h="100%">
-        Redirecting to {url}...
-      </Center>
+      <Center h="100%">Redirecting to {url}...</Center>
     </ChakraProvider>
   );
 };
