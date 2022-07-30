@@ -397,3 +397,12 @@ workflows:
       - mypy-core:
           requires:
             - build-images
+      - typecheck-front-end:
+          requires:
+            - build-images
+      - eslint-front-end:
+          requires:
+            - build-images
+      - prettier-front-end:
+          requires:
+            - build-images
