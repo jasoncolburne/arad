@@ -31,7 +31,7 @@ describe("registration", () => {
     cy.register(email, passphrase)
       .logout()
       .register(email, passphrase)
-      .get("#register-errorMessage").contains("please enter a valid email address")
+      .get("#register-errorMessage").contains("email address unavailable")
       .refreshToken().should("be.empty")
       .pathShouldEqual("/register");
   });
