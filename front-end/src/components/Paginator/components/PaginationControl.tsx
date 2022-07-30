@@ -1,10 +1,10 @@
+import React from "react";
 import { Button } from "@chakra-ui/react";
-import { MouseEventHandler } from "react";
 
 interface PaginationControlProps {
     content: string;
     disabled: boolean;
-    onClick: MouseEventHandler<HTMLButtonElement>;
+    onClick: React.MouseEventHandler<HTMLButtonElement>;
 }
 
 const PaginationControl = (props: PaginationControlProps) => {

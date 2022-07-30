@@ -1,3 +1,5 @@
+import React from "react";
+
 import { Box, ChakraProvider, theme } from '@chakra-ui/react';
 import { Outlet } from 'react-router-dom';
 

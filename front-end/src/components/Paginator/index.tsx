@@ -1,5 +1,6 @@
+import React from "react";
+
 import { HStack } from '@chakra-ui/react';
-import { ReactNode } from 'React';
 
 import { PaginationControl } from './components/PaginationControl';
 
@@ -8,7 +9,7 @@ interface PaginatorProps {
     page: number;
     totalPages: number;
     setPage: Function;
-    children: ReactNode;
+    children: React.ReactNode;
 };
 
 const Paginator = (props: PaginatorProps) => {
