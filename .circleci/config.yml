@@ -310,7 +310,7 @@ jobs:
           name: Prettier
           command: |
             cd /app
-            yarn run prettier --check .
+            yarn run prettier --check src
 
   typecheck-front-end:
     resource_class: small

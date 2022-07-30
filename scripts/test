@@ -73,7 +73,7 @@ tsc() {
 
 prettier() {
   unset ACTIVATE_SCRIPT
-  simple_compose_command front-end "yarn run prettier --write ."
+  simple_compose_command front-end "yarn run prettier --write src"
 }
 
 e2e() {
