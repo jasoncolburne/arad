@@ -76,8 +76,7 @@ jobs:
             docker compose -f docker-compose.build.yml up -d front-end-base
             docker compose -f docker-compose.build.yml cp front-end-base:/app/build front-end-nginx
             docker compose -f docker-compose.build.yml down
-            cd front-end-nginx
-            docker build -t project_front-end:latest
+            docker build -t project_front-end:latest front-end-nginx
       - run:
           name: Tag images
           command: |
