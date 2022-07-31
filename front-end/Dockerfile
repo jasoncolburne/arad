@@ -7,7 +7,7 @@ ENV DEPLOYMENT_ENVIRONMENT ${DEPLOYMENT_ENVIRONMENT}
 
 RUN \
     if [ "${DEPLOYMENT_ENVIRONMENT}" = "production" ]; then \
-        echo "skipping package installation for production build"
+        echo "skipping package installation for production build"; \
     else \
         apt-get update; \
         apt-get install -y \
