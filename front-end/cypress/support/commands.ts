@@ -71,6 +71,14 @@ const login = (
            .type("{enter}");
 };
 
+const shouldBeLoggedIn = (email: string): Cypress.Chainable<JQuery<HTMLElement>> => {
+  return cy.get("#arad-passphraseLink").contains(email);
+};
+
+const shouldBeLoggedOut = (): Cypress.Chainable<JQuery<HTMLElement>> => {
+  return cy.get("#arad-passphraseLink").should("not.exist");
+};
+
 const logout = (): Cypress.Chainable<JQuery<HTMLElement>> => {
   return cy.get("#arad-logoutLink").should("be.visible").click();
 };
@@ -97,6 +105,14 @@ const accessToken = (scope: Role): Cypress.Chainable<string> => {
     .its(`credentials.access_tokens.${scope.toLowerCase()}`);
 };
 
+const userId = (): Cypress.Chainable<string> => {
+  return cy.applicationState().its("user.id");
+};
+
+const userRoles = (): Cypress.Chainable<Role[]> => {
+  return cy.applicationState().its("user.roles");
+}
+
 declare namespace Cypress {
   // eslint-disable-next-line
   interface Chainable<Subject> {
@@ -118,6 +134,18 @@ declare namespace Cypress {
      * cy.logout();
      */
     logout: typeof logout;
+    /**
+     * Assert that the user identified by `email` is logged in
+     * @example
+     * cy.shouldBeLoggedIn(email);
+     */
+    shouldBeLoggedIn: typeof shouldBeLoggedIn;
+    /**
+     * Assert that no user is logged in
+     * @example
+     * cy.shouldBeLoggedOut();
+     */
+     shouldBeLoggedOut: typeof shouldBeLoggedOut;
 
     /**
      * Ensure the path is as expected, equal to the given value
@@ -141,15 +169,27 @@ declare namespace Cypress {
     /**
      * The current refreshToken
      * @example
-     * cy.refreshToken().should('be.not.empty');
+     * cy.refreshToken().should('not.be.empty');
      */
     refreshToken: typeof refreshToken;
     /**
      * A current access token
      * @example
-     * cy.accessToken('ADMINISTRATOR').should('be.not.empty');
+     * cy.accessToken('ADMINISTRATOR').should('not.be.empty');
      */
     accessToken: typeof accessToken;
+    /**
+     * The current user's id
+     * @example
+     * cy.userId().should('not.be.empty');
+     */
+    userId: typeof userId;
+    /**
+     * The current user's roles
+     * @example
+     * cy.userRoles().should('include', 'ADMINISTRATOR');
+     */
+     userRoles: typeof userRoles;
   }
 }
 
@@ -157,6 +197,8 @@ Cypress.Commands.addAll({
   register,
   login,
   logout,
+  shouldBeLoggedIn,
+  shouldBeLoggedOut,
 
   pathShouldEqual,
   pathShouldNotEqual,
@@ -164,4 +206,7 @@ Cypress.Commands.addAll({
   applicationState,
   refreshToken,
   accessToken,
+
+  userId,
+  userRoles
 });

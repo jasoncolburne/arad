@@ -41,7 +41,7 @@ async def register(
     except common.datatypes.exception.BadRequestException as exc:
         raise fastapi.HTTPException(
             status_code=fastapi.status.HTTP_400_BAD_REQUEST,
-            detail="Invalid email address",
+            detail="email address unavailable",
         ) from exc
 
 
@@ -59,7 +59,7 @@ async def login(
     except common.datatypes.exception.UnauthorizedException as exc:
         raise fastapi.HTTPException(
             status_code=fastapi.status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect email or password",
+            detail="incorrect email or password",
         ) from exc
 
 
@@ -87,7 +87,7 @@ async def access_token(
     except common.datatypes.exception.UnauthorizedException as exc:
         raise fastapi.HTTPException(
             status_code=fastapi.status.HTTP_401_UNAUTHORIZED,
-            detail="Not authorized",
+            detail="not authorized",
         ) from exc
 
 

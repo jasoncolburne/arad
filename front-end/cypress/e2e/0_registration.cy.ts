@@ -7,8 +7,8 @@ describe("registration", () => {
     const passphrase = "passphrase";
 
     cy.register(email, passphrase)
-      .get("#arad-logoutLink").should("be.visible")
-      .refreshToken().should("be.not.empty")
+      .shouldBeLoggedIn(email)
+      .refreshToken().should("not.be.empty")
       .pathShouldNotEqual("/register");
   });
 
@@ -27,11 +27,20 @@ describe("registration", () => {
     const email = randomEmail();
     const passphrase = "passphrase";
 
-    // TODO fix error messaging
     cy.register(email, passphrase)
       .logout()
       .register(email, passphrase)
-      .get("#register-errorMessage").contains("please enter a valid email address")
+      .get("#register-errorMessage").contains("email address unavailable")
+      .refreshToken().should("be.empty")
+      .pathShouldEqual("/register");
+  });
+
+  it("fails if email address not an email address", () => {
+    const email = 'invalid_email_address';
+    const passphrase = "passphrase";
+
+    cy.register(email, passphrase)
+      .get("#register-errorMessage").contains("email address unavailable")
       .refreshToken().should("be.empty")
       .pathShouldEqual("/register");
   });
@@ -41,16 +50,17 @@ describe("registration", () => {
     const passphrase = "passphrase";
 
     cy.register(email, passphrase)
-      .get("#arad-logoutLink").should("be.visible")
+      .shouldBeLoggedIn(email)
       .visit("/register")
       .pathShouldNotEqual("/register");
   });
 
-  it("for DEFAULT_ADMIN_EMAIL grants administrator privleges", () => {
+  it("for DEFAULT_ADMIN_EMAIL, grants administrator privleges", () => {
     const { email, passphrase } = administratorCredentials;
 
     cy.register(email, passphrase)
-      .get("#arad-usersLink").should("be.visible");
+      .shouldBeLoggedIn(email)
+      .userRoles().should("include", "ADMINISTRATOR");
   });
 
   it("for user email, does not grant administrator privleges", () => {
@@ -58,6 +68,7 @@ describe("registration", () => {
     const passphrase = "passphrase";
 
     cy.register(email, passphrase)
-      .get("#arad-usersLink").should("not.exist");
-  });
+      .shouldBeLoggedIn(email)
+      .userRoles().should("not.include", "ADMINISTRATOR");
+});
 });

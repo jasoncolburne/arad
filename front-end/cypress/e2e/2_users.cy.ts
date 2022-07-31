@@ -7,7 +7,7 @@ describe("users", () => {
     const passphrase = "passphrase";
 
     cy.register(email, passphrase)
-      .get("#arad-logoutLink").should("be.visible")
+      .shouldBeLoggedIn(email)
       .visit("/users")
       .get("#users-errorMessage").contains("not authorized")
       .accessToken("ADMINISTRATOR").should("be.empty");
@@ -21,6 +21,32 @@ describe("users", () => {
       .get("#arad-usersLink").should("be.visible").click()
       .wait("@token")
       .get("#users-loadingSpinner").should("not.exist")
-      .accessToken("ADMINISTRATOR").should("be.not.empty");
+      .accessToken("ADMINISTRATOR").should("not.be.empty");
+  });
+
+  it("allows modification of roles by administrator", () => {
+    const { email, passphrase } = administratorCredentials;
+
+    cy.login(email, passphrase)
+      .shouldBeLoggedIn(email)
+      .userId().then((userId) => {
+        const toggleId = `#users-roleToggle-${userId}-REVIEWER`;
+        cy.userRoles().should("not.include", "REVIEWER")
+          .intercept("**/api/v1/identify/users").as("users")
+          .get("#arad-usersLink").should("be.visible").click()
+          .wait("@users")
+          .get("#users-filter").should("be.visible").type("xxx")
+          .wait("@users")
+          .get("#users-filter").should("be.visible").type("admin")
+          .wait("@users")
+          .intercept("**/api/v1/identify/role").as("role")
+          .get(toggleId).check({ force: true })
+          .wait("@role")
+          .logout()
+          .get("#arad-passphraseLink").should("not.exist")
+          .login(email, passphrase)
+          .shouldBeLoggedIn(email)
+          .userRoles().should("include", "REVIEWER");
+        });
   });
 });

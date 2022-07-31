@@ -37,7 +37,7 @@ const UserList = (props: UserListProps) => {
 
   return (
     <Paginator page={page} totalPages={totalPages} setPage={setPage}>
-      <Table>
+      <Table id="users-list">
         <Tbody>
           <Tr>
             <Td key="email-filter">
@@ -54,7 +54,8 @@ const UserList = (props: UserListProps) => {
             })}
           </Tr>
           {users.map((user) => {
-            return <UserListRow key={user.id} user={user} roles={roles} />;
+            const rowKey = `users-row-${user.id}`;
+            return <UserListRow key={rowKey} user={user} roles={roles} />;
           })}
         </Tbody>
       </Table>
