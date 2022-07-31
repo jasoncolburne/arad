@@ -141,7 +141,7 @@ declare namespace Cypress {
      */
     shouldBeLoggedIn: typeof shouldBeLoggedIn;
     /**
-     * Assert that the no user is logged in
+     * Assert that no user is logged in
      * @example
      * cy.shouldBeLoggedOut();
      */
