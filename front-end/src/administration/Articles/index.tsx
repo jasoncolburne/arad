@@ -8,4 +8,4 @@ const Articles = () => {
   );
 };
 
-export { Articles };
+export default Articles;
