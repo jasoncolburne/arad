@@ -4,6 +4,7 @@ FROM node:slim
 
 ARG DEPLOYMENT_ENVIRONMENT
 ENV DEPLOYMENT_ENVIRONMENT ${DEPLOYMENT_ENVIRONMENT}
+ENV PORT 80
 
 RUN \
     if [ "${DEPLOYMENT_ENVIRONMENT}" = "production" ]; then \
@@ -20,6 +21,7 @@ RUN \
             libgtk-3-0 \
             libgbm1 \
             libasound2 \
+            curl \
             --no-install-recommends; \
     fi
 
