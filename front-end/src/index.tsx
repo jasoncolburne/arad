@@ -14,9 +14,15 @@ import { Redirect } from "./core/Redirect";
 // code splitting
 const Login = React.lazy(() => import("./identification/Login"));
 const Register = React.lazy(() => import("./identification/Register"));
-const PassphraseResetRequest = React.lazy(() => import("./identification/Passphrase/Reset/Request"));
-const PassphraseResetConfirm = React.lazy(() => import("./identification/Passphrase/Reset/Confirm"));
-const PassphraseChange = React.lazy(() => import("./identification/Passphrase/Change"));
+const PassphraseResetRequest = React.lazy(
+  () => import("./identification/Passphrase/Reset/Request")
+);
+const PassphraseResetConfirm = React.lazy(
+  () => import("./identification/Passphrase/Reset/Confirm")
+);
+const PassphraseChange = React.lazy(
+  () => import("./identification/Passphrase/Change")
+);
 
 const Users = React.lazy(() => import("./identification/Users"));
 const Article = React.lazy(() => import("./administration/Article"));
