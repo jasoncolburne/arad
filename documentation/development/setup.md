@@ -3,7 +3,8 @@
 # Setup
 
 ## Pre-requisites
-- bash
+
+- bash (get something like Debian on WSL2 if you're using Windows)
 - docker
 
 ## Setup
@@ -14,7 +15,16 @@ The `nuke` command can be leveraged to setup your local environment.
 arad $ scripts/local nuke
 ```
 
+## Sanity Test
+
+It's best to test that your local is setup correctly by running all test suites.
+
+```
+arad $ scripts/test e2e && scripts/test front-end && scripts/test back-end
+```
+
 ## Running
+
 ```
 arad $ scripts/local up
 ```
