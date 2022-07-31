@@ -80,7 +80,7 @@ jobs:
       - run:
           name: Tag images
           command: |
-            IMAGES=(front-end e2e-client identity reader reviewer administrator core api)
+            IMAGES=(front-end identity reader reviewer administrator core api)
             for IMAGE in "${IMAGES[@]}"; do
               LATEST_TAG="${IMAGE}-${CIRCLE_BRANCH}-latest"
               HASH_TAG="${IMAGE}-${CIRCLE_BRANCH}-$(git rev-parse --short HEAD)"
@@ -94,7 +94,7 @@ jobs:
       - run:
           name: Push images
           command: |
-            IMAGES=(front-end e2e-client identity reader reviewer administrator core api)
+            IMAGES=(front-end identity reader reviewer administrator core api)
             for IMAGE in "${IMAGES[@]}"; do
               LATEST_TAG="${IMAGE}-${CIRCLE_BRANCH}-latest"
               HASH_TAG="${IMAGE}-${CIRCLE_BRANCH}-$(git rev-parse --short HEAD)"
