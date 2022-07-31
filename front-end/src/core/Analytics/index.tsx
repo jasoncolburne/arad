@@ -8,4 +8,4 @@ const Analytics = () => {
   );
 };
 
-export { Analytics };
+export default Analytics;

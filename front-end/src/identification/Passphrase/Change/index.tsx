@@ -8,4 +8,4 @@ const Change = () => {
   );
 };
 
-export { Change };
+export default Change;
