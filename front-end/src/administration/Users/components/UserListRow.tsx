@@ -47,15 +47,21 @@ const UserListRow = (props: UserListRowProps) => {
     );
   };
 
+  const emailKey = `users-email-${user.id}`;
+
   return (
     <Tr>
-      <Td key={user.id + "-email"}>{user.email}</Td>
+      <Td id={emailKey} key={emailKey}>
+        {user.email}
+      </Td>
       {roles.map((role) => {
         const assigned = user.roles!.includes(role);
+        const toggleKey = `users-roleToggle-${user.id}-${role}`;
 
         return (
-          <Td key={user.id + "-" + role}>
+          <Td key={toggleKey}>
             <Checkbox
+              id={toggleKey}
               colorScheme="gray"
               size="lg"
               defaultChecked={assigned}

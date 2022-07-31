@@ -8,7 +8,7 @@ describe("registration", () => {
 
     cy.register(email, passphrase)
       .get("#arad-logoutLink").should("be.visible")
-      .refreshToken().should("be.not.empty")
+      .refreshToken().should("not.be.empty")
       .pathShouldNotEqual("/register");
   });
 

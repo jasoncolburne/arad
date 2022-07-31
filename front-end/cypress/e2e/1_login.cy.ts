@@ -10,7 +10,7 @@ describe("login", () => {
       .logout()
       .login(email, passphrase)
       .get("#arad-logoutLink").should("be.visible")
-      .refreshToken().should("be.not.empty")
+      .refreshToken().should("not.be.empty")
       .pathShouldNotEqual("/login");
   });
 

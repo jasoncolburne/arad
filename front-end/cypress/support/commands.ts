@@ -97,6 +97,14 @@ const accessToken = (scope: Role): Cypress.Chainable<string> => {
     .its(`credentials.access_tokens.${scope.toLowerCase()}`);
 };
 
+const userId = (): Cypress.Chainable<string> => {
+  return cy.applicationState().its("user.id");
+};
+
+const userRoles = (): Cypress.Chainable<Role[]> => {
+  return cy.applicationState().its("user.roles");
+}
+
 declare namespace Cypress {
   // eslint-disable-next-line
   interface Chainable<Subject> {
@@ -141,15 +149,18 @@ declare namespace Cypress {
     /**
      * The current refreshToken
      * @example
-     * cy.refreshToken().should('be.not.empty');
+     * cy.refreshToken().should('not.be.empty');
      */
     refreshToken: typeof refreshToken;
     /**
      * A current access token
      * @example
-     * cy.accessToken('ADMINISTRATOR').should('be.not.empty');
+     * cy.accessToken('ADMINISTRATOR').should('not.be.empty');
      */
     accessToken: typeof accessToken;
+
+    userId: typeof userId;
+    userRoles: typeof userRoles;
   }
 }
 
@@ -164,4 +175,7 @@ Cypress.Commands.addAll({
   applicationState,
   refreshToken,
   accessToken,
+
+  userId,
+  userRoles
 });
