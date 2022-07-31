@@ -6,7 +6,9 @@ ARG DEPLOYMENT_ENVIRONMENT
 ENV DEPLOYMENT_ENVIRONMENT ${DEPLOYMENT_ENVIRONMENT}
 
 RUN \
-    if [ "${DEPLOYMENT_ENVIRONMENT}" = "development" ]; then \
+    if [ "${DEPLOYMENT_ENVIRONMENT}" = "production" ]; then \
+        echo "skipping package installation for production build"
+    else \
         apt-get update; \
         apt-get install -y \
             xvfb \
