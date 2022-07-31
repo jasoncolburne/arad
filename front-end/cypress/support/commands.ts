@@ -71,6 +71,14 @@ const login = (
            .type("{enter}");
 };
 
+const shouldBeLoggedIn = (email: string): Cypress.Chainable<JQuery<HTMLElement>> => {
+  return cy.get("#arad-passphraseLink").contains(email);
+};
+
+const shouldBeLoggedOut = (): Cypress.Chainable<JQuery<HTMLElement>> => {
+  return cy.get("#arad-passphraseLink").should("not.exist");
+};
+
 const logout = (): Cypress.Chainable<JQuery<HTMLElement>> => {
   return cy.get("#arad-logoutLink").should("be.visible").click();
 };
@@ -126,6 +134,8 @@ declare namespace Cypress {
      * cy.logout();
      */
     logout: typeof logout;
+    shouldBeLoggedIn: typeof shouldBeLoggedIn;
+    shouldBeLoggedOut: typeof shouldBeLoggedOut;
 
     /**
      * Ensure the path is as expected, equal to the given value
@@ -168,6 +178,8 @@ Cypress.Commands.addAll({
   register,
   login,
   logout,
+  shouldBeLoggedIn,
+  shouldBeLoggedOut,
 
   pathShouldEqual,
   pathShouldNotEqual,

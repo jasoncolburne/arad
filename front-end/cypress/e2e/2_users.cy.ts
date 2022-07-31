@@ -7,7 +7,7 @@ describe("users", () => {
     const passphrase = "passphrase";
 
     cy.register(email, passphrase)
-      .get("#arad-logoutLink").should("be.visible")
+      .shouldBeLoggedIn(email)
       .visit("/users")
       .get("#users-errorMessage").contains("not authorized")
       .accessToken("ADMINISTRATOR").should("be.empty");
@@ -28,7 +28,7 @@ describe("users", () => {
     const { email, passphrase } = administratorCredentials;
 
     cy.login(email, passphrase)
-      .get("#arad-passphraseLink").contains(email)
+      .shouldBeLoggedIn(email)
       .userId().then((userId) => {
         const toggleId = `#users-roleToggle-${userId}-REVIEWER`;
         cy.userRoles().should("not.include", "REVIEWER")
@@ -45,7 +45,7 @@ describe("users", () => {
           .logout()
           .get("#arad-passphraseLink").should("not.exist")
           .login(email, passphrase)
-          .get("#arad-passphraseLink").contains(email)
+          .shouldBeLoggedIn(email)
           .userRoles().should("include", "REVIEWER");
         });
   });

@@ -9,7 +9,7 @@ describe("login", () => {
     cy.register(email, passphrase)
       .logout()
       .login(email, passphrase)
-      .get("#arad-logoutLink").should("be.visible")
+      .shouldBeLoggedIn(email)
       .refreshToken().should("not.be.empty")
       .pathShouldNotEqual("/login");
   });
@@ -32,7 +32,7 @@ describe("login", () => {
     const passphrase = "passphrase";
 
     cy.register(email, passphrase)
-      .get("#arad-logoutLink").should("be.visible")
+      .shouldBeLoggedIn(email)
       .visit("/login")
       .pathShouldNotEqual("/login");
   });
