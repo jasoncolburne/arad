@@ -38,3 +38,9 @@ services:
     build:
       context: front-end
       args: *common-args
+
+  front-end-ci:
+    build:
+      context: front-end
+      args:
+        DEPLOYMENT_ENVIRONMENT: ci

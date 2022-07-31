@@ -80,7 +80,7 @@ jobs:
       - run:
           name: Tag images
           command: |
-            IMAGES=(front-end identity reader reviewer administrator core api)
+            IMAGES=(front-end front-end-ci identity reader reviewer administrator core api)
             for IMAGE in "${IMAGES[@]}"; do
               LATEST_TAG="${IMAGE}-${CIRCLE_BRANCH}-latest"
               HASH_TAG="${IMAGE}-${CIRCLE_BRANCH}-$(git rev-parse --short HEAD)"
@@ -94,7 +94,7 @@ jobs:
       - run:
           name: Push images
           command: |
-            IMAGES=(front-end identity reader reviewer administrator core api)
+            IMAGES=(front-end front-end-ci identity reader reviewer administrator core api)
             for IMAGE in "${IMAGES[@]}"; do
               LATEST_TAG="${IMAGE}-${CIRCLE_BRANCH}-latest"
               HASH_TAG="${IMAGE}-${CIRCLE_BRANCH}-$(git rev-parse --short HEAD)"
@@ -135,18 +135,7 @@ jobs:
           command: ./scripts/provision-ci-database
       - run:
           name: End to End Tests
-          command: |
-            docker compose -f docker-compose.ci.yml up -d \
-              database \
-              cache \
-              identity \
-              reader \
-              reviewer \
-              administrator \
-              api \
-              front-end
-            docker compose -f docker-compose.ci.yml build e2e-client
-            docker compose -f docker-compose.ci.yml run --rm e2e-client bash -c "yarn cypress:ci"
+          command: docker compose -f docker-compose.ci.yml run e2e-client bash -c "yarn cypress:ci"
 
   black-identity:
     resource_class: small
@@ -305,38 +294,38 @@ jobs:
   eslint-front-end:
     resource_class: small
     docker:
-      - image: ${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:front-end-${CIRCLE_BRANCH}-latest
+      - image: ${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:front-end-ci-${CIRCLE_BRANCH}-latest
         auth: *docker-auth
     steps:
       - run:
           name: Eslint
           command: |
             cd /app
-            yarn run eslint --max-warnings=0 .
+            yarn lint
 
   prettier-front-end:
     resource_class: small
     docker:
-      - image: ${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:front-end-${CIRCLE_BRANCH}-latest
+      - image: ${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:front-end-ci-${CIRCLE_BRANCH}-latest
         auth: *docker-auth
     steps:
       - run:
           name: Prettier
           command: |
             cd /app
-            yarn run prettier --check src
+            yarn prettier
 
   typecheck-front-end:
     resource_class: small
     docker:
-      - image: ${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:front-end-${CIRCLE_BRANCH}-latest
+      - image: ${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:front-end-ci-${CIRCLE_BRANCH}-latest
         auth: *docker-auth
     steps:
       - run:
           name: Typecheck
           command: |
             cd /app
-            yarn run tsc --strict
+            yarn typecheck
 
 
 

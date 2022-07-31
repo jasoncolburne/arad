@@ -61,19 +61,24 @@ mypy() {
   simple_compose_command $1 "mypy --install-types --non-interactive ."
 }
 
-eslint() {
+lint() {
   unset ACTIVATE_SCRIPT
-  simple_compose_command front-end "yarn run eslint --max-warnings=0 ."
+  simple_compose_command front-end "yarn lint"
 }
 
-tsc() {
+typecheck() {
   unset ACTIVATE_SCRIPT
-  simple_compose_command front-end "yarn run tsc --strict"
+  simple_compose_command front-end "yarn typecheck"
+}
+
+prettify() {
+  unset ACTIVATE_SCRIPT
+  simple_compose_command front-end "yarn prettify"
 }
 
 prettier() {
   unset ACTIVATE_SCRIPT
-  simple_compose_command front-end "yarn run prettier --write src"
+  simple_compose_command front-end "yarn prettier"
 }
 
 e2e() {
@@ -142,8 +147,8 @@ back_end() {
 }
 
 front_end() {
-  ./scripts/test tsc
-  ./scripts/test eslint
+  ./scripts/test typecheck
+  ./scripts/test lint
   ./scripts/test prettier
 }
 
@@ -162,12 +167,14 @@ execute() {
     pylint "${ARGUMENTS}"
   elif [[ "${COMMAND}" == "mypy" ]]; then
     mypy "${ARGUMENTS}"
-  elif [[ "${COMMAND}" == "eslint" ]]; then
-    eslint
-  elif [[ "${COMMAND}" == "tsc" ]]; then
-    tsc
+  elif [[ "${COMMAND}" == "lint" ]]; then
+    lint
+  elif [[ "${COMMAND}" == "typecheck" ]]; then
+    typecheck
   elif [[ "${COMMAND}" == "prettier" ]]; then
     prettier
+  elif [[ "${COMMAND}" == "prettify" ]]; then
+    prettify
   elif [[ "${COMMAND}" == "e2e" ]]; then
     e2e
   elif [[ "${COMMAND}" == "fast-e2e" ]]; then
