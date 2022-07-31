@@ -34,10 +34,10 @@ COPY poetry.lock .
 RUN poetry check
 RUN poetry lock --check
 RUN \
-  if [ "${DEPLOYMENT_ENVIRONMENT}" = "development" ]; then \
-    poetry install --no-root --with test; \
-  else \
+  if [ "${DEPLOYMENT_ENVIRONMENT}" = "production" ]; then \
     poetry install --no-root --without test; \
+  else \
+    poetry install --no-root --with test; \
   fi
 
 RUN apt-get -y remove gcc libc-dev ca-certificates

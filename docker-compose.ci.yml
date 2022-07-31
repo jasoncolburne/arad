@@ -22,6 +22,14 @@ x-database-dependency: &database-dependency
     condition: service_healthy
 
 services:
+  e2e-client:
+    build:
+      context: front-end
+      args:
+        DEPLOYMENT_ENVIRONMENT: ci
+    depends_on:
+      - front-end
+
   front-end:
     image: "${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:front-end-${CIRCLE_BRANCH}-latest"
     depends_on:

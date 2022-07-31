@@ -69,11 +69,19 @@ jobs:
           command: ./scripts/sync
       - run:
           name: Build images from docker-compose.yml
-          command: docker compose -f production-compose.yml build
+          command: docker compose -f docker-compose.build.yml build
+      - run:
+          name: Create front-end image from base
+          command: |
+            docker compose -f docker-compose.build.yml up -d front-end-base
+            docker compose -f docker-compose.build.yml cp front-end-base:/app/build front-end-nginx
+            docker compose -f docker-compose.build.yml down
+            cd front-end-nginx
+            docker build -t project_front-end:latest
       - run:
           name: Tag images
           command: |
-            IMAGES=(front-end identity reader reviewer administrator core api)
+            IMAGES=(front-end e2e-client identity reader reviewer administrator core api)
             for IMAGE in "${IMAGES[@]}"; do
               LATEST_TAG="${IMAGE}-${CIRCLE_BRANCH}-latest"
               HASH_TAG="${IMAGE}-${CIRCLE_BRANCH}-$(git rev-parse --short HEAD)"
@@ -87,7 +95,7 @@ jobs:
       - run:
           name: Push images
           command: |
-            IMAGES=(front-end identity reader reviewer administrator core api)
+            IMAGES=(front-end e2e-client identity reader reviewer administrator core api)
             for IMAGE in "${IMAGES[@]}"; do
               LATEST_TAG="${IMAGE}-${CIRCLE_BRANCH}-latest"
               HASH_TAG="${IMAGE}-${CIRCLE_BRANCH}-$(git rev-parse --short HEAD)"
@@ -129,10 +137,17 @@ jobs:
       - run:
           name: End to End Tests
           command: |
-            docker compose -f ci-compose.yml up -d
-            echo "waiting 45 seconds for front-end..."
-            sleep 45
-            docker compose -f ci-compose.yml run --rm front-end bash -c "yarn cypress:ci"
+            docker compose -f docker-compose.ci.yml up -d \
+              database \
+              cache \
+              identity \
+              reader \
+              reviewer \
+              administrator \
+              api \
+              front-end
+            docker compose -f docker-compose.ci.yml build e2e-client
+            docker compose -f docker-compose.ci.yml run --rm e2e-client bash -c "yarn cypress:ci"
 
   black-identity:
     resource_class: small
