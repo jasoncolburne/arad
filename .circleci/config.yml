@@ -69,11 +69,18 @@ jobs:
           command: ./scripts/sync
       - run:
           name: Build images from docker-compose.yml
-          command: docker compose -f production-compose.yml build
+          command: docker compose -f docker-compose.build.yml build
+      - run:
+          name: Create front-end image from base
+          command: |
+            docker compose -f docker-compose.build.yml up -d front-end-base
+            docker compose -f docker-compose.build.yml cp front-end-base:/app/build front-end-nginx
+            docker compose -f docker-compose.build.yml down
+            docker build -t project_front-end:latest front-end-nginx
       - run:
           name: Tag images
           command: |
-            IMAGES=(front-end identity reader reviewer administrator core api)
+            IMAGES=(front-end front-end-ci identity reader reviewer administrator core api)
             for IMAGE in "${IMAGES[@]}"; do
               LATEST_TAG="${IMAGE}-${CIRCLE_BRANCH}-latest"
               HASH_TAG="${IMAGE}-${CIRCLE_BRANCH}-$(git rev-parse --short HEAD)"
@@ -87,7 +94,7 @@ jobs:
       - run:
           name: Push images
           command: |
-            IMAGES=(front-end identity reader reviewer administrator core api)
+            IMAGES=(front-end front-end-ci identity reader reviewer administrator core api)
             for IMAGE in "${IMAGES[@]}"; do
               LATEST_TAG="${IMAGE}-${CIRCLE_BRANCH}-latest"
               HASH_TAG="${IMAGE}-${CIRCLE_BRANCH}-$(git rev-parse --short HEAD)"
@@ -128,11 +135,7 @@ jobs:
           command: ./scripts/provision-ci-database
       - run:
           name: End to End Tests
-          command: |
-            docker compose -f ci-compose.yml up -d
-            echo "waiting 45 seconds for front-end..."
-            sleep 45
-            docker compose -f ci-compose.yml run --rm front-end bash -c "yarn cypress:ci"
+          command: docker compose -f docker-compose.ci.yml run e2e-client bash -c "yarn cypress:ci"
 
   black-identity:
     resource_class: small
@@ -291,38 +294,38 @@ jobs:
   eslint-front-end:
     resource_class: small
     docker:
-      - image: ${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:front-end-${CIRCLE_BRANCH}-latest
+      - image: ${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:front-end-ci-${CIRCLE_BRANCH}-latest
         auth: *docker-auth
     steps:
       - run:
           name: Eslint
           command: |
             cd /app
-            yarn run eslint --max-warnings=0 .
+            yarn lint
 
   prettier-front-end:
     resource_class: small
     docker:
-      - image: ${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:front-end-${CIRCLE_BRANCH}-latest
+      - image: ${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:front-end-ci-${CIRCLE_BRANCH}-latest
         auth: *docker-auth
     steps:
       - run:
           name: Prettier
           command: |
             cd /app
-            yarn run prettier --check src
+            yarn prettier
 
   typecheck-front-end:
     resource_class: small
     docker:
-      - image: ${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:front-end-${CIRCLE_BRANCH}-latest
+      - image: ${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:front-end-ci-${CIRCLE_BRANCH}-latest
         auth: *docker-auth
     steps:
       - run:
           name: Typecheck
           command: |
             cd /app
-            yarn run tsc --strict
+            yarn typecheck
 
 
 

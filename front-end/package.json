@@ -23,7 +23,11 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "cypress:run": "cypress run",
-    "cypress:ci": "cypress run --config-file ./cypress.config.ci.ts"
+    "cypress:ci": "cypress run --config-file ./cypress.config.ci.ts",
+    "prettify": "prettier --write src",
+    "prettier": "prettier --check src",
+    "typecheck": "tsc --strict",
+    "lint": "eslint --max-warnings=0 ."
   },
   "eslintConfig": {
     "extends": "react-app"

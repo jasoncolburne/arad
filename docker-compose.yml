@@ -23,7 +23,9 @@ x-database-dependency: &database-dependency
 
 services:
   front-end:
-    build: front-end
+    build:
+      context: front-end
+      args: *common-args
     volumes:
       - './front-end:/app'
     depends_on:

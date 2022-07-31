@@ -22,14 +22,16 @@ x-database-dependency: &database-dependency
     condition: service_healthy
 
 services:
+  e2e-client:
+    image: "${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:front-end-ci-${CIRCLE_BRANCH}-latest"
+    depends_on:
+      - front-end
+
   front-end:
     image: "${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:front-end-${CIRCLE_BRANCH}-latest"
     depends_on:
       api:
         condition: service_healthy
-    ports:
-      - "3000:3000" # for websockets
-      - "80:3000"
 
   api:
     image: "${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:api-${CIRCLE_BRANCH}-latest"
@@ -47,8 +49,6 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
-    ports:
-      - "81:80" # this is how the front end talks to the api. port 80 is taken atm.
 
   identity:
     image: "${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:identity-${CIRCLE_BRANCH}-latest"
@@ -69,8 +69,6 @@ services:
       cache:
         condition: service_healthy
     healthcheck: *healthcheck
-    ports:
-      - "8003:80" # for docs
 
   reader:
     image: "${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:reader-${CIRCLE_BRANCH}-latest"
@@ -78,8 +76,6 @@ services:
     environment: *common-environment
     depends_on: *database-dependency
     healthcheck: *healthcheck
-    ports:
-      - "8002:80" # for docs
 
   reviewer:
     image: "${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:reviewer-${CIRCLE_BRANCH}-latest"
@@ -87,8 +83,6 @@ services:
     environment: *common-environment
     depends_on: *database-dependency
     healthcheck: *healthcheck
-    ports:
-      - "8001:80" # for docs
 
   administrator:
     image: "${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:administrator-${CIRCLE_BRANCH}-latest"
@@ -96,8 +90,6 @@ services:
     environment: *common-environment
     depends_on: *database-dependency
     healthcheck: *healthcheck
-    ports:
-      - "8000:80" # for docs
 
   cache:
     image: "redis:bullseye"
