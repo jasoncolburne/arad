@@ -134,8 +134,18 @@ declare namespace Cypress {
      * cy.logout();
      */
     logout: typeof logout;
+    /**
+     * Assert that the user identified by `email` is logged in
+     * @example
+     * cy.shouldBeLoggedIn(email);
+     */
     shouldBeLoggedIn: typeof shouldBeLoggedIn;
-    shouldBeLoggedOut: typeof shouldBeLoggedOut;
+    /**
+     * Assert that the no user is logged in
+     * @example
+     * cy.shouldBeLoggedOut();
+     */
+     shouldBeLoggedOut: typeof shouldBeLoggedOut;
 
     /**
      * Ensure the path is as expected, equal to the given value
@@ -168,9 +178,18 @@ declare namespace Cypress {
      * cy.accessToken('ADMINISTRATOR').should('not.be.empty');
      */
     accessToken: typeof accessToken;
-
+    /**
+     * The current user's id
+     * @example
+     * cy.userId().should('not.be.empty');
+     */
     userId: typeof userId;
-    userRoles: typeof userRoles;
+    /**
+     * The current user's roles
+     * @example
+     * cy.userRoles().should('include', 'ADMINISTRATOR');
+     */
+     userRoles: typeof userRoles;
   }
 }
 
