@@ -2,6 +2,9 @@
 
 FROM node:slim
 
+ARG DEPLOYMENT_ENVIRONMENT
+ENV DEPLOYMENT_ENVIRONMENT ${DEPLOYMENT_ENVIRONMENT}
+
 RUN \
     if [ "${DEPLOYMENT_ENVIRONMENT}" = "development" ]; then \
         apt-get update; \
