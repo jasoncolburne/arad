@@ -34,8 +34,8 @@ services:
     healthcheck:
       test: ["CMD-SHELL", "curl http://localhost > /dev/null"]
       interval: 10s
-      timeout: 5s
-      retries: 5
+      timeout: 10s
+      retries: 11
     ports:
       - "80:80"
 
