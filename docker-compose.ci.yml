@@ -51,7 +51,7 @@ services:
       administrator:
         condition: service_healthy
     healthcheck:
-      test: ["CMD-SHELL", "curl https://localhost/health > /dev/null"]
+      test: ["CMD-SHELL", "curl -k https://localhost/health > /dev/null"]
       interval: 5s
       timeout: 5s
       retries: 5
