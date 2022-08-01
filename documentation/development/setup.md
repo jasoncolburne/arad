@@ -20,7 +20,7 @@ arad $ scripts/local nuke
 It's best to test that your local is setup correctly by running all test suites.
 
 ```
-arad $ scripts/test e2e && scripts/test front-end && scripts/test back-end
+arad $ scripts/test all
 ```
 
 ## Running
