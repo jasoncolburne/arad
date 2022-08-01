@@ -21,13 +21,12 @@ RUN apt-get -y install --no-install-recommends \
   curl \
   ca-certificates
 
-# TODO download this script and run it from our sources
-RUN curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/install-poetry.py | \
-  python - --preview
+WORKDIR /app
 
+COPY install-poetry.py .
+RUN python ./install-poetry.py --version 1.2.0b3
 RUN poetry config virtualenvs.options.system-site-packages true
 
-WORKDIR /app
 COPY pyproject.toml .
 COPY poetry.lock .
 

@@ -3,7 +3,7 @@
 set -eo pipefail
 
 BACKENDS=(administrator reviewer reader identity)
-ACTIVATE_SCRIPT=". \$(./activate)"
+ACTIVATE_SCRIPT=". \$(./echo_activate_path)"
 
 stack_up() {
   docker compose up --remove-orphans
