@@ -47,6 +47,36 @@ x-mypy-steps: &mypy-steps
         . $(./echo_activate_path)
         mypy --install-types --non-interactive .
 
+x-identity-common: &identity-common
+  resource_class: small
+  docker:
+    - image: ${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:identity-${CIRCLE_BRANCH}-${CIRCLE_SHA1:0:7}
+      auth: *docker-auth
+
+x-administrator-common: &administrator-common
+  resource_class: small
+  docker:
+    - image: ${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:administrator-${CIRCLE_BRANCH}-${CIRCLE_SHA1:0:7}
+      auth: *docker-auth
+
+x-reviewer-common: &reviewer-common
+  resource_class: small
+  docker:
+    - image: ${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:reviewer-${CIRCLE_BRANCH}-${CIRCLE_SHA1:0:7}
+      auth: *docker-auth
+
+x-reader-common: &reader-common
+  resource_class: small
+  docker:
+    - image: ${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:reader-${CIRCLE_BRANCH}-${CIRCLE_SHA1:0:7}
+      auth: *docker-auth
+
+x-core-common: &core-common
+  resource_class: small
+  docker:
+    - image: ${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:core-${CIRCLE_BRANCH}-${CIRCLE_SHA1:0:7}
+      auth: *docker-auth
+
 
 jobs:
   build-images:
@@ -130,6 +160,7 @@ jobs:
             echo "DOCKERHUB_USER=${DOCKERHUB_USER}" > .env
             echo "CIRCLE_PROJECT_REPONAME=${CIRCLE_PROJECT_REPONAME}" >> .env
             echo "CIRCLE_BRANCH=${CIRCLE_BRANCH}" >> .env
+            echo "GIT_REVISION=$(git rev-parse --short HEAD)" >> .env
       - run:
           name: Provision Database
           command: ./scripts/provision-ci-database
@@ -138,45 +169,26 @@ jobs:
           command: docker compose -f docker-compose.ci.yml run e2e-client bash -c "yarn cypress:ci"
 
   black-identity:
-    resource_class: small
-    docker:
-      - image: ${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:identity-${CIRCLE_BRANCH}-latest
-        auth: *docker-auth
+    <<: *identity-common
     steps: *black-steps
 
   black-administrator:
-    resource_class: small
-    docker:
-      - image: ${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:administrator-${CIRCLE_BRANCH}-latest
-        auth: *docker-auth
+    <<: *administrator-common
     steps: *black-steps
 
   black-reviewer:
-    resource_class: small
-    docker:
-      - image: ${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:reviewer-${CIRCLE_BRANCH}-latest
-        auth: *docker-auth
+    <<: *reviewer-common
     steps: *black-steps
 
   black-reader:
-    resource_class: small
-    docker:
-      - image: ${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:reader-${CIRCLE_BRANCH}-latest
-        auth: *docker-auth
+    <<: *reader-common
     steps: *black-steps
 
   black-core:
-    resource_class: small
-    docker:
-      - image: ${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:core-${CIRCLE_BRANCH}-latest
-        auth: *docker-auth
+    <<: *core-common
     steps: *black-steps
 
   pytest-identity:
-    resource_class: small
-    docker:
-      - image: ${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:identity-${CIRCLE_BRANCH}-latest
-        auth: *docker-auth
     environment:
       ACCESS_TOKEN_PRIVATE_KEY_PEM: |
         -----BEGIN EC PRIVATE KEY-----
@@ -185,116 +197,75 @@ jobs:
         KtsWIycbTKbfLm2IdwNXDOO346u4OhCaBg==
         -----END EC PRIVATE KEY-----
       DEFAULT_ADMIN_EMAIL: admin@domain.org
+    <<: *identity-common
     steps: *pytest-steps
 
   pytest-administrator:
-    resource_class: small
-    docker:
-      - image: ${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:administrator-${CIRCLE_BRANCH}-latest
-        auth: *docker-auth
+    <<: *administrator-common
     steps: *pytest-steps
 
   pytest-reviewer:
-    resource_class: small
-    docker:
-      - image: ${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:reviewer-${CIRCLE_BRANCH}-latest
-        auth: *docker-auth
+    <<: *reviewer-common
     steps: *pytest-steps
 
   pytest-reader:
-    resource_class: small
-    docker:
-      - image: ${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:reader-${CIRCLE_BRANCH}-latest
-        auth: *docker-auth
+    <<: *reader-common
     steps: *pytest-steps
 
   pytest-core:
-    resource_class: small
-    docker:
-      - image: ${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:core-${CIRCLE_BRANCH}-latest
-        auth: *docker-auth
     environment:
       ACCESS_TOKEN_PUBLIC_KEY_PEM: |
         -----BEGIN PUBLIC KEY-----
         MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEnoH4lyjW4T0uUFbAYRL1G/3dxF1M
         kak4CYTwDU8lSubpkIKXFqo7KtsWIycbTKbfLm2IdwNXDOO346u4OhCaBg==
         -----END PUBLIC KEY-----
+    <<: *core-common
     steps: *pytest-steps
 
   pylint-identity:
-    resource_class: small
-    docker:
-      - image: ${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:identity-${CIRCLE_BRANCH}-latest
-        auth: *docker-auth
+    <<: *identity-common
     steps: *pylint-steps
 
   pylint-administrator:
-    resource_class: small
-    docker:
-      - image: ${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:administrator-${CIRCLE_BRANCH}-latest
-        auth: *docker-auth
+    <<: *administrator-common
     steps: *pylint-steps
 
   pylint-reviewer:
-    resource_class: small
-    docker:
-      - image: ${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:reviewer-${CIRCLE_BRANCH}-latest
-        auth: *docker-auth
+    <<: *reviewer-common
     steps: *pylint-steps
 
   pylint-reader:
-    resource_class: small
-    docker:
-      - image: ${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:reader-${CIRCLE_BRANCH}-latest
-        auth: *docker-auth
+    <<: *reader-common
     steps: *pylint-steps
 
   pylint-core:
-    resource_class: small
-    docker:
-      - image: ${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:core-${CIRCLE_BRANCH}-latest
-        auth: *docker-auth
+    <<: *core-common
     steps: *pylint-steps
 
   mypy-identity:
-    resource_class: small
-    docker:
-      - image: ${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:identity-${CIRCLE_BRANCH}-latest
-        auth: *docker-auth
+    <<: *identity-common
     steps: *mypy-steps
 
   mypy-administrator:
-    resource_class: small
-    docker:
-      - image: ${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:administrator-${CIRCLE_BRANCH}-latest
-        auth: *docker-auth
+    <<: *administrator-common
     steps: *mypy-steps
 
   mypy-reviewer:
-    resource_class: small
-    docker:
-      - image: ${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:reviewer-${CIRCLE_BRANCH}-latest
-        auth: *docker-auth
+    <<: *reviewer-common
     steps: *mypy-steps
 
   mypy-reader:
-    resource_class: small
-    docker:
-      - image: ${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:reader-${CIRCLE_BRANCH}-latest
-        auth: *docker-auth
+    <<: *reader-common
     steps: *mypy-steps
 
   mypy-core:
-    resource_class: small
-    docker:
-      - image: ${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:core-${CIRCLE_BRANCH}-latest
-        auth: *docker-auth
+    <<: *core-common
     steps: *mypy-steps
 
   eslint-front-end:
     resource_class: small
     docker:
-      - image: ${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:front-end-ci-${CIRCLE_BRANCH}-latest
+      - image: ${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:front-end-ci-${CIRCLE_BRANCH}-${CIRCLE_SHA1:0:7}
         auth: *docker-auth
     steps:
       - run:
@@ -306,7 +277,7 @@ jobs:
   prettier-front-end:
     resource_class: small
     docker:
-      - image: ${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:front-end-ci-${CIRCLE_BRANCH}-latest
+      - image: ${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:front-end-ci-${CIRCLE_BRANCH}-${CIRCLE_SHA1:0:7}
         auth: *docker-auth
     steps:
       - run:
@@ -318,7 +289,7 @@ jobs:
   typecheck-front-end:
     resource_class: small
     docker:
-      - image: ${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:front-end-ci-${CIRCLE_BRANCH}-latest
+      - image: ${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:front-end-ci-${CIRCLE_BRANCH}-${CIRCLE_SHA1:0:7}
         auth: *docker-auth
     steps:
       - run:

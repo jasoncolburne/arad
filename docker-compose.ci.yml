@@ -23,13 +23,13 @@ x-database-dependency: &database-dependency
 
 services:
   e2e-client:
-    image: "${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:front-end-ci-${CIRCLE_BRANCH}-latest"
+    image: "${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:front-end-ci-${CIRCLE_BRANCH}-${GIT_REVISION}"
     depends_on:
       front-end:
         condition: service_healthy
 
   front-end:
-    image: "${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:front-end-${CIRCLE_BRANCH}-latest"
+    image: "${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:front-end-${CIRCLE_BRANCH}-${GIT_REVISION}"
     depends_on:
       api:
         condition: service_healthy
@@ -40,7 +40,7 @@ services:
       retries: 5
 
   api:
-    image: "${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:api-${CIRCLE_BRANCH}-latest"
+    image: "${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:api-${CIRCLE_BRANCH}-${GIT_REVISION}"
     depends_on:
       identity:
         condition: service_healthy
@@ -57,7 +57,7 @@ services:
       retries: 5
 
   identity:
-    image: "${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:identity-${CIRCLE_BRANCH}-latest"
+    image: "${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:identity-${CIRCLE_BRANCH}-${GIT_REVISION}"
     restart: always
     environment:
       <<: *common-environment
@@ -77,21 +77,21 @@ services:
     healthcheck: *healthcheck
 
   reader:
-    image: "${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:reader-${CIRCLE_BRANCH}-latest"
+    image: "${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:reader-${CIRCLE_BRANCH}-${GIT_REVISION}"
     restart: always
     environment: *common-environment
     depends_on: *database-dependency
     healthcheck: *healthcheck
 
   reviewer:
-    image: "${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:reviewer-${CIRCLE_BRANCH}-latest"
+    image: "${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:reviewer-${CIRCLE_BRANCH}-${GIT_REVISION}"
     restart: always
     environment: *common-environment
     depends_on: *database-dependency
     healthcheck: *healthcheck
 
   administrator:
-    image: "${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:administrator-${CIRCLE_BRANCH}-latest"
+    image: "${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:administrator-${CIRCLE_BRANCH}-${GIT_REVISION}"
     restart: always
     environment: *common-environment
     depends_on: *database-dependency
