@@ -121,12 +121,6 @@ back_end() {
   done
 
   echo
-  echo "moving black changes back into common..."
-  echo
-  rsync -v -r -d administrator/database core
-  rsync -v -r -d identity/common core
-  
-  echo
   echo "re-syncing"
   echo
   ./scripts/sync
