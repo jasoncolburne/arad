@@ -50,31 +50,31 @@ x-mypy-steps: &mypy-steps
 x-identity-common: &identity-common
   resource_class: small
   docker:
-    - image: ${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:identity-${CIRCLE_BRANCH}-${CIRCLE_SHA1:0:7}
+    - image: "${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:identity-${CIRCLE_BRANCH}-${CIRCLE_SHA1:0:7}"
       auth: *docker-auth
 
 x-administrator-common: &administrator-common
   resource_class: small
   docker:
-    - image: ${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:administrator-${CIRCLE_BRANCH}-${CIRCLE_SHA1:0:7}
+    - image: "${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:administrator-${CIRCLE_BRANCH}-${CIRCLE_SHA1:0:7}"
       auth: *docker-auth
 
 x-reviewer-common: &reviewer-common
   resource_class: small
   docker:
-    - image: ${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:reviewer-${CIRCLE_BRANCH}-${CIRCLE_SHA1:0:7}
+    - image: "${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:reviewer-${CIRCLE_BRANCH}-${CIRCLE_SHA1:0:7}"
       auth: *docker-auth
 
 x-reader-common: &reader-common
   resource_class: small
   docker:
-    - image: ${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:reader-${CIRCLE_BRANCH}-${CIRCLE_SHA1:0:7}
+    - image: "${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:reader-${CIRCLE_BRANCH}-${CIRCLE_SHA1:0:7}"
       auth: *docker-auth
 
 x-core-common: &core-common
   resource_class: small
   docker:
-    - image: ${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:core-${CIRCLE_BRANCH}-${CIRCLE_SHA1:0:7}
+    - image: "${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:core-${CIRCLE_BRANCH}-${CIRCLE_SHA1:0:7}"
       auth: *docker-auth
 
 
