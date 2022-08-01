@@ -23,6 +23,12 @@ It's best to test that your local is setup correctly by running all test suites.
 arad $ scripts/test all
 ```
 
+## Browser Configuration
+
+You'll need to tell your browser to allow self-signed certificates from localhost. Navigate here if you use Chrome -
+[chrome://flags/#allow-insecure-localhost](chrome://flags/#allow-insecure-localhost) - and enable the flag
+`Allow invalid certificates for resources loaded from localhost`.
+
 ## Running
 
 ```
