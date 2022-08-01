@@ -24,7 +24,7 @@ RUN apt-get -y install --no-install-recommends \
 WORKDIR /app
 
 COPY install-poetry.py .
-RUN python ./install-poetry.py --preview
+RUN python ./install-poetry.py --version 1.2.0b3
 RUN poetry config virtualenvs.options.system-site-packages true
 
 COPY pyproject.toml .
