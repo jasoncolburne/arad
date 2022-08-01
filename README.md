@@ -2,6 +2,7 @@
 Accessible Research Article Database
 
 [![CircleCI](https://dl.circleci.com/status-badge/img/gh/jasoncolburne/arad/tree/main.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/gh/jasoncolburne/arad/tree/main)
+(sometimes this may say failed if we do something like change documentation and cancel the build to save ci credits)
 
 *This project is under construction and reality may not yet match design.*
 
