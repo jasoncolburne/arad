@@ -4,7 +4,7 @@ set -eo pipefail
 
 BACKENDS=(identity reader reviewer administrator)
 DIRECTORIES=(common)
-FILES=(Dockerfile .dockerignore mypy.ini .pylintrc activate)
+FILES=(Dockerfile .dockerignore mypy.ini .pylintrc echo_activate_path install-poetry.py)
 
 for BACKEND in "${BACKENDS[@]}"
 do

@@ -17,7 +17,7 @@ x-black-steps: &black-steps
       name: Blacken
       command: |
         cd /app
-        . $(./activate)
+        . $(./echo_activate_path)
         black --check .
 
 x-pytest-steps: &pytest-steps
@@ -26,7 +26,7 @@ x-pytest-steps: &pytest-steps
       name: Pytest
       command: |
         cd /app
-        . $(./activate)
+        . $(./echo_activate_path)
         pytest .
 
 x-pylint-steps: &pylint-steps
@@ -35,7 +35,7 @@ x-pylint-steps: &pylint-steps
       name: Pylint
       command: |
         cd /app
-        . $(./activate)
+        . $(./echo_activate_path)
         find . -maxdepth 1 -type d -not -name '.*' | xargs pylint
 
 x-mypy-steps: &mypy-steps
@@ -44,7 +44,7 @@ x-mypy-steps: &mypy-steps
       name: Mypy
       command: |
         cd /app
-        . $(./activate)
+        . $(./echo_activate_path)
         mypy --install-types --non-interactive .
 
 

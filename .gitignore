@@ -29,10 +29,15 @@
 /reader/.pylintrc
 /identity/.pylintrc
 
-/administrator/activate
-/reviewer/activate
-/reader/activate
-/identity/activate
+/administrator/echo_activate_path
+/reviewer/echo_activate_path
+/reader/echo_activate_path
+/identity/echo_activate_path
+
+/administrator/install-poetry.py
+/reviewer/install-poetry.py
+/reader/install-poetry.py
+/identity/install-poetry.py
 
 /front-end/cypress/screenshots
 /front-end/cypress/videos

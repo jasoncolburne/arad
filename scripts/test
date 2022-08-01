@@ -3,7 +3,7 @@
 set -eo pipefail
 
 BACKENDS=(administrator reviewer reader identity core)
-ACTIVATE_SCRIPT=". \$(./activate)"
+ACTIVATE_SCRIPT=". \$(./echo_activate_path)"
 
 # core meaning the directory, arad/core. it's harder to test this code as we aren't deploying an image of it
 core_command() {
@@ -162,6 +162,12 @@ front_end() {
   ./scripts/test prettier
 }
 
+all() {
+  ./scripts/test e2e
+  ./scripts/test front-end
+  ./scripts/test back-end
+}
+
 # we can probably do the rest in a single line by eval or something
 execute() {
   local COMMAND=$1
@@ -193,6 +199,8 @@ execute() {
     back_end
   elif [[ "${COMMAND}" == "front-end" ]]; then
     front_end
+  elif [[ "${COMMAND}" == "all" ]]; then
+    all
   else
     echo "unknown command ${COMMAND}"
     exit 1

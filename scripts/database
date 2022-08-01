@@ -15,7 +15,7 @@ APPLICATION_DATABASE_PASSPHRASE=arad_application
 DATABASE_USER=postgres
 DATABASE_PASSPHRASE=postgres
 
-ACTIVATE_SCRIPT=". \$(./activate)"
+ACTIVATE_SCRIPT=". \$(./echo_activate_path)"
 
 create() {
   set +e
