@@ -28,6 +28,7 @@ services:
       args: *common-args
     volumes:
       - './front-end:/app'
+      - '/app/node_modules'
     depends_on:
       api:
         condition: service_healthy

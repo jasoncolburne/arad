@@ -106,12 +106,6 @@ fast_e2e() {
 }
 
 back_end() {
-  # sync first so that common changes don't get blown away during this process
-  echo "syncing code"
-  echo
-
-  ./scripts/sync
-
   echo
   echo "running black on all services"
   echo
@@ -121,7 +115,7 @@ back_end() {
   done
 
   echo
-  echo "re-syncing"
+  echo "syncing"
   echo
   ./scripts/sync
 
