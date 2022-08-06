@@ -31,8 +31,8 @@ const Api = () => {
         options.body = JSON.stringify(body);
       }
 
-      const url = `https://${
-        currentHostname === "localhost" ? "localhost" : "api"
+      const url = `http://${
+        currentHostname === "localhost" ? "localhost:81" : "api"
       }/api/v1/${endpoint}`;
       const response = await fetch(url, options);
 
