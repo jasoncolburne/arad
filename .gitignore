@@ -39,9 +39,21 @@
 /reader/install-poetry.py
 /identity/install-poetry.py
 
+/administrator/nginx.conf
+/reviewer/nginx.conf
+/reader/nginx.conf
+/identity/nginx.conf
+
+/administrator/migrate.sh
+/reviewer/migrate.sh
+/reader/migrate.sh
+/identity/migrate.sh
+
 /front-end/cypress/screenshots
 /front-end/cypress/videos
 /front-end/cypress/downloads
+
+/nomad/batch_jobs/*.nomad
 
 /.vscode
 

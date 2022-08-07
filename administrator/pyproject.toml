@@ -20,6 +20,7 @@ python-multipart = "*"
 python-jose = {extras = ["cryptography"], version = "*"}
 pydantic = {extras = ["email"], version = "*"}
 fastapi-utils = "*"
+alembic = "*"
 ipython = "*"
 
 [tool.poetry.group.test.dependencies]
