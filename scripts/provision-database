@@ -2,12 +2,22 @@
 
 set -eo pipefail
 
-USER_DATABASE_HOST=localhost
+DATABASE_SET=$1
+
+
+if [[ "${DATABASE_SET}" == "ci" ]]
+then
+  USER_DATABASE_HOST=database
+  APPLICATION_DATABASE_HOST=database
+else
+  USER_DATABASE_HOST=localhost
+  APPLICATION_DATABASE_HOST=localhost
+fi
+
 USER_DATABASE_NAME=arad_user
 USER_DATABASE_USER=arad_user
 USER_DATABASE_PASSPHRASE=arad_user
 
-APPLICATION_DATABASE_HOST=localhost
 APPLICATION_DATABASE_NAME=arad_application
 APPLICATION_DATABASE_USER=arad_application
 APPLICATION_DATABASE_PASSPHRASE=arad_application
@@ -61,32 +71,27 @@ EOS
 set -e
 
 
-# we can probably do the rest in a single line by eval or something
-execute() {
-  local DATABASE_SET=$1
 
-  if [[ "${DATABASE_SET}" == "ci" ]]; then
-    docker compose -f docker-compose.ci.yml run --rm identity bash -c "${USER_DATABASE_SCRIPT}"
-    docker compose -f docker-compose.ci.yml run --rm administrator bash -c "${APPLICATION_DATABASE_SCRIPT}"
 
-    docker compose -f docker-compose.ci.yml run --rm identity ./migrate.sh
-    docker compose -f docker-compose.ci.yml run --rm administrator ./migrate.sh
-  elif [[ "${DATABASE_SET}" == "local" ]]; then
-    nomad-pack run pack
+if [[ "${DATABASE_SET}" == "ci" ]]; then
+  docker compose -f docker-compose.ci.yml run --rm identity bash -c "${USER_DATABASE_SCRIPT}"
+  docker compose -f docker-compose.ci.yml run --rm administrator bash -c "${APPLICATION_DATABASE_SCRIPT}"
 
-    sleep 30
+  docker compose -f docker-compose.ci.yml run --rm identity ./migrate.sh
+  docker compose -f docker-compose.ci.yml run --rm administrator ./migrate.sh
+elif [[ "${DATABASE_SET}" == "local" ]]; then
+  nomad-pack run pack
 
-    IDENTITY_ALLOC=$(nomad status identity_service | rg run | rg identity_service | cut -d' ' -f1)
-    ADMINISTRATOR_ALLOC=$(nomad status administrator_service | rg run | rg administrator_service | cut -d' ' -f1)
-    nomad alloc exec $IDENTITY_ALLOC bash -c "${USER_DATABASE_SCRIPT}"
-    nomad alloc exec $ADMINISTRATOR_ALLOC bash -c "${APPLICATION_DATABASE_SCRIPT}"
+  sleep 30
 
-    nomad alloc exec $IDENTITY_ALLOC ./migrate.sh
-    nomad alloc exec $ADMINISTRATOR_ALLOC ./migrate.sh
-  else
-    echo "unknown database set ${DATABASE_SET}"
-    exit 1
-  fi
-}
+  IDENTITY_ALLOC=$(nomad status identity_service | rg run | rg identity_service | cut -d' ' -f1)
+  ADMINISTRATOR_ALLOC=$(nomad status administrator_service | rg run | rg administrator_service | cut -d' ' -f1)
+  nomad alloc exec $IDENTITY_ALLOC bash -c "${USER_DATABASE_SCRIPT}"
+  nomad alloc exec $ADMINISTRATOR_ALLOC bash -c "${APPLICATION_DATABASE_SCRIPT}"
 
-execute "$1"
+  nomad alloc exec $IDENTITY_ALLOC ./migrate.sh
+  nomad alloc exec $ADMINISTRATOR_ALLOC ./migrate.sh
+else
+  echo "unknown database set ${DATABASE_SET}"
+  exit 1
+fi
