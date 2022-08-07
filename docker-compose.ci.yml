@@ -112,7 +112,7 @@ services:
     image: "postgres:bullseye"
     restart: always
     environment:
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_PASSWORD: passphrase
     volumes:
       - 'database:/var/lib/postgresql/data'
     healthcheck:

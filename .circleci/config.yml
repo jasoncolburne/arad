@@ -163,7 +163,7 @@ jobs:
             echo "GIT_REVISION=$(git rev-parse --short HEAD)" >> .env
       - run:
           name: Provision Database
-          command: ./scripts/provision-ci-database
+          command: ./scripts/provision-database ci
       - run:
           name: End to End Tests
           command: docker compose -f docker-compose.ci.yml run e2e-client bash -c "yarn cypress:ci"

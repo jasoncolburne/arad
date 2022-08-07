@@ -3,6 +3,7 @@
 set -eo pipefail
 
 BACKENDS=(administrator reviewer reader identity)
+IMAGES=(front-end api identity administrator reviewer reader)
 ACTIVATE_SCRIPT=". \$(./echo_activate_path)"
 
 stack_up() {
@@ -15,6 +16,31 @@ stack_daemonize() {
 
 stack_down() {
   docker compose down
+}
+
+nomad_server() {
+  nomad agent -dev -bind=0.0.0.0 -log-level INFO -config=nomad/client.hcl
+}
+
+nomad_up() {
+  nomad-pack run nomad/arad
+}
+
+nomad_down() {
+  nomad-pack destroy nomad/arad
+}
+
+nomad_migrate() {
+  rm -f nomad/batch_jobs/*.nomad
+  nomad-pack render -o nomad nomad/batch_jobs
+  hclfmt -w nomad/batch_jobs/*.nomad
+
+  nomad run nomad/batch_jobs/migrate_user_database.nomad
+  nomad run nomad/batch_jobs/migrate_application_database.nomad
+
+  sleep 2
+
+  nomad system gc
 }
 
 stack_build() {
@@ -32,6 +58,10 @@ stack_build() {
   echo "building from compose..."
   echo
   docker compose build
+  
+  for IMAGE in "${IMAGES[@]}"; do
+    docker tag arad_${IMAGE}:latest arad_${IMAGE}:local
+  done
 
   echo
   echo "building snowflake core testing image..."
@@ -120,6 +150,14 @@ execute() {
     stack_daemonize
   elif [[ "${COMMAND}" == "down" ]]; then
     stack_down
+  elif [[ "${COMMAND}" == "nomad-server" ]]; then
+    nomad_server
+  elif [[ "${COMMAND}" == "nomad-up" ]]; then
+    nomad_up
+  elif [[ "${COMMAND}" == "nomad-down" ]]; then
+    nomad_down
+  elif [[ "${COMMAND}" == "nomad-migrate" ]]; then
+    nomad_migrate
   elif [[ "${COMMAND}" == "build" ]]; then
     stack_build
   elif [[ "${COMMAND}" == "relock" ]]; then
