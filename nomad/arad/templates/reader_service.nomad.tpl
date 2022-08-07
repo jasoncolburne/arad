@@ -24,6 +24,12 @@ job "reader_service" {
         ports = ["http"]
       }
 
+      service {
+        name     = "reader-service"
+        provider = [[ if (.arad.consul_enabled) -]]"consul"[[- else -]]"nomad"[[- end ]]
+        port     = "http"
+      }
+
       template {
         [[ if (.arad.consul_enabled) -]]
         data = <<EOH

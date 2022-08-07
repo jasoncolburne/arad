@@ -39,6 +39,12 @@ EOK
         ports = ["http"]
       }
 
+      service {
+        name     = "identity-service"
+        provider = [[ if (.arad.consul_enabled) -]]"consul"[[- else -]]"nomad"[[- end ]]
+        port     = "http"
+      }
+
       template {
         [[ if (.arad.consul_enabled) -]]
         data = <<EOH

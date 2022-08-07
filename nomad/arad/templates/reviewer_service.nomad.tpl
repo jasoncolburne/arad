@@ -24,6 +24,12 @@ job "reviewer_service" {
         ports = ["http"]
       }
 
+      service {
+        name     = "reviewer-service"
+        provider = [[ if (.arad.consul_enabled) -]]"consul"[[- else -]]"nomad"[[- end ]]
+        port     = "http"
+      }
+
       template {
         [[ if (.arad.consul_enabled) -]]
         data = <<EOH
