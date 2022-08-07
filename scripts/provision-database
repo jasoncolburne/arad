@@ -80,7 +80,7 @@ if [[ "${DATABASE_SET}" == "ci" ]]; then
   docker compose -f docker-compose.ci.yml run --rm identity ./migrate.sh
   docker compose -f docker-compose.ci.yml run --rm administrator ./migrate.sh
 elif [[ "${DATABASE_SET}" == "local" ]]; then
-  nomad-pack run pack
+  nomad-pack run nomad/arad
 
   sleep 30
 
