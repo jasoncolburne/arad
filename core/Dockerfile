@@ -51,4 +51,4 @@ RUN apt-get -y autoremove
 COPY . .
 RUN rm nginx.conf
 
-CMD ["bash", "-c", "service nginx start && poetry run start"]
+CMD ["bash", "-c", "./entrypoint.sh"]

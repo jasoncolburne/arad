@@ -4,7 +4,7 @@ set -eo pipefail
 
 BACKENDS=(identity reader reviewer administrator)
 DIRECTORIES=(common)
-FILES=(Dockerfile .dockerignore mypy.ini .pylintrc echo_activate_path install-poetry.py nginx.conf migrate.sh)
+FILES=(Dockerfile .dockerignore mypy.ini .pylintrc echo_activate_path install-poetry.py nginx.conf migrate.sh entrypoint.sh)
 
 for BACKEND in "${BACKENDS[@]}"
 do
@@ -12,12 +12,12 @@ do
 
   for DIRECTORY in "${DIRECTORIES[@]}"
   do
-    rsync -v -r -d --delete --delete-excluded core/${DIRECTORY} ${TARGET}
+    rsync -avrd --delete --delete-excluded core/${DIRECTORY} ${TARGET}
   done
 
   for FILE in "${FILES[@]}"
   do
-    cp -v core/${FILE} ${TARGET}
+    cp -av core/${FILE} ${TARGET}
   done
 done
 
@@ -31,7 +31,7 @@ do
 
   for DIRECTORY in "${DIRECTORIES[@]}"
   do
-    rsync -v -r -d --delete --delete-excluded core/${DIRECTORY} ${TARGET}
+    rsync -avrd --delete --delete-excluded core/${DIRECTORY} ${TARGET}
   done
 done
 
