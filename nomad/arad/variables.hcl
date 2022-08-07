@@ -77,7 +77,7 @@ variable "service_listen_port" {
 }
 
 variable "service_resources" {
-  description = "The resources to assign to the user database."
+  description = "The resources to assign to a backend service."
   type = object({
     cpu    = number
     memory = number
@@ -85,6 +85,18 @@ variable "service_resources" {
   default = {
     cpu    = 750,
     memory = 512
+  }
+}
+
+variable "front_end_resources" {
+  description = "The resources to assign to the front-end."
+  type = object({
+    cpu    = number
+    memory = number
+  })
+  default = {
+    cpu    = 2000,
+    memory = 3072
   }
 }
 
@@ -116,4 +128,10 @@ variable "api_service_image" {
   description = "The image to use for the api service."
   type = string
   default = "arad_api:local"
+}
+
+variable "front_end_image" {
+  description = "The image to use for the front-end."
+  type = string
+  default = "arad_front-end:local"
 }
