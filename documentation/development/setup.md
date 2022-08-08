@@ -29,14 +29,13 @@ arad $ scripts/test all
 arad $ scripts/local up
 ```
 
-With your docker-compose services running, try navigating to `http://localhost`. We'll turn TLS 1.3 on before moving to
-production. If you want to see the backend APIs, there is live documentation available at `http://localhost` on ports
-`8000`-`8003` at `/docs`. Check out `http://localhost:8003/docs` to see the `identity` api documentation.
+With your docker-compose services running, try navigating to [http://localhost](http://localhost).
 
-- `administrator` - `8000`
-- `reviewer` - `8001`
-- `reader` - `8002`
-- `identity` - `8003`
+Here are some other useful urls:
+[http://localhost/api/v1/identify/docs](http://localhost/api/v1/identify/docs)
+[http://localhost/api/v1/administrate/docs](http://localhost/api/v1/administrate/docs)
+[http://localhost/api/v1/review/docs](http://localhost/api/v1/review/docs)
+[http://localhost/api/v1/read/docs](http://localhost/api/v1/read/docs)
 
 You can edit any code, front-end or back-end, and it should live-update. Just remember to sync if you edit something in
 `common`.

@@ -1,8 +1,7 @@
 import common.app
-import common.services.authorization
 import common.datatypes.response
 
-app = common.app.get_application()
+app = common.app.get_application("/api/v1/administrate")
 
 
 @app.get(
