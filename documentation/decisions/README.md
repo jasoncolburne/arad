@@ -19,3 +19,4 @@ itself is more important so I don't intend to do archaeology to figure out the c
 - [008: Read-Only Access for Reader Service](./008-read-only-access-for-reader.md)
 - [009: Default Docker Compose for Local Development](./009-default-docker-compose-for-local.md)
 - [010: ECC Keys for JWT Signatures](./010-ecc-keys-for-jwt.md)
+- [011: Hashicorp Tooling for Deployment and Configuration](./011-hashicorp.md)
