@@ -35,8 +35,9 @@ EOK
       }
 
       config {
-        image = [[ .arad.identity_service_image | quote ]]
-        ports = ["http"]
+        image       = [[ .arad.identity_service_image | quote ]]
+        extra_hosts = ["host.docker.internal:host-gateway"]
+        ports       = ["http"]
       }
 
       service {

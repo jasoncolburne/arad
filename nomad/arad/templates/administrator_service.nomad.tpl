@@ -20,8 +20,9 @@ job "administrator_service" {
       }
 
       config {
-        image = [[ .arad.administrator_service_image | quote ]]
-        ports = ["http"]
+        image       = [[ .arad.administrator_service_image | quote ]]
+        extra_hosts = ["host.docker.internal:host-gateway"]
+        ports       = ["http"]
       }
 
       service {

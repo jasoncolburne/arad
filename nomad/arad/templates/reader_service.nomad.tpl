@@ -20,8 +20,9 @@ job "reader_service" {
       }
 
       config {
-        image = [[ .arad.reader_service_image | quote ]]
-        ports = ["http"]
+        image       = [[ .arad.reader_service_image | quote ]]
+        extra_hosts = ["host.docker.internal:host-gateway"]
+        ports       = ["http"]
       }
 
       service {

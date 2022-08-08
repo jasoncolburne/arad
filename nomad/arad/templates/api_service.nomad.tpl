@@ -17,8 +17,9 @@ job "api_service" {
       driver = "docker"
 
       config {
-        image = [[ .arad.api_service_image | quote ]]
-        ports = ["http"]
+        image       = [[ .arad.api_service_image | quote ]]
+        extra_hosts = ["host.docker.internal:host-gateway"]
+        ports       = ["http"]
       }
 
       service {
