@@ -84,8 +84,6 @@ services:
       cache:
         condition: service_healthy
     healthcheck: *healthcheck
-    ports:
-      - "8003:80" # for docs
 
   reader:
     build:
@@ -97,8 +95,6 @@ services:
       - './reader:/app'
     depends_on: *database-dependency
     healthcheck: *healthcheck
-    ports:
-      - "8002:80" # for docs
 
   reviewer:
     build:
@@ -110,8 +106,6 @@ services:
       - './reviewer:/app'
     depends_on: *database-dependency
     healthcheck: *healthcheck
-    ports:
-      - "8001:80" # for docs
 
   administrator:
     build:
@@ -123,8 +117,6 @@ services:
       - './administrator:/app'
     depends_on: *database-dependency
     healthcheck: *healthcheck
-    ports:
-      - "8000:80" # for docs
 
   cache:
     image: "redis:bullseye"

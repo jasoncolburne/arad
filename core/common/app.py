@@ -19,11 +19,12 @@ class HealthCheckFilter(logging.Filter):
 logging.getLogger("uvicorn.access").addFilter(HealthCheckFilter())
 
 
-def get_application() -> FastAPI:
+def get_application(root_path: str) -> FastAPI:
     app = FastAPI(
         openapi_url="/openapi.json" if LOCAL else None,
         docs_url="/docs" if LOCAL else None,
         redoc_url=None,
+        root_path=root_path,
     )
 
     origins = [

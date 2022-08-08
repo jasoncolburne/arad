@@ -14,7 +14,7 @@ import identity.datatypes.response
 import identity.orchestrations
 
 
-app = common.app.get_application()
+app = common.app.get_application("/api/v1/identify")
 oauth2_scheme = fastapi.security.OAuth2PasswordBearer(tokenUrl="/identify/token")
 
 
