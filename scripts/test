@@ -50,6 +50,10 @@ pytest() {
 }
 
 black() {
+  simple_compose_command $1 "black --check ."
+}
+
+blacken() {
   simple_compose_command $1 "black ."
 }
 
@@ -115,11 +119,6 @@ back_end() {
   done
 
   echo
-  echo "syncing"
-  echo
-  ./scripts/sync
-
-  echo
   echo "running pylint on all services"
   echo
   for BACKEND in "${BACKENDS[@]}"; do
@@ -139,9 +138,6 @@ back_end() {
   for BACKEND in "${BACKENDS[@]}"; do
     ./scripts/test pytest "${BACKEND}"
   done
-
-  echo
-  echo "all tests passed!"
 }
 
 front_end() {
@@ -154,6 +150,32 @@ all() {
   ./scripts/test e2e
   ./scripts/test front-end
   ./scripts/test back-end
+
+  echo
+  echo "all tests passed!"
+}
+
+format() {
+  echo
+  echo "blackening all back-end services"
+  echo
+
+  for BACKEND in "${BACKENDS[@]}"; do
+    ./scripts/test blacken "${BACKEND}"
+  done
+
+
+  echo
+  echo "syncing core"
+  echo
+
+  ./scripts/sync
+
+  echo
+  echo "prettifying front-end"
+  echo
+
+  ./scripts/test prettify
 }
 
 # we can probably do the rest in a single line by eval or something
@@ -161,12 +183,12 @@ execute() {
   local COMMAND=$1
   local ARGUMENTS=$(echo $2 | sed "s/^ *//" | sed "s/ *\$//")
 
-  if [[ "${COMMAND}" == "behave" ]]; then
-    behave "${ARGUMENTS}"
-  elif [[ "${COMMAND}" == "pytest" ]]; then
-    pytest "${ARGUMENTS}"
+  if [[ "${COMMAND}" == "blacken" ]]; then
+    blacken "${ARGUMENTS}"
   elif [[ "${COMMAND}" == "black" ]]; then
     black "${ARGUMENTS}"
+  elif [[ "${COMMAND}" == "pytest" ]]; then
+    pytest "${ARGUMENTS}"
   elif [[ "${COMMAND}" == "pylint" ]]; then
     pylint "${ARGUMENTS}"
   elif [[ "${COMMAND}" == "mypy" ]]; then
@@ -189,6 +211,8 @@ execute() {
     front_end
   elif [[ "${COMMAND}" == "all" ]]; then
     all
+  elif [[ "${COMMAND}" == "format" ]]; then
+    format
   else
     echo "unknown command ${COMMAND}"
     exit 1
