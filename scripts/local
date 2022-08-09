@@ -32,31 +32,40 @@ nomad_server() {
 
 # render the batch jobs to .nomad files
 nomad_batch() {
+  local ENVIRONMENT=$1
+
   rm -f nomad/batch_jobs/*.nomad
-  nomad-pack render -o nomad nomad/batch_jobs
+
+  nomad-pack render -o nomad -f nomad/configurations/common.hcl -f "nomad/configurations/${ENVIRONMENT}.hcl" nomad/batch_jobs
   hclfmt -w nomad/batch_jobs/*.nomad
 }
 
 # render the arad pack to the screen
 nomad_render() {
-  nomad-pack render nomad/arad | hclfmt
+  local ENVIRONMENT=$1
+
+  nomad-pack render -f nomad/configurations/common.hcl -f "nomad/configurations/${ENVIRONMENT}.hcl" nomad/arad | hclfmt
 }
 
 nomad_plan() {
-  nomad-pack plan nomad/arad
+  local ENVIRONMENT=$1
+
+  nomad-pack plan -f nomad/configurations/common.hcl -f "nomad/configurations/${ENVIRONMENT}.hcl" nomad/arad
 }
 
 nomad_apply() {
-  nomad-pack run nomad/arad
+  local ENVIRONMENT=$1
+
+  nomad-pack run -f nomad/configurations/common.hcl -f "nomad/configurations/${ENVIRONMENT}.hcl" nomad/arad
 }
 
 nomad_destroy() {
-  nomad-pack destroy nomad/arad
+  local ENVIRONMENT=$1
+
+  nomad-pack destroy -f nomad/configurations/common.hcl -f "nomad/configurations/${ENVIRONMENT}.hcl" nomad/arad
 }
 
 nomad_migrate() {
-  ./scripts/local nomad-batch
-
   nomad run nomad/batch_jobs/migrate_user_database.nomad
   nomad run nomad/batch_jobs/migrate_application_database.nomad
 
@@ -175,15 +184,15 @@ execute() {
   elif [[ "${COMMAND}" == "nomad-server" ]]; then
     nomad_server "${ARGUMENTS}"
   elif [[ "${COMMAND}" == "nomad-batch" ]]; then
-    nomad_batch
+    nomad_batch "${ARGUMENTS}"
   elif [[ "${COMMAND}" == "nomad-render" ]]; then
-    nomad_render
+    nomad_render "${ARGUMENTS}"
   elif [[ "${COMMAND}" == "nomad-plan" ]]; then
-    nomad_plan
+    nomad_plan "${ARGUMENTS}"
   elif [[ "${COMMAND}" == "nomad-apply" ]]; then
-    nomad_apply
+    nomad_apply "${ARGUMENTS}"
   elif [[ "${COMMAND}" == "nomad-destroy" ]]; then
-    nomad_destroy
+    nomad_destroy "${ARGUMENTS}"
   elif [[ "${COMMAND}" == "nomad-migrate" ]]; then
     nomad_migrate
   elif [[ "${COMMAND}" == "build" ]]; then

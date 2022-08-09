@@ -14,6 +14,10 @@ job "migrate_user_database" {
         entrypoint = ["bash", "-c", "service nginx start && ./migrate.sh"]
       }
 
+      env {
+        DATABASE_URL = "postgresql+asyncpg://arad_user:arad_user@localhost:5432/arad_user"
+      }
+
       restart {
         attempts = 0
       }
@@ -23,7 +27,7 @@ job "migrate_user_database" {
         data = <<EOH
 upstream database {
 {{- range service "user-database" }}
-  server {{ if (eq .Address "127.0.0.1") }}host.docker.internal{{ else }}{{ .Address }}{{ end }}:{{ .Port }};
+  server {{ .Address }}:{{ .Port }};
 {{- end }}
 }
 
@@ -36,7 +40,7 @@ EOH
         data = <<EOH
 upstream database {
 {{- range nomadService "user-database" }}
-  server {{ if (eq .Address "127.0.0.1") }}host.docker.internal{{ else }}{{ .Address }}{{ end }}:{{ .Port }};
+  server {{ .Address }}:{{ .Port }};
 {{- end }}
 }
 

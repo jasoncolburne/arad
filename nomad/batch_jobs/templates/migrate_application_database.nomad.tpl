@@ -14,6 +14,10 @@ job "migrate_application_database" {
         entrypoint = ["bash", "-c", "service nginx start && ./migrate.sh"]
       }
 
+      env {
+        DATABASE_URL = "postgresql+asyncpg://arad_application:arad_application@localhost:5432/arad_application"
+      }
+
       restart {
         attempts = 0
       }
@@ -23,7 +27,7 @@ job "migrate_application_database" {
         data = <<EOH
 upstream database {
 {{- range service "application-database" }}
-  server {{ if (eq .Address "127.0.0.1") }}host.docker.internal{{ else }}{{ .Address }}{{ end }}:{{ .Port }};
+  server {{ .Address }}:{{ .Port }};
 {{- end }}
 }
 
@@ -36,7 +40,7 @@ EOH
         data = <<EOH
 upstream database {
 {{- range nomadService "application-database" }}
-  server {{ if (eq .Address "127.0.0.1") }}host.docker.internal{{ else }}{{ .Address }}{{ end }}:{{ .Port }};
+  server {{ .Address }}:{{ .Port }};
 {{- end }}
 }
 

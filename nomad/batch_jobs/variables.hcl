@@ -77,7 +77,7 @@ variable "service_listen_port" {
 }
 
 variable "service_resources" {
-  description = "The resources to assign to the user database."
+  description = "The resources to assign to a backend service."
   type = object({
     cpu    = number
     memory = number
@@ -86,6 +86,24 @@ variable "service_resources" {
     cpu    = 750,
     memory = 512
   }
+}
+
+variable "front_end_resources" {
+  description = "The resources to assign to the front-end."
+  type = object({
+    cpu    = number
+    memory = number
+  })
+  default = {
+    cpu    = 2000,
+    memory = 3072
+  }
+}
+
+variable "back_end_allowed_origins" {
+  description = "A string, comma separated list of origins to allow access to the backend. eg, https://arad.org"
+  type = string
+  default = "http://arad-local.org"
 }
 
 variable "identity_service_image" {
@@ -100,8 +118,26 @@ variable "reader_service_image" {
   default = "arad_reader:local"
 }
 
+variable "reviewer_service_image" {
+  description = "The image to use for the reviewer service."
+  type = string
+  default = "arad_reviewer:local"
+}
+
 variable "administrator_service_image" {
   description = "The image to use for the administrator service."
   type = string
   default = "arad_administrator:local"
+}
+
+variable "api_service_image" {
+  description = "The image to use for the api service."
+  type = string
+  default = "arad_api:local"
+}
+
+variable "front_end_image" {
+  description = "The image to use for the front-end."
+  type = string
+  default = "arad_front-end:local"
 }
