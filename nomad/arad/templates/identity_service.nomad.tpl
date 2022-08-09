@@ -54,7 +54,7 @@ EOK
         data = <<EOH
 upstream cache {
 {{- range service "token-cache" }}
-  server {{ .Address }}:{{ .Port }};
+  server 10.1.0.1:{{ .Port }};
 {{- end }}
 }
 
@@ -65,7 +65,7 @@ server {
 
 upstream database {
 {{- range service "user-database" }}
-  server {{ .Address }}:{{ .Port }};
+  server 10.1.0.1:{{ .Port }};
 {{- end }}
 }
 
@@ -78,7 +78,7 @@ EOH
         data = <<EOH
 upstream cache {
 {{- range nomadService "token-cache" }}
-  server {{ .Address }}:{{ .Port }};
+  server 10.1.0.1:{{ .Port }};
 {{- end }}
 }
 
@@ -89,7 +89,7 @@ server {
 
 upstream database {
 {{- range nomadService "user-database" }}
-  server {{ .Address }}:{{ .Port }};
+  server 10.1.0.1:{{ .Port }};
 {{- end }}
 }
 

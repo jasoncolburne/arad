@@ -35,7 +35,7 @@ job "api_service" {
         data = <<EOH
 upstream administrator {
 {{- range service "administrator-service" }}
-  server {{ .Address }}:{{ .Port }};
+  server 10.1.0.1:{{ .Port }};
 {{- end }}
 }
 EOH
@@ -43,7 +43,7 @@ EOH
         data = <<EOH
 upstream administrator {
 {{- range nomadService "administrator-service" }}
-  server {{ .Address }}:{{ .Port }};
+  server 10.1.0.1:{{ .Port }};
 {{- end }}
 }
 EOH
@@ -58,7 +58,7 @@ EOH
         data = <<EOH
 upstream reviewer {
 {{- range service "reviewer-service" }}
-  server {{ .Address }}:{{ .Port }};
+  server 10.1.0.1:{{ .Port }};
 {{- end }}
 }
 EOH
@@ -66,7 +66,7 @@ EOH
         data = <<EOH
 upstream reviewer {
 {{- range nomadService "reviewer-service" }}
-  server {{ .Address }}:{{ .Port }};
+  server 10.1.0.1:{{ .Port }};
 {{- end }}
 }
 EOH
@@ -81,7 +81,7 @@ EOH
         data = <<EOH
 upstream reader {
 {{- range service "reader-service" }}
-  server {{ .Address }}:{{ .Port }};
+  server 10.1.0.1:{{ .Port }};
 {{- end }}
 }
 EOH
@@ -89,7 +89,7 @@ EOH
         data = <<EOH
 upstream reader {
 {{- range nomadService "reader-service" }}
-  server {{ .Address }}:{{ .Port }};
+  server 10.1.0.1:{{ .Port }};
 {{- end }}
 }
 EOH
@@ -104,7 +104,7 @@ EOH
         data = <<EOH
 upstream identity {
 {{- range service "identity-service" }}
-  server {{ .Address }}:{{ .Port }};
+  server 10.1.0.1:{{ .Port }};
 {{- end }}
 }
 EOH
@@ -112,7 +112,7 @@ EOH
         data = <<EOH
 upstream identity {
 {{- range nomadService "identity-service" }}
-  server {{ .Address }}:{{ .Port }};
+  server 10.1.0.1:{{ .Port }};
 {{- end }}
 }
 EOH

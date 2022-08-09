@@ -33,7 +33,7 @@ job "migrate_application_database" {
         data = <<EOH
 upstream database {
 {{- range service "application-database" }}
-  server {{ .Address }}:{{ .Port }};
+  server 10.1.0.1:{{ .Port }};
 {{- end }}
 }
 
@@ -46,7 +46,7 @@ EOH
         data = <<EOH
 upstream database {
 {{- range nomadService "application-database" }}
-  server {{ .Address }}:{{ .Port }};
+  server 10.1.0.1:{{ .Port }};
 {{- end }}
 }
 
