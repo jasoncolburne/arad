@@ -48,7 +48,6 @@ EOH
         [[ end -]]
         
         destination = "local/administrator.conf"
-        perms       = 0600
         # command     = "systemctl restart nginx"
       }
 
@@ -72,7 +71,6 @@ EOH
         [[ end -]]
         
         destination = "local/reviewer.conf"
-        perms       = 0600
         # command     = "systemctl restart nginx"
       }
 
@@ -96,7 +94,6 @@ EOH
         [[ end -]]
         
         destination = "local/reader.conf"
-        perms       = 0600
         # command     = "systemctl restart nginx"
       }
 
@@ -120,7 +117,6 @@ EOH
         [[ end -]]
         
         destination = "local/identity.conf"
-        perms       = 0600
         # command     = "systemctl restart nginx"
       }
 

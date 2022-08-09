@@ -99,7 +99,6 @@ EOH
         [[ end -]]
         
         destination = "local/upstreams.conf"
-        perms       = 0600
         # command     = "systemctl restart nginx"
       }
 
