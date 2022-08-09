@@ -46,8 +46,8 @@ set -e
 if [[ "${DATABASE_SET}" == "ci" ]]; then
   docker compose -f docker-compose.ci.yml run --rm identity bash -c "${USER_DATABASE_SCRIPT}"
   docker compose -f docker-compose.ci.yml run --rm administrator bash -c "${APPLICATION_DATABASE_SCRIPT}"
-elif [[ "${DATABASE_SET}" == "local" ]]; then
-  nomad-pack run nomad/arad
+else
+  ./scripts/local nomad-apply "${DATABASE_SET}"  
 
   sleep 30
 
@@ -55,7 +55,4 @@ elif [[ "${DATABASE_SET}" == "local" ]]; then
   ADMINISTRATOR_ALLOC=$(nomad status administrator_service | rg run | rg administrator_service | cut -d' ' -f1)
   nomad alloc exec $IDENTITY_ALLOC bash -c "${USER_DATABASE_SCRIPT}"
   nomad alloc exec $ADMINISTRATOR_ALLOC bash -c "${APPLICATION_DATABASE_SCRIPT}"
-else
-  echo "unknown database set ${DATABASE_SET}"
-  exit 1
 fi
