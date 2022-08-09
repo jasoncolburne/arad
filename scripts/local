@@ -19,7 +19,9 @@ stack_down() {
 }
 
 nomad_server() {
-  nomad agent -dev -bind=0.0.0.0 -log-level INFO -config=nomad/client.hcl
+  local ENVIRONMENT=$1
+
+  nomad agent -dev -bind=0.0.0.0 -log-level INFO -config="nomad/client.${ENVIRONMENT}.hcl"
 }
 
 # render the batch jobs to .nomad files
@@ -174,7 +176,7 @@ execute() {
   elif [[ "${COMMAND}" == "down" ]]; then
     stack_down
   elif [[ "${COMMAND}" == "nomad-server" ]]; then
-    nomad_server
+    nomad_server "${ARGUMENTS}"
   elif [[ "${COMMAND}" == "nomad-batch" ]]; then
     nomad_batch "${ARGUMENTS}"
   elif [[ "${COMMAND}" == "nomad-render" ]]; then
