@@ -57,7 +57,14 @@ In another terminal:
 ```
 arad $ scripts/local build
 arad $ scripts/provision-database local
+arad $ scripts/local nomad-plan local
 arad $ scripts/local nomad-apply local
+```
+
+The last thing you need to do to test locally with nomad is put this line in /etc/hosts:
+
+```
+<your network interface ip address> arad-local.org
 ```
 
 That should be it! We haven't made code syncing work in Nomad yet.
