@@ -50,14 +50,14 @@ If you want to try using the nomad tools to run things, first install nomad and 
 
 In a dedicated terminal:
 ```
-arad $ scripts/local nomad-server
+arad $ scripts/local nomad-server <your network interface>
 ```
 
 In another terminal:
 ```
 arad $ scripts/local build
 arad $ scripts/provision-database local
-arad $ scripts/local nomad-up
+arad $ scripts/local nomad-apply local
 ```
 
 That should be it! We haven't made code syncing work in Nomad yet.
