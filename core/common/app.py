@@ -27,11 +27,9 @@ def get_application(root_path: str) -> FastAPI:
         root_path=root_path,
     )
 
-    origins = os.environ["ALLOWED_ORIGINS"].split(",")
-
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=origins,
+        allow_origins=os.environ["ALLOWED_ORIGINS"].split(","),
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],
