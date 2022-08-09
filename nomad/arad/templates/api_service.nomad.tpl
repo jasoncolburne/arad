@@ -21,7 +21,6 @@ job "api_service" {
 
       config {
         image       = [[ .arad.api_service_image | quote ]]
-        extra_hosts = ["host.docker.internal:host-gateway"]
         ports       = ["http"]
       }
 
@@ -36,7 +35,7 @@ job "api_service" {
         data = <<EOH
 upstream administrator {
 {{- range service "administrator-service" }}
-  server host.docker.internal:{{ .Port }};
+  server {{ .Address }}:{{ .Port }};
 {{- end }}
 }
 EOH
@@ -44,7 +43,7 @@ EOH
         data = <<EOH
 upstream administrator {
 {{- range nomadService "administrator-service" }}
-  server host.docker.internal:{{ .Port }};
+  server {{ .Address }}:{{ .Port }};
 {{- end }}
 }
 EOH
@@ -59,7 +58,7 @@ EOH
         data = <<EOH
 upstream reviewer {
 {{- range service "reviewer-service" }}
-  server host.docker.internal:{{ .Port }};
+  server {{ .Address }}:{{ .Port }};
 {{- end }}
 }
 EOH
@@ -67,7 +66,7 @@ EOH
         data = <<EOH
 upstream reviewer {
 {{- range nomadService "reviewer-service" }}
-  server host.docker.internal:{{ .Port }};
+  server {{ .Address }}:{{ .Port }};
 {{- end }}
 }
 EOH
@@ -82,7 +81,7 @@ EOH
         data = <<EOH
 upstream reader {
 {{- range service "reader-service" }}
-  server host.docker.internal:{{ .Port }};
+  server {{ .Address }}:{{ .Port }};
 {{- end }}
 }
 EOH
@@ -90,7 +89,7 @@ EOH
         data = <<EOH
 upstream reader {
 {{- range nomadService "reader-service" }}
-  server host.docker.internal:{{ .Port }};
+  server {{ .Address }}:{{ .Port }};
 {{- end }}
 }
 EOH
@@ -105,7 +104,7 @@ EOH
         data = <<EOH
 upstream identity {
 {{- range service "identity-service" }}
-  server host.docker.internal:{{ .Port }};
+  server {{ .Address }}:{{ .Port }};
 {{- end }}
 }
 EOH
@@ -113,7 +112,7 @@ EOH
         data = <<EOH
 upstream identity {
 {{- range nomadService "identity-service" }}
-  server host.docker.internal:{{ .Port }};
+  server {{ .Address }}:{{ .Port }};
 {{- end }}
 }
 EOH

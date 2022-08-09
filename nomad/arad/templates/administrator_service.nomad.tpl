@@ -25,7 +25,6 @@ job "administrator_service" {
 
       config {
         image       = [[ .arad.administrator_service_image | quote ]]
-        extra_hosts = ["host.docker.internal:host-gateway"]
         ports       = ["http"]
       }
 
@@ -40,7 +39,7 @@ job "administrator_service" {
         data = <<EOH
 upstream database {
 {{- range service "application-database" }}
-  server host.docker.internal:{{ .Port }};
+  server {{ .Address }}:{{ .Port }};
 {{- end }}
 }
 
@@ -53,7 +52,7 @@ EOH
         data = <<EOH
 upstream database {
 {{- range nomadService "application-database" }}
-  server host.docker.internal:{{ .Port }};
+  server {{ .Address }}:{{ .Port }};
 {{- end }}
 }
 

@@ -40,7 +40,6 @@ EOK
 
       config {
         image       = [[ .arad.identity_service_image | quote ]]
-        extra_hosts = ["host.docker.internal:host-gateway"]
         ports       = ["http"]
       }
 
@@ -55,7 +54,7 @@ EOK
         data = <<EOH
 upstream cache {
 {{- range service "token-cache" }}
-  server host.docker.internal:{{ .Port }};
+  server {{ .Address }}:{{ .Port }};
 {{- end }}
 }
 
@@ -66,7 +65,7 @@ server {
 
 upstream database {
 {{- range service "user-database" }}
-  server host.docker.internal:{{ .Port }};
+  server {{ .Address }}:{{ .Port }};
 {{- end }}
 }
 
@@ -79,7 +78,7 @@ EOH
         data = <<EOH
 upstream cache {
 {{- range nomadService "token-cache" }}
-  server host.docker.internal:{{ .Port }};
+  server {{ .Address }}:{{ .Port }};
 {{- end }}
 }
 
@@ -90,7 +89,7 @@ server {
 
 upstream database {
 {{- range nomadService "user-database" }}
-  server host.docker.internal:{{ .Port }};
+  server {{ .Address }}:{{ .Port }};
 {{- end }}
 }
 

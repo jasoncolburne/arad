@@ -33,7 +33,7 @@ job "migrate_user_database" {
         data = <<EOH
 upstream database {
 {{- range service "user-database" }}
-  server host.docker.internal:{{ .Port }};
+  server {{ .Address }}:{{ .Port }};
 {{- end }}
 }
 
@@ -46,7 +46,7 @@ EOH
         data = <<EOH
 upstream database {
 {{- range nomadService "user-database" }}
-  server host.docker.internal:{{ .Port }};
+  server {{ .Address }}:{{ .Port }};
 {{- end }}
 }
 
