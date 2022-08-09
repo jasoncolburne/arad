@@ -16,6 +16,7 @@ job "identity_service" {
       driver = "docker"
 
       env {
+        ALLOWED_ORIGINS = [[ .arad.back_end_allowed_origins | quote ]]
         DATABASE_URL = "postgresql+asyncpg://arad_user:arad_user@localhost:5432/arad_user"
         CACHE_URL = "redis://localhost:6379/0"
         DEFAULT_ADMIN_EMAIL = "admin@domain.org"
@@ -35,9 +36,8 @@ EOK
       }
 
       config {
-        image       = [[ .arad.identity_service_image | quote ]]
-        extra_hosts = ["host.docker.internal:host-gateway"]
-        ports       = ["http"]
+        image = [[ .arad.identity_service_image | quote ]]
+        ports = ["http"]
       }
 
       service {
@@ -51,7 +51,7 @@ EOK
         data = <<EOH
 upstream cache {
 {{- range service "token-cache" }}
-  server {{ if (eq .Address "127.0.0.1") }}host.docker.internal{{ else }}{{ .Address }}{{ end }}:{{ .Port }};
+  server {{ .Address }}:{{ .Port }};
 {{- end }}
 }
 
@@ -62,7 +62,7 @@ server {
 
 upstream database {
 {{- range service "user-database" }}
-  server {{ if (eq .Address "127.0.0.1") }}host.docker.internal{{ else }}{{ .Address }}{{ end }}:{{ .Port }};
+  server {{ .Address }}:{{ .Port }};
 {{- end }}
 }
 
@@ -75,7 +75,7 @@ EOH
         data = <<EOH
 upstream cache {
 {{- range nomadService "token-cache" }}
-  server {{ if (eq .Address "127.0.0.1") }}host.docker.internal{{ else }}{{ .Address }}{{ end }}:{{ .Port }};
+  server {{ .Address }}:{{ .Port }};
 {{- end }}
 }
 
@@ -86,7 +86,7 @@ server {
 
 upstream database {
 {{- range nomadService "user-database" }}
-  server {{ if (eq .Address "127.0.0.1") }}host.docker.internal{{ else }}{{ .Address }}{{ end }}:{{ .Port }};
+  server {{ .Address }}:{{ .Port }};
 {{- end }}
 }
 

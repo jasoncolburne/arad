@@ -19,26 +19,48 @@ stack_down() {
 }
 
 nomad_server() {
-  nomad agent -dev -bind=0.0.0.0 -log-level INFO -config=nomad/client.hcl
+  local INTERFACE=$1
+
+  if [[ -z "${INTERFACE}" ]]
+  then
+    echo "you must supply a network interface as the final argument"
+    exit 1
+  fi
+
+  nomad agent -dev -bind=0.0.0.0 -log-level INFO -config=nomad/client.hcl -network-interface=${INTERFACE}
 }
 
-nomad_up() {
+# render the batch jobs to .nomad files
+nomad_batch() {
+  rm -f nomad/batch_jobs/*.nomad
+  nomad-pack render -o nomad nomad/batch_jobs
+  hclfmt -w nomad/batch_jobs/*.nomad
+}
+
+# render the arad pack to the screen
+nomad_render() {
+  nomad-pack render nomad/arad | hclfmt
+}
+
+nomad_plan() {
+  nomad-pack plan nomad/arad
+}
+
+nomad_apply() {
   nomad-pack run nomad/arad
 }
 
-nomad_down() {
+nomad_destroy() {
   nomad-pack destroy nomad/arad
 }
 
 nomad_migrate() {
-  rm -f nomad/batch_jobs/*.nomad
-  nomad-pack render -o nomad nomad/batch_jobs
-  hclfmt -w nomad/batch_jobs/*.nomad
+  ./scripts/local nomad-batch
 
   nomad run nomad/batch_jobs/migrate_user_database.nomad
   nomad run nomad/batch_jobs/migrate_application_database.nomad
 
-  sleep 2
+  sleep 3
 
   nomad system gc
 }
@@ -151,11 +173,17 @@ execute() {
   elif [[ "${COMMAND}" == "down" ]]; then
     stack_down
   elif [[ "${COMMAND}" == "nomad-server" ]]; then
-    nomad_server
-  elif [[ "${COMMAND}" == "nomad-up" ]]; then
-    nomad_up
-  elif [[ "${COMMAND}" == "nomad-down" ]]; then
-    nomad_down
+    nomad_server "${ARGUMENTS}"
+  elif [[ "${COMMAND}" == "nomad-batch" ]]; then
+    nomad_batch
+  elif [[ "${COMMAND}" == "nomad-render" ]]; then
+    nomad_render
+  elif [[ "${COMMAND}" == "nomad-plan" ]]; then
+    nomad_plan
+  elif [[ "${COMMAND}" == "nomad-apply" ]]; then
+    nomad_apply
+  elif [[ "${COMMAND}" == "nomad-destroy" ]]; then
+    nomad_destroy
   elif [[ "${COMMAND}" == "nomad-migrate" ]]; then
     nomad_migrate
   elif [[ "${COMMAND}" == "build" ]]; then

@@ -27,10 +27,7 @@ def get_application(root_path: str) -> FastAPI:
         root_path=root_path,
     )
 
-    origins = [
-        "http://localhost",
-        "http://front-end",
-    ]
+    origins = os.environ["ALLOWED_ORIGINS"].split(",")
 
     app.add_middleware(
         CORSMiddleware,

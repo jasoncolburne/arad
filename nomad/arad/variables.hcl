@@ -100,6 +100,12 @@ variable "front_end_resources" {
   }
 }
 
+variable "back_end_allowed_origins" {
+  description = "A string, comma separated list of origins to allow access to the backend. eg, https://arad.org"
+  type = string
+  default = "http://arad-local.org"
+}
+
 variable "identity_service_image" {
   description = "The image to use for the identity service."
   type = string

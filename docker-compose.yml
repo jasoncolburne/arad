@@ -9,6 +9,7 @@ x-common-environment: &common-environment
     MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEnoH4lyjW4T0uUFbAYRL1G/3dxF1M
     kak4CYTwDU8lSubpkIKXFqo7KtsWIycbTKbfLm2IdwNXDOO346u4OhCaBg==
     -----END PUBLIC KEY-----
+  ALLOWED_ORIGINS: http://localhost
   DATABASE_URL: postgresql+asyncpg://arad_application:arad_application@database:5432/arad_application
 
 x-healthcheck: &healthcheck

@@ -17,9 +17,8 @@ job "api_service" {
       driver = "docker"
 
       config {
-        image       = [[ .arad.api_service_image | quote ]]
-        extra_hosts = ["host.docker.internal:host-gateway"]
-        ports       = ["http"]
+        image = [[ .arad.api_service_image | quote ]]
+        ports = ["http"]
       }
 
       service {
@@ -33,7 +32,7 @@ job "api_service" {
         data = <<EOH
 upstream administrator {
 {{- range service "administrator-service" }}
-  server {{ if (eq .Address "127.0.0.1") }}host.docker.internal{{ else }}{{ .Address }}{{ end }}:{{ .Port }};
+  server {{ .Address }}:{{ .Port }};
 {{- end }}
 }
 EOH
@@ -41,7 +40,7 @@ EOH
         data = <<EOH
 upstream administrator {
 {{- range nomadService "administrator-service" }}
-  server {{ if (eq .Address "127.0.0.1") }}host.docker.internal{{ else }}{{ .Address }}{{ end }}:{{ .Port }};
+  server {{ .Address }}:{{ .Port }};
 {{- end }}
 }
 EOH
@@ -57,7 +56,7 @@ EOH
         data = <<EOH
 upstream reviewer {
 {{- range service "reviewer-service" }}
-  server {{ if (eq .Address "127.0.0.1") }}host.docker.internal{{ else }}{{ .Address }}{{ end }}:{{ .Port }};
+  server {{ .Address }}:{{ .Port }};
 {{- end }}
 }
 EOH
@@ -65,7 +64,7 @@ EOH
         data = <<EOH
 upstream reviewer {
 {{- range nomadService "reviewer-service" }}
-  server {{ if (eq .Address "127.0.0.1") }}host.docker.internal{{ else }}{{ .Address }}{{ end }}:{{ .Port }};
+  server {{ .Address }}:{{ .Port }};
 {{- end }}
 }
 EOH
@@ -81,7 +80,7 @@ EOH
         data = <<EOH
 upstream reader {
 {{- range service "reader-service" }}
-  server {{ if (eq .Address "127.0.0.1") }}host.docker.internal{{ else }}{{ .Address }}{{ end }}:{{ .Port }};
+  server {{ .Address }}:{{ .Port }};
 {{- end }}
 }
 EOH
@@ -89,7 +88,7 @@ EOH
         data = <<EOH
 upstream reader {
 {{- range nomadService "reader-service" }}
-  server {{ if (eq .Address "127.0.0.1") }}host.docker.internal{{ else }}{{ .Address }}{{ end }}:{{ .Port }};
+  server {{ .Address }}:{{ .Port }};
 {{- end }}
 }
 EOH
@@ -105,7 +104,7 @@ EOH
         data = <<EOH
 upstream identity {
 {{- range service "identity-service" }}
-  server {{ if (eq .Address "127.0.0.1") }}host.docker.internal{{ else }}{{ .Address }}{{ end }}:{{ .Port }};
+  server {{ .Address }}:{{ .Port }};
 {{- end }}
 }
 EOH
@@ -113,7 +112,7 @@ EOH
         data = <<EOH
 upstream identity {
 {{- range nomadService "identity-service" }}
-  server {{ if (eq .Address "127.0.0.1") }}host.docker.internal{{ else }}{{ .Address }}{{ end }}:{{ .Port }};
+  server {{ .Address }}:{{ .Port }};
 {{- end }}
 }
 EOH

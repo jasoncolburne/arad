@@ -1,0 +1,61 @@
+#!/usr/bin/env bash
+
+set -eo pipefail
+
+DATABASE_SET=$1
+
+
+if [[ "${DATABASE_SET}" == "ci" ]]
+then
+  USER_DATABASE_HOST=database
+  APPLICATION_DATABASE_HOST=database
+else
+  USER_DATABASE_HOST=localhost
+  APPLICATION_DATABASE_HOST=localhost
+fi
+
+USER_DATABASE_NAME=arad_user
+USER_DATABASE_USER=arad_user
+
+APPLICATION_DATABASE_NAME=arad_application
+APPLICATION_DATABASE_USER=arad_application
+
+DATABASE_USER=postgres
+DATABASE_PASSPHRASE=passphrase
+
+
+set +e
+read -r -d '' USER_DATABASE_SCRIPT << EOS
+apt-get -y install postgresql-client
+
+PGPASSWORD=${DATABASE_PASSPHRASE} psql -U${DATABASE_USER} -h${USER_DATABASE_HOST} -c "DROP DATABASE ${USER_DATABASE_NAME}"
+PGPASSWORD=${DATABASE_PASSPHRASE} psql -U${DATABASE_USER} -h${USER_DATABASE_HOST} -c "DROP ROLE ${USER_DATABASE_USER}"
+EOS
+
+read -r -d '' APPLICATION_DATABASE_SCRIPT << EOS
+apt-get -y install postgresql-client
+
+PGPASSWORD=${DATABASE_PASSPHRASE} psql -U${DATABASE_USER} -h${APPLICATION_DATABASE_HOST} -c "DROP DATABASE ${APPLICATION_DATABASE_NAME}"
+PGPASSWORD=${DATABASE_PASSPHRASE} psql -U${DATABASE_USER} -h${APPLICATION_DATABASE_HOST} -c "DROP ROLE ${APPLICATION_DATABASE_USER}"
+EOS
+set -e
+
+
+
+
+if [[ "${DATABASE_SET}" == "ci" ]]; then
+  docker compose -f docker-compose.ci.yml run --rm identity bash -c "${USER_DATABASE_SCRIPT}"
+  docker compose -f docker-compose.ci.yml run --rm administrator bash -c "${APPLICATION_DATABASE_SCRIPT}"
+elif [[ "${DATABASE_SET}" == "local" ]]; then
+  nomad-pack run nomad/arad
+
+  sleep 30
+
+  IDENTITY_ALLOC=$(nomad status identity_service | rg run | rg identity_service | cut -d' ' -f1)
+  ADMINISTRATOR_ALLOC=$(nomad status administrator_service | rg run | rg administrator_service | cut -d' ' -f1)
+  nomad alloc exec $IDENTITY_ALLOC bash -c "${USER_DATABASE_SCRIPT}"
+  nomad alloc exec $ADMINISTRATOR_ALLOC bash -c "${APPLICATION_DATABASE_SCRIPT}"
+else
+  echo "unknown database set ${DATABASE_SET}"
+  exit 1
+fi

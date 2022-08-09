@@ -16,13 +16,13 @@ job "reader_service" {
       driver = "docker"
 
       env {
+        ALLOWED_ORIGINS = [[ .arad.back_end_allowed_origins | quote ]]
         DATABASE_URL = "postgresql+asyncpg://arad_application:arad_application@localhost:5432/arad_application"
       }
 
       config {
-        image       = [[ .arad.reader_service_image | quote ]]
-        extra_hosts = ["host.docker.internal:host-gateway"]
-        ports       = ["http"]
+        image = [[ .arad.reader_service_image | quote ]]
+        ports = ["http"]
       }
 
       service {
@@ -36,7 +36,7 @@ job "reader_service" {
         data = <<EOH
 upstream database {
 {{- range service "application-database" }}
-  server {{ if (eq .Address "127.0.0.1") }}host.docker.internal{{ else }}{{ .Address }}{{ end }}:{{ .Port }};
+  server {{ .Address }}:{{ .Port }};
 {{- end }}
 }
 
@@ -49,7 +49,7 @@ EOH
         data = <<EOH
 upstream database {
 {{- range nomadService "application-database" }}
-  server {{ if (eq .Address "127.0.0.1") }}host.docker.internal{{ else }}{{ .Address }}{{ end }}:{{ .Port }};
+  server {{ .Address }}:{{ .Port }};
 {{- end }}
 }
 
