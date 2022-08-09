@@ -6,6 +6,12 @@ job "migrate_application_database" {
   datacenters = [ [[ range $idx, $dc := .batch_jobs.datacenters ]][[if $idx]],[[end]][[ $dc | quote ]][[ end ]] ]
 
   group "migrate_application_database" {
+    [[ if (.arad.linux_host) ]]
+    network {
+      mode = "bridge"
+    }
+    [[ end ]]
+
     task "alembic" {
       driver = "docker"
 
@@ -27,7 +33,7 @@ job "migrate_application_database" {
         data = <<EOH
 upstream database {
 {{- range service "application-database" }}
-  server {{ .Address }}:{{ .Port }};
+  server host.docker.internal:{{ .Port }};
 {{- end }}
 }
 
@@ -40,7 +46,7 @@ EOH
         data = <<EOH
 upstream database {
 {{- range nomadService "application-database" }}
-  server {{ .Address }}:{{ .Port }};
+  server host.docker.internal:{{ .Port }};
 {{- end }}
 }
 

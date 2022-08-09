@@ -28,7 +28,7 @@ nomad_batch() {
 
   rm -f nomad/batch_jobs/*.nomad
 
-  nomad-pack render -o nomad -f nomad/configurations/common.hcl -f "nomad/configurations/${ENVIRONMENT}.hcl" nomad/batch_jobs
+  nomad-pack render -o nomad -f "nomad/configurations/${ENVIRONMENT}.hcl" nomad/batch_jobs
   hclfmt -w nomad/batch_jobs/*.nomad
 }
 
@@ -36,25 +36,25 @@ nomad_batch() {
 nomad_render() {
   local ENVIRONMENT=$1
 
-  nomad-pack render -f nomad/configurations/common.hcl -f "nomad/configurations/${ENVIRONMENT}.hcl" nomad/arad | hclfmt
+  nomad-pack render -f "nomad/configurations/${ENVIRONMENT}.hcl" nomad/arad | hclfmt
 }
 
 nomad_plan() {
   local ENVIRONMENT=$1
 
-  nomad-pack plan -f nomad/configurations/common.hcl -f "nomad/configurations/${ENVIRONMENT}.hcl" nomad/arad
+  nomad-pack plan -f "nomad/configurations/${ENVIRONMENT}.hcl" nomad/arad
 }
 
 nomad_apply() {
   local ENVIRONMENT=$1
 
-  nomad-pack run -f nomad/configurations/common.hcl -f "nomad/configurations/${ENVIRONMENT}.hcl" nomad/arad
+  nomad-pack run -f "nomad/configurations/${ENVIRONMENT}.hcl" nomad/arad
 }
 
 nomad_destroy() {
   local ENVIRONMENT=$1
 
-  nomad-pack destroy -f nomad/configurations/common.hcl -f "nomad/configurations/${ENVIRONMENT}.hcl" nomad/arad
+  nomad-pack destroy -f "nomad/configurations/${ENVIRONMENT}.hcl" nomad/arad
 }
 
 nomad_migrate() {

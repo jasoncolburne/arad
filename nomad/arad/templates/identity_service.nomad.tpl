@@ -7,6 +7,9 @@ job "identity_service" {
 
   group "identity_service" {
     network {
+      [[ if (.arad.linux_host) ]]
+      mode = "bridge"
+      [[ end ]]
       port "http" {
         to = [[ .arad.service_listen_port ]]
       }

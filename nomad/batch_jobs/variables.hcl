@@ -141,3 +141,9 @@ variable "front_end_image" {
   type = string
   default = "arad_front-end:local"
 }
+
+variable "linux_host" {
+  description = "Whether the host OS is Linux."
+  type = bool
+  default = false
+}

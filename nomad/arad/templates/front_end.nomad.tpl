@@ -7,6 +7,9 @@ job "front_end" {
 
   group "front_end" {
     network {
+      [[ if (.arad.linux_host) ]]
+      mode = "bridge"
+      [[ end ]]
       port "http" {
         to = [[ .arad.service_listen_port ]]
         static = 80

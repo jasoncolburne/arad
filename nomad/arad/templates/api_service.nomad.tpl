@@ -7,6 +7,9 @@ job "api_service" {
 
   group "api_service" {
     network {
+      [[ if (.arad.linux_host) ]]
+      mode = "bridge"
+      [[ end ]]
       port "http" {
         to = [[ .arad.service_listen_port ]]
         static = 81

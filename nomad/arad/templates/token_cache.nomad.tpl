@@ -10,6 +10,9 @@ job "token_cache" {
     count = 1
 
     network {
+      [[ if (.arad.linux_host) ]]
+      mode = "bridge"
+      [[ end ]]
       port "db" {
         to = [[ .arad.token_cache_port ]]
       }
