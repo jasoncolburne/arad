@@ -21,8 +21,9 @@ job "reader_service" {
       }
 
       config {
-        image = [[ .arad.reader_service_image | quote ]]
-        ports = ["http"]
+        image       = [[ .arad.reader_service_image | quote ]]
+        extra_hosts = ["host.docker.internal:host-gateway"]
+        ports       = ["http"]
       }
 
       service {
@@ -36,7 +37,7 @@ job "reader_service" {
         data = <<EOH
 upstream database {
 {{- range service "application-database" }}
-  server {{ .Address }}:{{ .Port }};
+  server host.docker.internal:{{ .Port }};
 {{- end }}
 }
 
@@ -49,7 +50,7 @@ EOH
         data = <<EOH
 upstream database {
 {{- range nomadService "application-database" }}
-  server {{ .Address }}:{{ .Port }};
+  server host.docker.internal:{{ .Port }};
 {{- end }}
 }
 

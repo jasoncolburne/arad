@@ -19,15 +19,7 @@ stack_down() {
 }
 
 nomad_server() {
-  local INTERFACE=$1
-
-  if [[ -z "${INTERFACE}" ]]
-  then
-    echo "you must supply a network interface as the final argument"
-    exit 1
-  fi
-
-  nomad agent -dev -bind=0.0.0.0 -log-level INFO -config=nomad/client.hcl -network-interface=${INTERFACE}
+  nomad agent -dev -bind=0.0.0.0 -log-level INFO -config=nomad/client.hcl
 }
 
 # render the batch jobs to .nomad files
@@ -182,7 +174,7 @@ execute() {
   elif [[ "${COMMAND}" == "down" ]]; then
     stack_down
   elif [[ "${COMMAND}" == "nomad-server" ]]; then
-    nomad_server "${ARGUMENTS}"
+    nomad_server
   elif [[ "${COMMAND}" == "nomad-batch" ]]; then
     nomad_batch "${ARGUMENTS}"
   elif [[ "${COMMAND}" == "nomad-render" ]]; then

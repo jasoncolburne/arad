@@ -50,7 +50,7 @@ If you want to try using the nomad tools to run things, first install nomad and 
 
 In a dedicated terminal:
 ```
-arad $ scripts/local nomad-server <your network interface>
+arad $ scripts/local nomad-server
 ```
 
 In another terminal:
@@ -61,10 +61,10 @@ arad $ scripts/local nomad-plan local
 arad $ scripts/local nomad-apply local
 ```
 
-The last thing you need to do to test locally with nomad is put this line in /etc/hosts:
+The last thing you need to do to test locally with nomad is add this line in /etc/hosts:
 
 ```
-<your network interface ip address> arad-local.org
+127.0.0.1 arad-local.org
 ```
 
 That should be it! We haven't made code syncing work in Nomad yet.
