@@ -100,7 +100,7 @@ e2e() {
     fi
   done
 
-  [[ $(docker inspect "$(docker ps | rg arad-front-end-react-1 | cut -d' ' -f1)" --format '{{ .State.Health.Status }}') == "healthy" ]] || (echo "front-end still unhealth!" && exit 1)
+  [[ $(docker inspect "$(docker ps | rg arad-front-end-react-1 | cut -d' ' -f1)" --format '{{ .State.Health.Status }}') == "healthy" ]] || (echo "front-end still unhealthy!" && exit 1)
   ./scripts/test fast-e2e
 }
 
