@@ -10,8 +10,8 @@ job "api_service" {
       [[ if (.arad.linux_host) ]]
       mode = "bridge"
       [[ end ]]
-      port "http" {
-        to = [[ .arad.service_listen_port ]]
+      port "https" {
+        to = 443
         static = 8080
       }
     }
@@ -21,14 +21,14 @@ job "api_service" {
 
       config {
         image       = [[ .arad.api_service_image | quote ]]
-        ports       = ["http"]
+        ports       = ["https"]
       }
 
-      service {
-        name     = "api-service"
-        provider = [[ if (.arad.consul_enabled) -]]"consul"[[- else -]]"nomad"[[- end ]]
-        port     = "http"
-      }
+      // service {
+      //   name     = "api-service"
+      //   provider = [[ if (.arad.consul_enabled) -]]"consul"[[- else -]]"nomad"[[- end ]]
+      //   port     = "https"
+      // }
 
       template {
         [[ template "secret_pem" "api_nginx_private_key" ]]
