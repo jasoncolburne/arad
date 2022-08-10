@@ -17,6 +17,10 @@ RUN ln -sf /local/reviewer.conf /etc/nginx/conf.d/upstreams/reviewer.conf
 RUN ln -sf /local/reader.conf /etc/nginx/conf.d/upstreams/reader.conf
 RUN ln -sf /local/identity.conf /etc/nginx/conf.d/upstreams/identity.conf
 
+RUN mkdir -p /etc/nginx/ssl
+RUN ln -sf /local/nginx-private-key.pem /etc/nginx/ssl/key.pem
+RUN ln -sf /local/nginx-certificate.pem /etc/nginx/ssl/cert.pem
+
 EXPOSE 80
 STOPSIGNAL SIGQUIT
 CMD ["nginx"]
