@@ -31,6 +31,18 @@ job "api_service" {
       }
 
       template {
+        [[ template "secret_pem" "api_signing_key" ]]
+
+        destination = "secrets/nginx-private.pem"
+      }
+
+      template {
+        [[ template "secret_pem" "api_certificate" ]]
+
+        destination = "secrets/nginx-certificate.pem"
+      }
+
+      template {
         [[ if .arad.consul_enabled ]]
           [[ template "upstream_consul" "administrator" ]]
         [[ else ]]
