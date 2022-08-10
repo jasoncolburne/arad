@@ -169,7 +169,7 @@ jobs:
           command: docker compose -f docker-compose.ci.yml up -d database cache identity administrator reviewer reader api front-end-nginx
       - run:
           name: Wait for front-end
-            COUNT=24  # 12x5 minute periods = 2 minutes
+            COUNT=24
             for COUNTER in $(seq ${COUNT}); do
               if [[ $(docker inspect "$(docker ps | rg arad-front-end-react-1 | cut -d' ' -f1)" --format '{{ .State.Health.Status }}') == "healthy" ]]; then
                 break
