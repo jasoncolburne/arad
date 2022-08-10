@@ -1,6 +1,6 @@
 vault {
   enabled = true
-  address = "https://localhost:8200"
+  address = "http://localhost:8200"
 }
 
 plugin "docker" {
