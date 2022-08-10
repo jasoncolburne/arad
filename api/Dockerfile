@@ -3,6 +3,7 @@
 FROM nginx:latest
 
 COPY ./etc/nginx/conf.d/default.conf /etc/nginx/conf.d/
+COPY ./etc/nginx/nginx.conf /etc/nginx/
 
 RUN mkdir /local
 RUN touch /local/administrator.conf
@@ -18,4 +19,4 @@ RUN ln -sf /local/identity.conf /etc/nginx/conf.d/upstreams/identity.conf
 
 EXPOSE 80
 STOPSIGNAL SIGQUIT
-CMD ["nginx", "-g", "daemon off;"]
+CMD ["nginx"]
