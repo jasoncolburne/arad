@@ -31,13 +31,13 @@ job "api_service" {
       }
 
       template {
-        [[ template "secret_pem" "api_signing_key" ]]
+        [[ template "secret_pem" "api_nginx_private_key" ]]
 
-        destination = "secrets/nginx-private.pem"
+        destination = "secrets/nginx-private-key.pem"
       }
 
       template {
-        [[ template "secret_pem" "api_certificate" ]]
+        [[ template "secret_pem" "api_nginx_certificate" ]]
 
         destination = "secrets/nginx-certificate.pem"
       }
