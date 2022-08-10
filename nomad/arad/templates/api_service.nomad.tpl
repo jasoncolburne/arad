@@ -31,95 +31,43 @@ job "api_service" {
       }
 
       template {
-        [[ if (.arad.consul_enabled) -]]
-        data = <<EOH
-upstream administrator {
-{{- range service "administrator-service" }}
-  server 10.1.0.1:{{ .Port }};
-{{- end }}
-}
-EOH
-        [[ else -]]
-        data = <<EOH
-upstream administrator {
-{{- range nomadService "administrator-service" }}
-  server 10.1.0.1:{{ .Port }};
-{{- end }}
-}
-EOH
-        [[ end -]]
+        [[ if .arad.consul_enabled ]]
+          [[ template "upstream_consul" "administrator" ]]
+        [[ else ]]
+          [[ template "upstream_nomad" "administrator" ]]
+        [[ end ]]
         
         destination = "local/administrator.conf"
-        # command     = "systemctl restart nginx"
       }
 
       template {
-        [[ if (.arad.consul_enabled) -]]
-        data = <<EOH
-upstream reviewer {
-{{- range service "reviewer-service" }}
-  server 10.1.0.1:{{ .Port }};
-{{- end }}
-}
-EOH
-        [[ else -]]
-        data = <<EOH
-upstream reviewer {
-{{- range nomadService "reviewer-service" }}
-  server 10.1.0.1:{{ .Port }};
-{{- end }}
-}
-EOH
-        [[ end -]]
-        
+        [[ if .arad.consul_enabled ]]
+          [[ template "upstream_consul" "reviewer" ]]
+        [[ else ]]
+          [[ template "upstream_nomad" "reviewer" ]]
+        [[ end ]]
+
         destination = "local/reviewer.conf"
-        # command     = "systemctl restart nginx"
       }
 
       template {
-        [[ if (.arad.consul_enabled) -]]
-        data = <<EOH
-upstream reader {
-{{- range service "reader-service" }}
-  server 10.1.0.1:{{ .Port }};
-{{- end }}
-}
-EOH
-        [[ else -]]
-        data = <<EOH
-upstream reader {
-{{- range nomadService "reader-service" }}
-  server 10.1.0.1:{{ .Port }};
-{{- end }}
-}
-EOH
-        [[ end -]]
+        [[ if .arad.consul_enabled ]]
+          [[ template "upstream_consul" "reader" ]]
+        [[ else ]]
+          [[ template "upstream_nomad" "reader" ]]
+        [[ end ]]
         
         destination = "local/reader.conf"
-        # command     = "systemctl restart nginx"
       }
 
       template {
-        [[ if (.arad.consul_enabled) -]]
-        data = <<EOH
-upstream identity {
-{{- range service "identity-service" }}
-  server 10.1.0.1:{{ .Port }};
-{{- end }}
-}
-EOH
-        [[ else -]]
-        data = <<EOH
-upstream identity {
-{{- range nomadService "identity-service" }}
-  server 10.1.0.1:{{ .Port }};
-{{- end }}
-}
-EOH
-        [[ end -]]
+        [[ if .arad.consul_enabled ]]
+          [[ template "upstream_consul" "identity" ]]
+        [[ else ]]
+          [[ template "upstream_nomad" "identity" ]]
+        [[ end ]]
         
         destination = "local/identity.conf"
-        # command     = "systemctl restart nginx"
       }
 
       [[ template "resources" .arad.service_resources -]]
