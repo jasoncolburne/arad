@@ -32,7 +32,7 @@ const Api = () => {
       }
 
       const url =
-        currentHostname === "front-end-react"
+        ["front-end-react", "front-end-nginx"].includes(currentHostname)
           ? `https://api/api/v1/${endpoint}`
           : `https://${currentHostname}:8080/api/v1/${endpoint}`;
       const response = await fetch(url, options);
