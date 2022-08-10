@@ -60,6 +60,8 @@
 
 /nomad/batch_jobs/*.nomad
 
+/front-end-nginx/build
+
 /.vscode
 
 __pycache__

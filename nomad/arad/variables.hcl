@@ -139,7 +139,7 @@ variable "api_service_image" {
 variable "front_end_image" {
   description = "The image to use for the front-end."
   type = string
-  default = "arad_front-end:local"
+  default = "arad_front-end-nginx:local"
 }
 
 variable "linux_host" {

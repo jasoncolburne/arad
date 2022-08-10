@@ -67,22 +67,22 @@ mypy() {
 
 lint() {
   unset ACTIVATE_SCRIPT
-  simple_compose_command front-end "yarn lint"
+  simple_compose_command front-end-react "yarn lint"
 }
 
 typecheck() {
   unset ACTIVATE_SCRIPT
-  simple_compose_command front-end "yarn typecheck"
+  simple_compose_command front-end-react "yarn typecheck"
 }
 
 prettify() {
   unset ACTIVATE_SCRIPT
-  simple_compose_command front-end "yarn prettify"
+  simple_compose_command front-end-react "yarn prettify"
 }
 
 prettier() {
   unset ACTIVATE_SCRIPT
-  simple_compose_command front-end "yarn prettier"
+  simple_compose_command front-end-react "yarn prettier"
 }
 
 e2e() {
@@ -92,7 +92,7 @@ e2e() {
 
   COUNT=24  # 12x5 minute periods = 2 minutes
   for COUNTER in $(seq ${COUNT}); do
-    if [[ $(docker inspect "$(docker ps | rg arad-front-end-1 | cut -d' ' -f1)" --format '{{ .State.Health.Status }}') == "healthy" ]]; then
+    if [[ $(docker inspect "$(docker ps | rg arad-front-end-react-1 | cut -d' ' -f1)" --format '{{ .State.Health.Status }}') == "healthy" ]]; then
       break
     else
       echo "waiting for front-end to spin up..."
@@ -100,13 +100,13 @@ e2e() {
     fi
   done
 
-  [[ $(docker inspect "$(docker ps | rg arad-front-end-1 | cut -d' ' -f1)" --format '{{ .State.Health.Status }}') == "healthy" ]] || (echo "front-end unhealthy after 1 minute!" && exit 1)
+  [[ $(docker inspect "$(docker ps | rg arad-front-end-react-1 | cut -d' ' -f1)" --format '{{ .State.Health.Status }}') == "healthy" ]] || (echo "front-end still unhealth!" && exit 1)
   ./scripts/test fast-e2e
 }
 
 fast_e2e() {
   unset ACTIVATE_SCRIPT
-  simple_compose_command front-end "yarn cypress:run"
+  simple_compose_command front-end-react "yarn cypress:run"
 }
 
 back_end() {

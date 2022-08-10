@@ -9,7 +9,7 @@ x-common-environment: &common-environment
     MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEnoH4lyjW4T0uUFbAYRL1G/3dxF1M
     kak4CYTwDU8lSubpkIKXFqo7KtsWIycbTKbfLm2IdwNXDOO346u4OhCaBg==
     -----END PUBLIC KEY-----
-  ALLOWED_ORIGINS: http://front-end
+  ALLOWED_ORIGINS: http://front-end-nginx
   DATABASE_URL: postgresql+asyncpg://arad_application:arad_application@database:5432/arad_application
 
 x-healthcheck: &healthcheck
@@ -24,13 +24,13 @@ x-database-dependency: &database-dependency
 
 services:
   e2e-client:
-    image: "${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:front-end-ci-${CIRCLE_BRANCH}-${GIT_REVISION}"
+    image: "${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:front-end-react-${CIRCLE_BRANCH}-${GIT_REVISION}"
     depends_on:
-      front-end:
+      front-end-nginx:
         condition: service_healthy
 
-  front-end:
-    image: "${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:front-end-${CIRCLE_BRANCH}-${GIT_REVISION}"
+  front-end-nginx:
+    image: "${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:front-end-nginx-${CIRCLE_BRANCH}-${GIT_REVISION}"
     depends_on:
       api:
         condition: service_healthy

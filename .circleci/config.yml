@@ -106,11 +106,11 @@ jobs:
             docker compose -f docker-compose.build.yml up -d front-end-base
             docker compose -f docker-compose.build.yml cp front-end-base:/app/build front-end-nginx
             docker compose -f docker-compose.build.yml down
-            docker build -t project_front-end:latest front-end-nginx
+            docker build -t project_front-end-nginx:latest front-end-nginx
       - run:
           name: Tag images
           command: |
-            IMAGES=(front-end front-end-ci identity reader reviewer administrator core api)
+            IMAGES=(front-end-nginx front-end-react identity reader reviewer administrator core api)
             for IMAGE in "${IMAGES[@]}"; do
               LATEST_TAG="${IMAGE}-${CIRCLE_BRANCH}-latest"
               HASH_TAG="${IMAGE}-${CIRCLE_BRANCH}-$(git rev-parse --short HEAD)"
@@ -124,7 +124,7 @@ jobs:
       - run:
           name: Push images
           command: |
-            IMAGES=(front-end front-end-ci identity reader reviewer administrator core api)
+            IMAGES=(front-end-nginx front-end-react identity reader reviewer administrator core api)
             for IMAGE in "${IMAGES[@]}"; do
               LATEST_TAG="${IMAGE}-${CIRCLE_BRANCH}-latest"
               HASH_TAG="${IMAGE}-${CIRCLE_BRANCH}-$(git rev-parse --short HEAD)"

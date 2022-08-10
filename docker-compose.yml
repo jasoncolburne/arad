@@ -9,7 +9,7 @@ x-common-environment: &common-environment
     MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEnoH4lyjW4T0uUFbAYRL1G/3dxF1M
     kak4CYTwDU8lSubpkIKXFqo7KtsWIycbTKbfLm2IdwNXDOO346u4OhCaBg==
     -----END PUBLIC KEY-----
-  ALLOWED_ORIGINS: http://localhost,http://front-end
+  ALLOWED_ORIGINS: http://localhost,http://front-end-react
   DATABASE_URL: postgresql+asyncpg://arad_application:arad_application@database:5432/arad_application
 
 x-healthcheck: &healthcheck
@@ -23,7 +23,7 @@ x-database-dependency: &database-dependency
     condition: service_healthy
 
 services:
-  front-end:
+  front-end-react:
     build:
       context: front-end
       args: *common-args
@@ -55,12 +55,12 @@ services:
       administrator:
         condition: service_healthy
     healthcheck:
-      test: ["CMD-SHELL", "curl http://localhost/health > /dev/null"]
+      test: ["CMD-SHELL", "curl -k https://localhost/health > /dev/null"]
       interval: 5s
       timeout: 5s
       retries: 5
     ports:
-      - "8080:80" # this is how the front end talks to the api. port 80 is taken atm.
+      - "8080:443" # this is how the front end talks to the api. port 80 is taken atm.
 
   identity:
     build:

@@ -3,7 +3,7 @@
 set -eo pipefail
 
 BACKENDS=(administrator reviewer reader identity)
-IMAGES=(front-end api identity administrator reviewer reader)
+IMAGES=(front-end-react api identity administrator reviewer reader)
 ACTIVATE_SCRIPT=". \$(./echo_activate_path)"
 
 stack_up() {
@@ -94,12 +94,21 @@ stack_build() {
   docker build --build-arg DEPLOYMENT_ENVIRONMENT=development -f core/Dockerfile -t arad_core-test core
 
   echo
+  echo "building nginx front-end"
+  echo
+  docker compose -f docker-compose.build.yml up -d front-end-base
+  docker compose -f docker-compose.build.yml cp front-end-base:/app/build front-end-nginx
+  docker compose -f docker-compose.build.yml down
+  docker build -t arad_front-end-nginx:latest front-end-nginx
+  docker tag arad_front-end-nginx:latest arad_front-end-nginx:local
+
+  echo
   echo "copying node_modules to host (this takes a bit)..."
   echo
   # this is required since we mount the volume in the same directory, meaning that the node_modules
   # directory on the container would be erased when it launched if we didn't do this
   rm -rf front-end/node_modules
-  CONTAINER_ID=$(docker run --rm -d arad_front-end sleep 600)
+  CONTAINER_ID=$(docker run --rm -d arad_front-end-react sleep 600)
   docker cp $CONTAINER_ID:/app/node_modules front-end
   docker kill $CONTAINER_ID
 }
@@ -119,7 +128,7 @@ be_exec() {
 }
 
 types() {
-  docker compose run --rm front-end ./build_types
+  docker compose run --rm front-end-react ./build_types
 }
 
 nuke() {
