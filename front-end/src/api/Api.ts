@@ -34,7 +34,7 @@ const Api = () => {
       const url =
         currentHostname === "front-end"
           ? `http://api/api/v1/${endpoint}`
-          : `http://${currentHostname}:81/api/v1/${endpoint}`;
+          : `http://${currentHostname}:8080/api/v1/${endpoint}`;
       const response = await fetch(url, options);
 
       if (!response.ok) {

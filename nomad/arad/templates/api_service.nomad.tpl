@@ -12,7 +12,7 @@ job "api_service" {
       [[ end ]]
       port "http" {
         to = [[ .arad.service_listen_port ]]
-        static = 81
+        static = 8080
       }
     }
 

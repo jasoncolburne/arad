@@ -60,7 +60,7 @@ services:
       timeout: 5s
       retries: 5
     ports:
-      - "81:80" # this is how the front end talks to the api. port 80 is taken atm.
+      - "8080:80" # this is how the front end talks to the api. port 80 is taken atm.
 
   identity:
     build:

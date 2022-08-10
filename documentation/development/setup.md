@@ -33,10 +33,10 @@ With your docker-compose services running, try navigating to [http://localhost](
 
 Here are some other useful urls:
 
-- [http://localhost:81/api/v1/identify/docs](http://localhost:81/api/v1/identify/docs)
-- [http://localhost:81/api/v1/administrate/docs](http://localhost:81/api/v1/administrate/docs)
-- [http://localhost:81/api/v1/review/docs](http://localhost:81/api/v1/review/docs)
-- [http://localhost:81/api/v1/read/docs](http://localhost:81/api/v1/read/docs)
+- [http://localhost:8080/api/v1/identify/docs](http://localhost:8080/api/v1/identify/docs)
+- [http://localhost:8080/api/v1/administrate/docs](http://localhost:8080/api/v1/administrate/docs)
+- [http://localhost:8080/api/v1/review/docs](http://localhost:8080/api/v1/review/docs)
+- [http://localhost:8080/api/v1/read/docs](http://localhost:8080/api/v1/read/docs)
 
 You can edit any code, front-end or back-end, and it should live-update. Just remember to sync if you edit something in
 `core`.
