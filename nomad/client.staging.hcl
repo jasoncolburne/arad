@@ -10,7 +10,7 @@ plugin "docker" {
     }
 
     auth {
-      helper = "dockerhub-login"
+      config = "/opt/nomad/docker.json"
     }
   }
 }

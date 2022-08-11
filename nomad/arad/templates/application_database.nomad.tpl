@@ -21,6 +21,11 @@ job "application_database" {
     task "postgres" {
       driver = "docker"
 
+      env {
+          POSTGRES_USER="postgres"
+          POSTGRES_PASSWORD="passphrase"
+      }
+
       config {
         image          = "postgres:bullseye"
         ports          = ["db"]
@@ -33,11 +38,6 @@ job "application_database" {
         name     = "application-database"
         provider = [[ if (.arad.consul_enabled) -]]"consul"[[- else -]]"nomad"[[- end ]]
         port     = "db"
-      }
-
-      env {
-          POSTGRES_USER="postgres"
-          POSTGRES_PASSWORD="passphrase"
       }
 
       [[ template "resources" .arad.application_database_resources -]]

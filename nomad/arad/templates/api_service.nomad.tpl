@@ -27,22 +27,18 @@ job "api_service" {
         ports       = ["https"]
       }
 
-      // service {
-      //   name     = "api-service"
-      //   provider = [[ if (.arad.consul_enabled) -]]"consul"[[- else -]]"nomad"[[- end ]]
-      //   port     = "https"
-      // }
-
       template {
         [[ template "secret_pem" "api_nginx_private_key" ]]
-
         destination = "secrets/nginx-private-key.pem"
+        change_mode = "signal"
+        change_signal = "SIGHUP"
       }
 
       template {
         [[ template "secret_pem" "api_nginx_certificate" ]]
-
         destination = "secrets/nginx-certificate.pem"
+        change_mode = "signal"
+        change_signal = "SIGHUP"
       }
 
       template {
@@ -51,8 +47,9 @@ job "api_service" {
         [[ else ]]
           [[ template "upstream_nomad" "administrator" ]]
         [[ end ]]
-        
         destination = "local/administrator.conf"
+        change_mode = "signal"
+        change_signal = "SIGHUP"
       }
 
       template {
@@ -61,8 +58,9 @@ job "api_service" {
         [[ else ]]
           [[ template "upstream_nomad" "reviewer" ]]
         [[ end ]]
-
         destination = "local/reviewer.conf"
+        change_mode = "signal"
+        change_signal = "SIGHUP"
       }
 
       template {
@@ -71,8 +69,9 @@ job "api_service" {
         [[ else ]]
           [[ template "upstream_nomad" "reader" ]]
         [[ end ]]
-        
         destination = "local/reader.conf"
+        change_mode = "signal"
+        change_signal = "SIGHUP"
       }
 
       template {
@@ -81,8 +80,9 @@ job "api_service" {
         [[ else ]]
           [[ template "upstream_nomad" "identity" ]]
         [[ end ]]
-        
         destination = "local/identity.conf"
+        change_mode = "signal"
+        change_signal = "SIGHUP"
       }
 
       [[ template "resources" .arad.service_resources -]]

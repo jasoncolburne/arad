@@ -104,7 +104,6 @@ EOH
         [[ end -]]
         
         destination = "local/upstreams.conf"
-        # command     = "systemctl restart nginx"
       }
 
       [[ template "resources" .arad.service_resources -]]

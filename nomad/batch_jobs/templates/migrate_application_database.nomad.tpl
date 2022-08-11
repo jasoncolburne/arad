@@ -59,7 +59,6 @@ EOH
         
         destination = "local/upstreams.conf"
         perms       = 0600
-        # command     = "systemctl restart nginx"
       }
 
       [[ template "resources" .batch_jobs.service_resources -]]
