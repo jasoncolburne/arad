@@ -20,22 +20,18 @@ job "identity_service" {
 
       env {
         ALLOWED_ORIGINS = [[ .arad.back_end_allowed_origins | quote ]]
-        DATABASE_URL = "postgresql+asyncpg://arad_user:arad_user@localhost:5432/arad_user"
         CACHE_URL = "redis://localhost:6379/0"
         DEFAULT_ADMIN_EMAIL = "admin@domain.org"
-        ACCESS_TOKEN_PUBLIC_KEY_PEM = <<EOK
------BEGIN PUBLIC KEY-----
-MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEnoH4lyjW4T0uUFbAYRL1G/3dxF1M
-kak4CYTwDU8lSubpkIKXFqo7KtsWIycbTKbfLm2IdwNXDOO346u4OhCaBg==
------END PUBLIC KEY-----
-EOK
-      ACCESS_TOKEN_PRIVATE_KEY_PEM = <<EOK
------BEGIN EC PRIVATE KEY-----
-MHcCAQEEIPDn6E30e3lwXXnW1GyYYH942x0OiU/lRhYKYh9IJReaoAoGCCqGSM49
-AwEHoUQDQgAEnoH4lyjW4T0uUFbAYRL1G/3dxF1Mkak4CYTwDU8lSubpkIKXFqo7
-KtsWIycbTKbfLm2IdwNXDOO346u4OhCaBg==
------END EC PRIVATE KEY-----
-EOK
+      }
+
+      template {
+        data = <<EOH
+DATABASE_URL="{{ with secret "secrets/user_database_url" }}{{ .Data.data.value }}{{ end }}"
+ACCESS_TOKEN_PRIVATE_KEY_PEM="{{ with secret "secrets/access_token_private_key_pem" }}{{ .Data.data.value | toJSON }}{{ end }}"
+ACCESS_TOKEN_PUBLIC_KEY_PEM="{{ with secret "secrets/access_token_public_key_pem" }}{{ .Data.data.value | toJSON }}{{ end }}"
+EOH
+        destination = "secrets/.env"
+        env = true
       }
 
       config {

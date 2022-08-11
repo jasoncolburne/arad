@@ -6,8 +6,9 @@ x-common-args: &common-args
 x-common-environment: &common-environment
   ACCESS_TOKEN_PUBLIC_KEY_PEM: |
     -----BEGIN PUBLIC KEY-----
-    MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEnoH4lyjW4T0uUFbAYRL1G/3dxF1M
-    kak4CYTwDU8lSubpkIKXFqo7KtsWIycbTKbfLm2IdwNXDOO346u4OhCaBg==
+    MHYwEAYHKoZIzj0CAQYFK4EEACIDYgAEN60b96+vHHiVRHD02BnbaarnMQHe0pNk
+    wnch0vkKkADmh9hHc/6cirDZDDr505/o+RHkdI01bRL/dODYOgv5ofa0XR1S3Uug
+    pYrUr68jGm/Zbmi9BgzCbt9DPkOcCd5W
     -----END PUBLIC KEY-----
   ALLOWED_ORIGINS: https://front-end-nginx
   DATABASE_URL: postgresql+asyncpg://arad_application:arad_application@database:5432/arad_application
@@ -67,9 +68,10 @@ services:
       DEFAULT_ADMIN_EMAIL: admin@domain.org
       ACCESS_TOKEN_PRIVATE_KEY_PEM: |
         -----BEGIN EC PRIVATE KEY-----
-        MHcCAQEEIPDn6E30e3lwXXnW1GyYYH942x0OiU/lRhYKYh9IJReaoAoGCCqGSM49
-        AwEHoUQDQgAEnoH4lyjW4T0uUFbAYRL1G/3dxF1Mkak4CYTwDU8lSubpkIKXFqo7
-        KtsWIycbTKbfLm2IdwNXDOO346u4OhCaBg==
+        MIGkAgEBBDDjQPP27NwYB6EuNB/V4lUTjgcQgWNdX5T/n6iogIkNzF2ieKyYjAe1
+        6+dKIhGyqK+gBwYFK4EEACKhZANiAAQ3rRv3r68ceJVEcPTYGdtpqucxAd7Sk2TC
+        dyHS+QqQAOaH2Edz/pyKsNkMOvnTn+j5EeR0jTVtEv904Ng6C/mh9rRdHVLdS6Cl
+        itSvryMab9luaL0GDMJu30M+Q5wJ3lY=
         -----END EC PRIVATE KEY-----
     depends_on:
       <<: *database-dependency

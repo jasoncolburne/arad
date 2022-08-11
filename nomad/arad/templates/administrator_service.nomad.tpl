@@ -20,7 +20,14 @@ job "administrator_service" {
 
       env {
         ALLOWED_ORIGINS = [[ .arad.back_end_allowed_origins | quote ]]
-        DATABASE_URL = "postgresql+asyncpg://arad_application:arad_application@localhost:5432/arad_application"
+      }
+
+      template {
+        data = <<EOH
+DATABASE_URL="{{ with secret "secrets/application_database_url" }}{{ .Data.data.value }}{{ end }}"
+EOH
+        destination = "secrets/.env"
+        env = true
       }
 
       config {
@@ -67,7 +74,6 @@ EOH
         [[ end -]]
         
         destination = "local/upstreams.conf"
-        # command     = "systemctl restart nginx"
       }
 
       [[ template "resources" .arad.service_resources -]]

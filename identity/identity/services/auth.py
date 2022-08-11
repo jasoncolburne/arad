@@ -18,7 +18,7 @@ import identity.repositories.auth
 
 
 ACCESS_TOKEN_EXPIRATION_MINUTES = 10
-ACCESS_TOKEN_ALGORITHM = "ES256"
+ACCESS_TOKEN_ALGORITHM = "ES384"
 ACCESS_TOKEN_PRIVATE_KEY_PEM = os.environ[
     "ACCESS_TOKEN_PRIVATE_KEY_PEM"
 ]  # we actually do want to throw if unset
