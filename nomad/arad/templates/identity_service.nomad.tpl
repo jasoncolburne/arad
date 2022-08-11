@@ -39,6 +39,13 @@ EOK
       }
 
       config {
+        [[ if .arad.remote_docker_registry -]]
+        auth {
+          helper = "dockerhub-login"
+        }
+
+        force_pull = true
+        [[- end ]]
         image       = [[ .arad.identity_service_image | quote ]]
         ports       = ["http"]
       }

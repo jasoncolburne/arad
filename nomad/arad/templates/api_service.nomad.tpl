@@ -20,6 +20,16 @@ job "api_service" {
       driver = "docker"
 
       config {
+        [[ if .arad.remote_docker_registry -]]
+        auth {
+          username = [[ with secret "secret/dockerhub_username" -]]
+[[ .Data.data.value ]]
+{{- end -}}
+
+        }
+
+        force_pull = true
+        [[- end ]]
         image       = [[ .arad.api_service_image | quote ]]
         ports       = ["https"]
       }

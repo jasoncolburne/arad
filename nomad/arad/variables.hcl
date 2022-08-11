@@ -142,6 +142,12 @@ variable "front_end_image" {
   default = "arad_front-end-nginx:local"
 }
 
+variable "remote_docker_registry" {
+  description = "Whether to use a remote registry."
+  type = bool
+  default = false
+}
+
 variable "linux_host" {
   description = "Whether the host OS is Linux."
   type = bool

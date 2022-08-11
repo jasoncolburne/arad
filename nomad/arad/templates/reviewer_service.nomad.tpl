@@ -24,6 +24,13 @@ job "reviewer_service" {
       }
 
       config {
+        [[ if .arad.remote_docker_registry -]]
+        auth {
+          helper = "dockerhub-login"
+        }
+
+        force_pull = true
+        [[- end ]]
         image       = [[ .arad.reviewer_service_image | quote ]]
         ports       = ["http"]
       }
