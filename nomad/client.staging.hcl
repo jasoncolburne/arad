@@ -8,6 +8,9 @@ plugin "docker" {
     volumes {
       enabled = true
     }
+
+    auth {
+      helper = "dockerhub-login"
+    }
   }
 }
-
