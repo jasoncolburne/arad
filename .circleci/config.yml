@@ -172,7 +172,7 @@ jobs:
           command: |
             COUNT=24
             for COUNTER in $(seq ${COUNT}); do
-              if [[ $(docker inspect "$(docker ps | rg project-front-end-nginx-1 | cut -d' ' -f1)" --format '{{ .State.Health.Status }}') == "healthy" ]]; then
+              if [[ $(docker inspect "$(docker ps | grep project-front-end-nginx-1 | cut -d' ' -f1)" --format '{{ .State.Health.Status }}') == "healthy" ]]; then
                 break
               else
                 echo "waiting for front-end to spin up..."
@@ -180,7 +180,7 @@ jobs:
               fi
             done
 
-            if [[ $(docker inspect "$(docker ps | rg project-front-end-nginx-1 | cut -d' ' -f1)" --format '{{ .State.Health.Status }}') != "healthy" ]]; then
+            if [[ $(docker inspect "$(docker ps | grep project-front-end-nginx-1 | cut -d' ' -f1)" --format '{{ .State.Health.Status }}') != "healthy" ]]; then
               echo "front-end still unhealthy!"
               exit 1
             fi
