@@ -3,8 +3,11 @@ data = <<EOH
 upstream [[ . ]] {
 {{- range service [[ (print . "-service") | quote ]] }}
   server 10.1.0.1:{{ .Port }};
-{{- end }}
-  keepalive {{ multiply (len (service [[ (print . "-service") | quote ]])) 2 }};
+{{- end -}}
+{{- $SERVICE_COUNT := len (service [[ (print . "-service") | quote ]]) -}}
+{{- if (gt $SERVICE_COUNT 0) }}
+  keepalive {{ multiply $SERVICE_COUNT 2 }};
+{{ end -}}
 }
 EOH
 [[ end -]]

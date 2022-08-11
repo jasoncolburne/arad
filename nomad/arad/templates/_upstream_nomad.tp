@@ -4,7 +4,10 @@ upstream [[ . ]] {
 {{- range nomadService [[ (print . "-service") | quote ]] }}
   server 10.1.0.1:{{ .Port }};
 {{- end }}
-  keepalive {{ multiply (len (nomadService [[ (print . "-service") | quote ]])) 2 }};
+{{- $SERVICE_COUNT := len (nomadService [[ (print . "-service") | quote ]]) -}}
+{{- if (gt $SERVICE_COUNT 0) }}
+  keepalive {{ multiply $SERVICE_COUNT 2 }};
+{{ end -}}
 }
 EOH
 [[ end -]]
