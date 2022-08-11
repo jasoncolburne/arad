@@ -19,6 +19,18 @@ job "front_end" {
     task "react" {
       driver = "docker"
 
+      template {
+        [[ template "secret_pem" "api_nginx_private_key" ]]
+
+        destination = "secrets/nginx-private-key.pem"
+      }
+
+      template {
+        [[ template "secret_pem" "api_nginx_certificate" ]]
+
+        destination = "secrets/nginx-certificate.pem"
+      }
+
       config {
         [[ if .arad.remote_docker_registry -]]
         force_pull = true
