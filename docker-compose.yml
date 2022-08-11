@@ -10,7 +10,7 @@ x-common-environment: &common-environment
     wnch0vkKkADmh9hHc/6cirDZDDr505/o+RHkdI01bRL/dODYOgv5ofa0XR1S3Uug
     pYrUr68jGm/Zbmi9BgzCbt9DPkOcCd5W
     -----END PUBLIC KEY-----
-  ALLOWED_ORIGINS: https://localhost,https://front-end-react
+  ALLOWED_ORIGINS: http://localhost,http://front-end-react
   DATABASE_URL: postgresql+asyncpg://arad_application:arad_application@database:5432/arad_application
 
 x-healthcheck: &healthcheck
