@@ -1,0 +1,10 @@
+[[- define "upstream_nomad" -]]
+data = <<EOH
+upstream [[ . ]] {
+{{- range nomadService [[ (print . "-service") | quote ]] }}
+  server 10.1.0.1:{{ .Port }};
+{{- end }}
+  keepalive {{ multiply (len (nomadService [[ (print . "-service") | quote ]])) 2 }};
+}
+EOH
+[[ end -]]

@@ -7,9 +7,12 @@ job "front_end" {
 
   group "front_end" {
     network {
-      port "http" {
-        to = [[ .arad.service_listen_port ]]
-        static = 80
+      [[ if (.arad.linux_host) ]]
+      mode = "bridge"
+      [[ end ]]
+      port "https" {
+        to = 443
+        static = 443
       }
     }
 
@@ -17,8 +20,25 @@ job "front_end" {
       driver = "docker"
 
       config {
+        [[ if .arad.remote_docker_registry -]]
+        force_pull = true
+        [[- end ]]
         image = [[ .arad.front_end_image | quote ]]
-        ports = ["http"]
+        ports = ["https"]
+      }
+
+      template {
+        [[ template "secret_pem" "api_nginx_private_key" ]]
+        destination = "secrets/nginx-private-key.pem"
+        change_mode = "signal"
+        change_signal = "SIGHUP"
+      }
+
+      template {
+        [[ template "secret_pem" "api_nginx_certificate" ]]
+        destination = "secrets/nginx-certificate.pem"
+        change_mode = "signal"
+        change_signal = "SIGHUP"
       }
 
       [[ template "resources" .arad.front_end_resources -]]

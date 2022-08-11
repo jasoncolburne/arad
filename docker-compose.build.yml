@@ -39,7 +39,7 @@ services:
       context: front-end
       args: *common-args
 
-  front-end-ci:
+  front-end-react:
     build:
       context: front-end
       args:

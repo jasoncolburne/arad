@@ -14,7 +14,7 @@ import common.datatypes.domain
 import common.datatypes.exception
 
 
-ACCESS_TOKEN_ALGORITHM = "ES256"
+ACCESS_TOKEN_ALGORITHM = "ES384"
 ACCESS_TOKEN_PUBLIC_KEY_PEM = os.environ.get("ACCESS_TOKEN_PUBLIC_KEY_PEM")
 ACCESS_TOKEN_PUBLIC_KEY = ecdsa.VerifyingKey.from_pem(ACCESS_TOKEN_PUBLIC_KEY_PEM)
 

@@ -7,6 +7,9 @@ job "identity_service" {
 
   group "identity_service" {
     network {
+      [[ if (.arad.linux_host) ]]
+      mode = "bridge"
+      [[ end ]]
       port "http" {
         to = [[ .arad.service_listen_port ]]
       }
@@ -16,27 +19,27 @@ job "identity_service" {
       driver = "docker"
 
       env {
-        DATABASE_URL = "postgresql+asyncpg://arad_user:arad_user@localhost:5432/arad_user"
+        ALLOWED_ORIGINS = [[ .arad.back_end_allowed_origins | quote ]]
         CACHE_URL = "redis://localhost:6379/0"
         DEFAULT_ADMIN_EMAIL = "admin@domain.org"
-        ACCESS_TOKEN_PUBLIC_KEY_PEM = <<EOK
------BEGIN PUBLIC KEY-----
-MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEnoH4lyjW4T0uUFbAYRL1G/3dxF1M
-kak4CYTwDU8lSubpkIKXFqo7KtsWIycbTKbfLm2IdwNXDOO346u4OhCaBg==
------END PUBLIC KEY-----
-EOK
-      ACCESS_TOKEN_PRIVATE_KEY_PEM = <<EOK
------BEGIN EC PRIVATE KEY-----
-MHcCAQEEIPDn6E30e3lwXXnW1GyYYH942x0OiU/lRhYKYh9IJReaoAoGCCqGSM49
-AwEHoUQDQgAEnoH4lyjW4T0uUFbAYRL1G/3dxF1Mkak4CYTwDU8lSubpkIKXFqo7
-KtsWIycbTKbfLm2IdwNXDOO346u4OhCaBg==
------END EC PRIVATE KEY-----
-EOK
+      }
+
+      template {
+        data = <<EOH
+DATABASE_URL="{{ with secret "secret/user_database_url" }}{{ .Data.data.value }}{{ end }}"
+ACCESS_TOKEN_PRIVATE_KEY_PEM={{ with secret "secret/access_token_private_key_pem" }}{{ .Data.data.value | toJSON }}{{ end }}
+ACCESS_TOKEN_PUBLIC_KEY_PEM={{ with secret "secret/access_token_public_key_pem" }}{{ .Data.data.value | toJSON }}{{ end }}
+EOH
+        destination = "secrets/.env"
+        env = true
       }
 
       config {
-        image = [[ .arad.identity_service_image | quote ]]
-        ports = ["http"]
+        [[ if .arad.remote_docker_registry -]]
+        force_pull = true
+        [[- end ]]
+        image       = [[ .arad.identity_service_image | quote ]]
+        ports       = ["http"]
       }
 
       service {
@@ -50,7 +53,7 @@ EOK
         data = <<EOH
 upstream cache {
 {{- range service "token-cache" }}
-  server {{ if (eq .Address "127.0.0.1") }}host.docker.internal{{ else }}{{ .Address }}{{ end }}:{{ .Port }};
+  server 10.1.0.1:{{ .Port }};
 {{- end }}
 }
 
@@ -61,7 +64,7 @@ server {
 
 upstream database {
 {{- range service "user-database" }}
-  server {{ if (eq .Address "127.0.0.1") }}host.docker.internal{{ else }}{{ .Address }}{{ end }}:{{ .Port }};
+  server 10.1.0.1:{{ .Port }};
 {{- end }}
 }
 
@@ -74,7 +77,7 @@ EOH
         data = <<EOH
 upstream cache {
 {{- range nomadService "token-cache" }}
-  server {{ if (eq .Address "127.0.0.1") }}host.docker.internal{{ else }}{{ .Address }}{{ end }}:{{ .Port }};
+  server 10.1.0.1:{{ .Port }};
 {{- end }}
 }
 
@@ -85,7 +88,7 @@ server {
 
 upstream database {
 {{- range nomadService "user-database" }}
-  server {{ if (eq .Address "127.0.0.1") }}host.docker.internal{{ else }}{{ .Address }}{{ end }}:{{ .Port }};
+  server 10.1.0.1:{{ .Port }};
 {{- end }}
 }
 
@@ -97,8 +100,6 @@ EOH
         [[ end -]]
         
         destination = "local/upstreams.conf"
-        perms       = 0600
-        # command     = "systemctl restart nginx"
       }
 
       [[ template "resources" .arad.service_resources -]]

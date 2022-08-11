@@ -1,0 +1,10 @@
+[[- define "upstream_consul" -]]
+data = <<EOH
+upstream [[ . ]] {
+{{- range service [[ (print . "-service") | quote ]] }}
+  server 10.1.0.1:{{ .Port }};
+{{- end }}
+  keepalive {{ multiply (len (service [[ (print . "-service") | quote ]])) 2 }};
+}
+EOH
+[[ end -]]

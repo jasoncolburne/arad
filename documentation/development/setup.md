@@ -33,10 +33,10 @@ With your docker-compose services running, try navigating to [http://localhost](
 
 Here are some other useful urls:
 
-- [http://localhost:81/api/v1/identify/docs](http://localhost:81/api/v1/identify/docs)
-- [http://localhost:81/api/v1/administrate/docs](http://localhost:81/api/v1/administrate/docs)
-- [http://localhost:81/api/v1/review/docs](http://localhost:81/api/v1/review/docs)
-- [http://localhost:81/api/v1/read/docs](http://localhost:81/api/v1/read/docs)
+- [http://localhost:8080/api/v1/identify/docs](http://localhost:8080/api/v1/identify/docs)
+- [http://localhost:8080/api/v1/administrate/docs](http://localhost:8080/api/v1/administrate/docs)
+- [http://localhost:8080/api/v1/review/docs](http://localhost:8080/api/v1/review/docs)
+- [http://localhost:8080/api/v1/read/docs](http://localhost:8080/api/v1/read/docs)
 
 You can edit any code, front-end or back-end, and it should live-update. Just remember to sync if you edit something in
 `core`.
@@ -57,7 +57,14 @@ In another terminal:
 ```
 arad $ scripts/local build
 arad $ scripts/provision-database local
-arad $ scripts/local nomad-up
+arad $ scripts/local nomad-plan local
+arad $ scripts/local nomad-apply local
+```
+
+The last thing you need to do to test locally with nomad is add this line in /etc/hosts:
+
+```
+127.0.0.1 arad-local.org
 ```
 
 That should be it! We haven't made code syncing work in Nomad yet.

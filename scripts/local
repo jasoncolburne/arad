@@ -3,7 +3,7 @@
 set -eo pipefail
 
 BACKENDS=(administrator reviewer reader identity)
-IMAGES=(front-end api identity administrator reviewer reader)
+IMAGES=(front-end-react api identity administrator reviewer reader)
 ACTIVATE_SCRIPT=". \$(./echo_activate_path)"
 
 stack_up() {
@@ -19,26 +19,51 @@ stack_down() {
 }
 
 nomad_server() {
-  nomad agent -dev -bind=0.0.0.0 -log-level INFO -config=nomad/client.hcl
+  local ENVIRONMENT=$1
+
+  nomad agent -dev -bind=0.0.0.0 -log-level INFO -config="nomad/client.${ENVIRONMENT}.hcl"
 }
 
-nomad_up() {
-  nomad-pack run nomad/arad
+# render the batch jobs to .nomad files
+nomad_batch() {
+  local ENVIRONMENT=$1
+
+  rm -f nomad/batch_jobs/*.nomad
+
+  nomad-pack render -o nomad -f "nomad/configurations/${ENVIRONMENT}.hcl" nomad/batch_jobs
+  hclfmt -w nomad/batch_jobs/*.nomad
 }
 
-nomad_down() {
-  nomad-pack destroy nomad/arad
+# render the arad pack to the screen
+nomad_render() {
+  local ENVIRONMENT=$1
+
+  nomad-pack render -f "nomad/configurations/${ENVIRONMENT}.hcl" nomad/arad | hclfmt
+}
+
+nomad_plan() {
+  local ENVIRONMENT=$1
+
+  nomad-pack plan -f "nomad/configurations/${ENVIRONMENT}.hcl" nomad/arad
+}
+
+nomad_apply() {
+  local ENVIRONMENT=$1
+
+  nomad-pack run -f "nomad/configurations/${ENVIRONMENT}.hcl" nomad/arad
+}
+
+nomad_destroy() {
+  local ENVIRONMENT=$1
+
+  nomad-pack destroy -f "nomad/configurations/${ENVIRONMENT}.hcl" nomad/arad
 }
 
 nomad_migrate() {
-  rm -f nomad/batch_jobs/*.nomad
-  nomad-pack render -o nomad nomad/batch_jobs
-  hclfmt -w nomad/batch_jobs/*.nomad
-
   nomad run nomad/batch_jobs/migrate_user_database.nomad
   nomad run nomad/batch_jobs/migrate_application_database.nomad
 
-  sleep 2
+  sleep 3
 
   nomad system gc
 }
@@ -69,12 +94,21 @@ stack_build() {
   docker build --build-arg DEPLOYMENT_ENVIRONMENT=development -f core/Dockerfile -t arad_core-test core
 
   echo
+  echo "building nginx front-end"
+  echo
+  docker compose -f docker-compose.build.yml up -d front-end-base
+  docker compose -f docker-compose.build.yml cp front-end-base:/app/build front-end-nginx
+  docker compose -f docker-compose.build.yml down
+  docker build -t arad_front-end-nginx:latest front-end-nginx
+  docker tag arad_front-end-nginx:latest arad_front-end-nginx:local
+
+  echo
   echo "copying node_modules to host (this takes a bit)..."
   echo
   # this is required since we mount the volume in the same directory, meaning that the node_modules
   # directory on the container would be erased when it launched if we didn't do this
   rm -rf front-end/node_modules
-  CONTAINER_ID=$(docker run --rm -d arad_front-end sleep 600)
+  CONTAINER_ID=$(docker run --rm -d arad_front-end-react sleep 600)
   docker cp $CONTAINER_ID:/app/node_modules front-end
   docker kill $CONTAINER_ID
 }
@@ -94,7 +128,7 @@ be_exec() {
 }
 
 types() {
-  docker compose run --rm front-end ./build_types
+  docker compose run --rm front-end-react ./build_types
 }
 
 nuke() {
@@ -151,11 +185,17 @@ execute() {
   elif [[ "${COMMAND}" == "down" ]]; then
     stack_down
   elif [[ "${COMMAND}" == "nomad-server" ]]; then
-    nomad_server
-  elif [[ "${COMMAND}" == "nomad-up" ]]; then
-    nomad_up
-  elif [[ "${COMMAND}" == "nomad-down" ]]; then
-    nomad_down
+    nomad_server "${ARGUMENTS}"
+  elif [[ "${COMMAND}" == "nomad-batch" ]]; then
+    nomad_batch "${ARGUMENTS}"
+  elif [[ "${COMMAND}" == "nomad-render" ]]; then
+    nomad_render "${ARGUMENTS}"
+  elif [[ "${COMMAND}" == "nomad-plan" ]]; then
+    nomad_plan "${ARGUMENTS}"
+  elif [[ "${COMMAND}" == "nomad-apply" ]]; then
+    nomad_apply "${ARGUMENTS}"
+  elif [[ "${COMMAND}" == "nomad-destroy" ]]; then
+    nomad_destroy "${ARGUMENTS}"
   elif [[ "${COMMAND}" == "nomad-migrate" ]]; then
     nomad_migrate
   elif [[ "${COMMAND}" == "build" ]]; then

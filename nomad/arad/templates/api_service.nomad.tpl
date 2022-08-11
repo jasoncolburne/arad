@@ -7,9 +7,12 @@ job "api_service" {
 
   group "api_service" {
     network {
-      port "http" {
-        to = [[ .arad.service_listen_port ]]
-        static = 81
+      [[ if (.arad.linux_host) ]]
+      mode = "bridge"
+      [[ end ]]
+      port "https" {
+        to = 443
+        static = 8080
       }
     }
 
@@ -17,110 +20,69 @@ job "api_service" {
       driver = "docker"
 
       config {
-        image = [[ .arad.api_service_image | quote ]]
-        ports = ["http"]
-      }
-
-      service {
-        name     = "api-service"
-        provider = [[ if (.arad.consul_enabled) -]]"consul"[[- else -]]"nomad"[[- end ]]
-        port     = "http"
+        [[ if .arad.remote_docker_registry -]]
+        force_pull = true
+        [[- end ]]
+        image       = [[ .arad.api_service_image | quote ]]
+        ports       = ["https"]
       }
 
       template {
-        [[ if (.arad.consul_enabled) -]]
-        data = <<EOH
-upstream administrator {
-{{- range service "administrator-service" }}
-  server {{ if (eq .Address "127.0.0.1") }}host.docker.internal{{ else }}{{ .Address }}{{ end }}:{{ .Port }};
-{{- end }}
-}
-EOH
-        [[ else -]]
-        data = <<EOH
-upstream administrator {
-{{- range nomadService "administrator-service" }}
-  server {{ if (eq .Address "127.0.0.1") }}host.docker.internal{{ else }}{{ .Address }}{{ end }}:{{ .Port }};
-{{- end }}
-}
-EOH
-        [[ end -]]
-        
+        [[ template "secret_pem" "api_nginx_private_key" ]]
+        destination = "secrets/nginx-private-key.pem"
+        change_mode = "signal"
+        change_signal = "SIGHUP"
+      }
+
+      template {
+        [[ template "secret_pem" "api_nginx_certificate" ]]
+        destination = "secrets/nginx-certificate.pem"
+        change_mode = "signal"
+        change_signal = "SIGHUP"
+      }
+
+      template {
+        [[ if .arad.consul_enabled ]]
+          [[ template "upstream_consul" "administrator" ]]
+        [[ else ]]
+          [[ template "upstream_nomad" "administrator" ]]
+        [[ end ]]
         destination = "local/administrator.conf"
-        perms       = 0600
-        # command     = "systemctl restart nginx"
+        change_mode = "signal"
+        change_signal = "SIGHUP"
       }
 
       template {
-        [[ if (.arad.consul_enabled) -]]
-        data = <<EOH
-upstream reviewer {
-{{- range service "reviewer-service" }}
-  server {{ if (eq .Address "127.0.0.1") }}host.docker.internal{{ else }}{{ .Address }}{{ end }}:{{ .Port }};
-{{- end }}
-}
-EOH
-        [[ else -]]
-        data = <<EOH
-upstream reviewer {
-{{- range nomadService "reviewer-service" }}
-  server {{ if (eq .Address "127.0.0.1") }}host.docker.internal{{ else }}{{ .Address }}{{ end }}:{{ .Port }};
-{{- end }}
-}
-EOH
-        [[ end -]]
-        
+        [[ if .arad.consul_enabled ]]
+          [[ template "upstream_consul" "reviewer" ]]
+        [[ else ]]
+          [[ template "upstream_nomad" "reviewer" ]]
+        [[ end ]]
         destination = "local/reviewer.conf"
-        perms       = 0600
-        # command     = "systemctl restart nginx"
+        change_mode = "signal"
+        change_signal = "SIGHUP"
       }
 
       template {
-        [[ if (.arad.consul_enabled) -]]
-        data = <<EOH
-upstream reader {
-{{- range service "reader-service" }}
-  server {{ if (eq .Address "127.0.0.1") }}host.docker.internal{{ else }}{{ .Address }}{{ end }}:{{ .Port }};
-{{- end }}
-}
-EOH
-        [[ else -]]
-        data = <<EOH
-upstream reader {
-{{- range nomadService "reader-service" }}
-  server {{ if (eq .Address "127.0.0.1") }}host.docker.internal{{ else }}{{ .Address }}{{ end }}:{{ .Port }};
-{{- end }}
-}
-EOH
-        [[ end -]]
-        
+        [[ if .arad.consul_enabled ]]
+          [[ template "upstream_consul" "reader" ]]
+        [[ else ]]
+          [[ template "upstream_nomad" "reader" ]]
+        [[ end ]]
         destination = "local/reader.conf"
-        perms       = 0600
-        # command     = "systemctl restart nginx"
+        change_mode = "signal"
+        change_signal = "SIGHUP"
       }
 
       template {
-        [[ if (.arad.consul_enabled) -]]
-        data = <<EOH
-upstream identity {
-{{- range service "identity-service" }}
-  server {{ if (eq .Address "127.0.0.1") }}host.docker.internal{{ else }}{{ .Address }}{{ end }}:{{ .Port }};
-{{- end }}
-}
-EOH
-        [[ else -]]
-        data = <<EOH
-upstream identity {
-{{- range nomadService "identity-service" }}
-  server {{ if (eq .Address "127.0.0.1") }}host.docker.internal{{ else }}{{ .Address }}{{ end }}:{{ .Port }};
-{{- end }}
-}
-EOH
-        [[ end -]]
-        
+        [[ if .arad.consul_enabled ]]
+          [[ template "upstream_consul" "identity" ]]
+        [[ else ]]
+          [[ template "upstream_nomad" "identity" ]]
+        [[ end ]]
         destination = "local/identity.conf"
-        perms       = 0600
-        # command     = "systemctl restart nginx"
+        change_mode = "signal"
+        change_signal = "SIGHUP"
       }
 
       [[ template "resources" .arad.service_resources -]]

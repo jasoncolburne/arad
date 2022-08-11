@@ -7,6 +7,9 @@ job "reviewer_service" {
 
   group "reviewer_service" {
     network {
+      [[ if (.arad.linux_host) ]]
+      mode = "bridge"
+      [[ end ]]
       port "http" {
         to = [[ .arad.service_listen_port ]]
       }
@@ -16,12 +19,16 @@ job "reviewer_service" {
       driver = "docker"
 
       env {
+        ALLOWED_ORIGINS = [[ .arad.back_end_allowed_origins | quote ]]
         DATABASE_URL = "postgresql+asyncpg://arad_application:arad_application@localhost:5432/arad_application"
       }
 
       config {
-        image = [[ .arad.reviewer_service_image | quote ]]
-        ports = ["http"]
+        [[ if .arad.remote_docker_registry -]]
+        force_pull = true
+        [[- end ]]
+        image       = [[ .arad.reviewer_service_image | quote ]]
+        ports       = ["http"]
       }
 
       service {
@@ -35,7 +42,7 @@ job "reviewer_service" {
         data = <<EOH
 upstream database {
 {{- range service "application-database" }}
-  server {{ if (eq .Address "127.0.0.1") }}host.docker.internal{{ else }}{{ .Address }}{{ end }}:{{ .Port }};
+  server 10.1.0.1:{{ .Port }};
 {{- end }}
 }
 
@@ -48,7 +55,7 @@ EOH
         data = <<EOH
 upstream database {
 {{- range nomadService "application-database" }}
-  server {{ if (eq .Address "127.0.0.1") }}host.docker.internal{{ else }}{{ .Address }}{{ end }}:{{ .Port }};
+  server 10.1.0.1:{{ .Port }};
 {{- end }}
 }
 
@@ -60,8 +67,6 @@ EOH
         [[ end -]]
         
         destination = "local/upstreams.conf"
-        perms       = 0600
-        # command     = "systemctl restart nginx"
       }
 
       [[ template "resources" .arad.service_resources -]]

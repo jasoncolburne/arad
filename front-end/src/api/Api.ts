@@ -31,9 +31,11 @@ const Api = () => {
         options.body = JSON.stringify(body);
       }
 
-      const url = `http://${
-        currentHostname === "localhost" ? "localhost:81" : "api"
-      }/api/v1/${endpoint}`;
+      const url = ["front-end-react", "front-end-nginx"].includes(
+        currentHostname
+      )
+        ? `https://api/api/v1/${endpoint}`
+        : `https://${currentHostname}:8080/api/v1/${endpoint}`;
       const response = await fetch(url, options);
 
       if (!response.ok) {

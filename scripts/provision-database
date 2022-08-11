@@ -79,8 +79,8 @@ if [[ "${DATABASE_SET}" == "ci" ]]; then
 
   docker compose -f docker-compose.ci.yml run --rm identity ./migrate.sh
   docker compose -f docker-compose.ci.yml run --rm administrator ./migrate.sh
-elif [[ "${DATABASE_SET}" == "local" ]]; then
-  nomad-pack run nomad/arad
+else
+  ./scripts/local nomad-apply "${DATABASE_SET}"  
 
   sleep 30
 
@@ -91,7 +91,4 @@ elif [[ "${DATABASE_SET}" == "local" ]]; then
 
   nomad alloc exec $IDENTITY_ALLOC ./migrate.sh
   nomad alloc exec $ADMINISTRATOR_ALLOC ./migrate.sh
-else
-  echo "unknown database set ${DATABASE_SET}"
-  exit 1
 fi

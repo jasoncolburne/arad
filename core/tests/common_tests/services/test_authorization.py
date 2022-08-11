@@ -26,7 +26,7 @@ def test_verify_and_parse_token__calls_jose() -> None:
         jwt_decode.return_value = payload
         result = authorization_service.verify_and_parse_token(token=token)
         jwt_decode.assert_called_once_with(
-            token, unittest.mock.ANY, algorithms=["ES256"]
+            token, unittest.mock.ANY, algorithms=["ES384"]
         )
 
     assert result == common.datatypes.domain.Token(**payload)
@@ -43,7 +43,7 @@ def test_verify_and_parse_token__raises_for_jose() -> None:
             jwt_decode.side_effect = jose.JWTError()
             authorization_service.verify_and_parse_token(token=token)
             jwt_decode.assert_called_once_with(
-                token, unittest.mock.ANY, algorithms=["ES256"]
+                token, unittest.mock.ANY, algorithms=["ES384"]
             )
 
 

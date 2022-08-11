@@ -10,6 +10,9 @@ job "user_database" {
     count = 1
 
     network {
+      [[ if (.arad.linux_host) ]]
+      mode = "bridge"
+      [[ end ]]
       port "db" {
         to = [[ .arad.user_database_port ]]
       }

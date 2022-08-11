@@ -6,12 +6,22 @@ job "migrate_application_database" {
   datacenters = [ [[ range $idx, $dc := .batch_jobs.datacenters ]][[if $idx]],[[end]][[ $dc | quote ]][[ end ]] ]
 
   group "migrate_application_database" {
+    [[ if (.arad.linux_host) ]]
+    network {
+      mode = "bridge"
+    }
+    [[ end ]]
+
     task "alembic" {
       driver = "docker"
 
       config {
         image = [[ .batch_jobs.administrator_service_image | quote ]]
         entrypoint = ["bash", "-c", "service nginx start && ./migrate.sh"]
+      }
+
+      env {
+        DATABASE_URL = "postgresql+asyncpg://arad_application:arad_application@localhost:5432/arad_application"
       }
 
       restart {
@@ -23,7 +33,7 @@ job "migrate_application_database" {
         data = <<EOH
 upstream database {
 {{- range service "application-database" }}
-  server {{ if (eq .Address "127.0.0.1") }}host.docker.internal{{ else }}{{ .Address }}{{ end }}:{{ .Port }};
+  server 10.1.0.1:{{ .Port }};
 {{- end }}
 }
 
@@ -36,7 +46,7 @@ EOH
         data = <<EOH
 upstream database {
 {{- range nomadService "application-database" }}
-  server {{ if (eq .Address "127.0.0.1") }}host.docker.internal{{ else }}{{ .Address }}{{ end }}:{{ .Port }};
+  server 10.1.0.1:{{ .Port }};
 {{- end }}
 }
 
@@ -49,7 +59,6 @@ EOH
         
         destination = "local/upstreams.conf"
         perms       = 0600
-        # command     = "systemctl restart nginx"
       }
 
       [[ template "resources" .batch_jobs.service_resources -]]

@@ -100,6 +100,12 @@ variable "front_end_resources" {
   }
 }
 
+variable "back_end_allowed_origins" {
+  description = "A string, comma separated list of origins to allow access to the backend. eg, https://arad.org"
+  type = string
+  default = "http://arad-local.org"
+}
+
 variable "identity_service_image" {
   description = "The image to use for the identity service."
   type = string
@@ -133,5 +139,17 @@ variable "api_service_image" {
 variable "front_end_image" {
   description = "The image to use for the front-end."
   type = string
-  default = "arad_front-end:local"
+  default = "arad_front-end-nginx:local"
+}
+
+variable "remote_docker_registry" {
+  description = "Whether to use a remote registry."
+  type = bool
+  default = false
+}
+
+variable "linux_host" {
+  description = "Whether the host OS is Linux."
+  type = bool
+  default = false
 }

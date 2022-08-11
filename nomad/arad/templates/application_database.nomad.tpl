@@ -10,6 +10,9 @@ job "application_database" {
     count = 1
 
     network {
+      [[ if (.arad.linux_host) ]]
+      mode = "bridge"
+      [[ end ]]
       port "db" {
         to = [[ .arad.application_database_port ]]
       }
@@ -17,6 +20,11 @@ job "application_database" {
 
     task "postgres" {
       driver = "docker"
+
+      env {
+          POSTGRES_USER="postgres"
+          POSTGRES_PASSWORD="passphrase"
+      }
 
       config {
         image          = "postgres:bullseye"
@@ -30,11 +38,6 @@ job "application_database" {
         name     = "application-database"
         provider = [[ if (.arad.consul_enabled) -]]"consul"[[- else -]]"nomad"[[- end ]]
         port     = "db"
-      }
-
-      env {
-          POSTGRES_USER="postgres"
-          POSTGRES_PASSWORD="passphrase"
       }
 
       [[ template "resources" .arad.application_database_resources -]]
