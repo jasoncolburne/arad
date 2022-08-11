@@ -10,9 +10,9 @@ job "front_end" {
       [[ if (.arad.linux_host) ]]
       mode = "bridge"
       [[ end ]]
-      port "http" {
-        to = [[ .arad.service_listen_port ]]
-        static = 80
+      port "https" {
+        to = 443
+        static = 443
       }
     }
 
