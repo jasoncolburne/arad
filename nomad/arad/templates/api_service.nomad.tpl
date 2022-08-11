@@ -22,10 +22,7 @@ job "api_service" {
       config {
         [[ if .arad.remote_docker_registry -]]
         auth {
-          username = [[ with secret "secret/dockerhub_username" -]]
-[[ .Data.data.value ]]
-{{- end -}}
-
+          helper = "dockerhub-login"
         }
 
         force_pull = true
