@@ -13,8 +13,8 @@ job "api_service" {
       mode = "bridge"
       [[ end ]]
       port "https" {
+        static = 8443
         to = 443
-        static = 8080
       }
     }
 

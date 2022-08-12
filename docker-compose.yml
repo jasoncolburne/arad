@@ -61,7 +61,7 @@ services:
       timeout: 5s
       retries: 5
     ports:
-      - "8080:443" # this is how the front end talks to the api. port 80 is taken atm.
+      - "8443:443" # this is how the front end talks to the api
 
   identity:
     build:

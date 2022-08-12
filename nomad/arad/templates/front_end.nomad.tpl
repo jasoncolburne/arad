@@ -11,8 +11,8 @@ job "front_end" {
       mode = "bridge"
       [[ end ]]
       port "https" {
-        to = 443
         static = 443
+        to = 443
       }
     }
 
