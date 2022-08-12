@@ -64,4 +64,6 @@
 
 /.vscode
 
+/secrets.tgz
+
 __pycache__

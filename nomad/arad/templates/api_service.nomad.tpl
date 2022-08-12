@@ -6,6 +6,8 @@ job "api_service" {
   datacenters = [ [[ range $idx, $dc := .arad.datacenters ]][[if $idx]],[[end]][[ $dc | quote ]][[ end ]] ]
 
   group "api_service" {
+    count = 1  // this is temporary, we need a load balancer here
+
     network {
       [[ if (.arad.linux_host) ]]
       mode = "bridge"
