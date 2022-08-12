@@ -35,7 +35,7 @@ const Api = () => {
         currentHostname
       )
         ? `https://api/api/v1/${endpoint}`
-        : `https://${currentHostname}:8080/api/v1/${endpoint}`;
+        : `https://${currentHostname}:8443/api/v1/${endpoint}`;
       const response = await fetch(url, options);
 
       if (!response.ok) {

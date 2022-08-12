@@ -18,9 +18,20 @@ job "reader_service" {
     task "fastapi" {
       driver = "docker"
 
+      vault {
+        policies = ["kv"]
+      }
+
       env {
         ALLOWED_ORIGINS = [[ .arad.back_end_allowed_origins | quote ]]
-        DATABASE_URL = "postgresql+asyncpg://arad_application:arad_application@localhost:5432/arad_application"
+      }
+
+      template {
+        data = <<EOH
+DATABASE_URL="{{ with secret "kv/data/application_database_url" }}{{ .Data.data.value }}{{ end }}"
+EOH
+        destination = "secrets/.env"
+        env = true
       }
 
       config {

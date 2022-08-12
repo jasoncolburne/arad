@@ -18,6 +18,10 @@ job "identity_service" {
     task "fastapi" {
       driver = "docker"
 
+      vault {
+        policies = ["kv"]
+      }
+
       env {
         ALLOWED_ORIGINS = [[ .arad.back_end_allowed_origins | quote ]]
         CACHE_URL = "redis://localhost:6379/0"
@@ -26,9 +30,9 @@ job "identity_service" {
 
       template {
         data = <<EOH
-DATABASE_URL="{{ with secret "secret/user_database_url" }}{{ .Data.data.value }}{{ end }}"
-ACCESS_TOKEN_PRIVATE_KEY_PEM={{ with secret "secret/access_token_private_key_pem" }}{{ .Data.data.value | toJSON }}{{ end }}
-ACCESS_TOKEN_PUBLIC_KEY_PEM={{ with secret "secret/access_token_public_key_pem" }}{{ .Data.data.value | toJSON }}{{ end }}
+DATABASE_URL="{{ with secret "kv/data/user_database_url" }}{{ .Data.data.value }}{{ end }}"
+ACCESS_TOKEN_PRIVATE_KEY_PEM={{ with secret "kv/data/access_token_private_key_pem" }}{{ .Data.data.value | toJSON }}{{ end }}
+ACCESS_TOKEN_PUBLIC_KEY_PEM={{ with secret "kv/data/access_token_public_key_pem" }}{{ .Data.data.value | toJSON }}{{ end }}
 EOH
         destination = "secrets/.env"
         env = true

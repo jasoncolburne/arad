@@ -9,3 +9,4 @@ reader_service_image = "jcolburne/arad:reader-main-latest"
 
 remote_docker_registry = true
 linux_host = true
+consul_enabled = true

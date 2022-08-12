@@ -11,13 +11,17 @@ job "front_end" {
       mode = "bridge"
       [[ end ]]
       port "https" {
-        to = 443
         static = 443
+        to = 443
       }
     }
 
     task "react" {
       driver = "docker"
+
+      vault {
+        policies = ["kv"]
+      }
 
       config {
         [[ if .arad.remote_docker_registry -]]
