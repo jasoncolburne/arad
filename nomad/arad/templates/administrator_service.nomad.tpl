@@ -24,7 +24,7 @@ job "administrator_service" {
 
       template {
         data = <<EOH
-DATABASE_URL="{{ with secret "secret/application_database_url" }}{{ .Data.data.value }}{{ end }}"
+DATABASE_URL="{{ with secret "kv/application_database_url" }}{{ .Data.data.value }}{{ end }}"
 EOH
         destination = "secrets/.env"
         env = true

@@ -20,8 +20,12 @@ job "migrate_user_database" {
         entrypoint = ["bash", "-c", "service nginx start && ./migrate.sh"]
       }
 
-      env {
-        DATABASE_URL = "postgresql+asyncpg://arad_user:arad_user@localhost:5432/arad_user"
+      template {
+        data = <<EOH
+DATABASE_URL="{{ with secret "kv/application_database_url" }}{{ .Data.data.value }}{{ end }}"
+EOH
+        destination = "secrets/.env"
+        env = true
       }
 
       restart {

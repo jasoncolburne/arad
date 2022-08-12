@@ -26,9 +26,9 @@ job "identity_service" {
 
       template {
         data = <<EOH
-DATABASE_URL="{{ with secret "secret/user_database_url" }}{{ .Data.data.value }}{{ end }}"
-ACCESS_TOKEN_PRIVATE_KEY_PEM={{ with secret "secret/access_token_private_key_pem" }}{{ .Data.data.value | toJSON }}{{ end }}
-ACCESS_TOKEN_PUBLIC_KEY_PEM={{ with secret "secret/access_token_public_key_pem" }}{{ .Data.data.value | toJSON }}{{ end }}
+DATABASE_URL="{{ with secret "kv/user_database_url" }}{{ .Data.data.value }}{{ end }}"
+ACCESS_TOKEN_PRIVATE_KEY_PEM={{ with secret "kv/access_token_private_key_pem" }}{{ .Data.data.value | toJSON }}{{ end }}
+ACCESS_TOKEN_PUBLIC_KEY_PEM={{ with secret "kv/access_token_public_key_pem" }}{{ .Data.data.value | toJSON }}{{ end }}
 EOH
         destination = "secrets/.env"
         env = true
