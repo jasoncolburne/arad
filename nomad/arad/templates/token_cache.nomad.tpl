@@ -29,7 +29,7 @@ job "token_cache" {
 
       service {
         name     = "token-cache"
-        provider = "nomad"
+        provider = [[ if (.arad.consul_enabled) -]]"consul"[[- else -]]"nomad"[[- end ]]
         port     = "db"
       }
 
