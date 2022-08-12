@@ -21,6 +21,10 @@ job "api_service" {
     task "nginx" {
       driver = "docker"
 
+      vault {
+        policies = ["kv"]
+      }
+
       config {
         [[ if .arad.remote_docker_registry -]]
         force_pull = true

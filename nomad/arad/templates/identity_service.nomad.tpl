@@ -18,6 +18,10 @@ job "identity_service" {
     task "fastapi" {
       driver = "docker"
 
+      vault {
+        policies = ["kv"]
+      }
+
       env {
         ALLOWED_ORIGINS = [[ .arad.back_end_allowed_origins | quote ]]
         CACHE_URL = "redis://localhost:6379/0"

@@ -19,6 +19,10 @@ job "front_end" {
     task "react" {
       driver = "docker"
 
+      vault {
+        policies = ["kv"]
+      }
+
       config {
         [[ if .arad.remote_docker_registry -]]
         force_pull = true
