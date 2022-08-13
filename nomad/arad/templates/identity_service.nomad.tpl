@@ -19,6 +19,8 @@ job "identity_service" {
       connect {
         sidecar_service {
           proxy {
+            protocol = "tcp"
+            mode = "transparent"
             upstreams {
               destination_name = "user-database"
               local_bind_port  = 5432
