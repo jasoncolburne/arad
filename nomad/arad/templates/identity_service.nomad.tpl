@@ -53,24 +53,22 @@ EOH
         connect {
           sidecar_service {
             proxy {
-              upstreams = [
-                {
-                  destination_name = "user-database"
-                  local_bind_address = "127.0.0.1"
-                  local_bind_port  = 5432
-                  mesh_gateway {
-                    mode = "local"
-                  }
+              upstreams {
+                destination_name = "user-database"
+                local_bind_address = "127.0.0.1"
+                local_bind_port  = 5432
+                mesh_gateway {
+                  mode = "local"
                 }
-                {
-                  destination_name = "token-cache"
-                  local_bind_address = "127.0.0.1"
-                  local_bind_port  = 6379
-                  mesh_gateway {
-                    mode = "local"
-                  }
+              }
+              upstreams {
+                destination_name = "token-cache"
+                local_bind_address = "127.0.0.1"
+                local_bind_port  = 6379
+                mesh_gateway {
+                  mode = "local"
                 }
-              ]
+              }
             }
           }
         }

@@ -34,46 +34,44 @@ job "api_service" {
       }
 
       service {
-        name     = "identity-service"
+        name     = "api-service"
         port     = "https"
         provider = "consul"
         connect {
           sidecar_service {
             proxy {
-              upstreams = [
-                {
-                  destination_name = "identity-service"
-                  local_bind_address = "127.0.0.1"
-                  local_bind_port = 8080
-                  mesh_gateway {
-                    mode = "local"
-                  }
-                },
-                {
-                  destination_name = "administrator-service"
-                  local_bind_address = "127.0.0.1"
-                  local_bind_port = 8081
-                  mesh_gateway {
-                    mode = "local"
-                  }
-                },
-                {
-                  destination_name = "reviewer-service"
-                  local_bind_address = "127.0.0.1"
-                  local_bind_port = 8082
-                  mesh_gateway {
-                    mode = "local"
-                  }
-                },
-                {
-                  destination_name = "reader-service"
-                  local_bind_address = "127.0.0.1"
-                  local_bind_port = 8083
-                  mesh_gateway {
-                    mode = "local"
-                  }
+              upstreams {
+                destination_name = "identity-service"
+                local_bind_address = "127.0.0.1"
+                local_bind_port = 8080
+                mesh_gateway {
+                  mode = "local"
                 }
-              ]
+              }
+              upstreams {
+                destination_name = "administrator-service"
+                local_bind_address = "127.0.0.1"
+                local_bind_port = 8081
+                mesh_gateway {
+                  mode = "local"
+                }
+              }
+              upstreams {
+                destination_name = "reviewer-service"
+                local_bind_address = "127.0.0.1"
+                local_bind_port = 8082
+                mesh_gateway {
+                  mode = "local"
+                }
+              }
+              upstreams {
+                destination_name = "reader-service"
+                local_bind_address = "127.0.0.1"
+                local_bind_port = 8083
+                mesh_gateway {
+                  mode = "local"
+                }
+              }
             }
           }
         }
