@@ -29,7 +29,7 @@ job "token_cache" {
 
       service {
         name     = "token-cache"
-        port     = "db"
+        port     = "6379"
         provider = "consul"
       }
 

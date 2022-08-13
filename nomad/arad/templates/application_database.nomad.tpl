@@ -36,7 +36,7 @@ job "application_database" {
 
       service {
         name     = "application-database"
-        port     = "db"
+        port     = "5432"
         provider = "consul"
       }
 

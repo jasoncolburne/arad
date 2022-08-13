@@ -49,7 +49,7 @@ job "reviewer_service" {
 
       service {
         name     = "reviewer-service"
-        port     = "http"
+        port     = "80"
         provider = "consul"
       }
 

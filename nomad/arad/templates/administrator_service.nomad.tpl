@@ -49,7 +49,7 @@ job "administrator_service" {
 
       service {
         name     = "administrator-service"
-        port     = "http"
+        port     = "80"
         provider = "consul"
       }
 

@@ -56,7 +56,7 @@ job "identity_service" {
 
       service {
         name     = "identity-service"
-        port     = "http"
+        port     = "80"
         provider = "consul"
       }
 

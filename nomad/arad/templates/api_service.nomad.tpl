@@ -73,7 +73,7 @@ job "api_service" {
 
       service {
         name     = "api-service"
-        port     = "https"
+        port     = "443"
         provider = "consul"
       }
 
