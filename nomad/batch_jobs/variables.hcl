@@ -7,7 +7,7 @@ variable "consul_enabled" {
 variable "datacenters" {
   description = "A list of datacenters in the region which are eligible for task placement. The first datacenter in the list will be used for uniquely deployed infrastructure."
   type        = list(string)
-  default     = ["dc1","dc2"]
+  default     = ["dc1"]
 }
 
 variable "region" {
