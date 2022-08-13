@@ -16,6 +16,7 @@ job "reviewer_service" {
     }
 
     service {
+      name = "reviewer-service"
       connect {
         sidecar_service {
           proxy {

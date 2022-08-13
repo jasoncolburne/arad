@@ -16,6 +16,7 @@ job "administrator_service" {
     }
 
     service {
+      name = "administrator-service"
       connect {
         sidecar_service {
           proxy {

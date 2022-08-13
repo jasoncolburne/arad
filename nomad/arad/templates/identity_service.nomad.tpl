@@ -16,6 +16,7 @@ job "identity_service" {
     }
 
     service {
+      name = "identity-service"
       connect {
         sidecar_service {
           proxy {

@@ -17,8 +17,6 @@ job "reader_service" {
 
     service {
       name     = "reader-service"
-      port     = "http"
-      provider = "consul"
       connect {
         sidecar_service {
           proxy {
