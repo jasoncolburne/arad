@@ -19,8 +19,10 @@ job "reader_service" {
       connect {
         sidecar_service {
           proxy {
-            protocol = "tcp"
-            mode = "transparent"
+            config {
+              protocol = "tcp"
+              mode = "transparent"
+            }
             upstreams {
               destination_name = "application-database"
               local_bind_port  = 5432

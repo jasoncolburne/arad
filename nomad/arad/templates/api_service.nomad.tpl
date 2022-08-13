@@ -25,8 +25,10 @@ job "api_service" {
       connect {
         sidecar_service {
           proxy {
-            protocol = "http"
-            mode = "direct"
+            config {
+              protocol = "http"
+              mode = "direct"
+            }
             upstreams {
               destination_name = "identity-service"
               local_bind_port = 8080
