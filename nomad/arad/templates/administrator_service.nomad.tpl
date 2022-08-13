@@ -6,17 +6,16 @@ job "administrator_service" {
   datacenters = [ [[ range $idx, $dc := .arad.datacenters ]][[if $idx]],[[end]][[ $dc | quote ]][[ end ]] ]
 
   group "administrator_service" {
+    [[ if (.arad.linux_host) ]]
     network {
-      [[ if (.arad.linux_host) ]]
       mode = "bridge"
-      [[ end ]]
-      port "http" {
-        to = [[ .arad.service_listen_port ]]
-      }
     }
+    [[ end ]]
 
     service {
       name = "administrator-service"
+      port     = "80"
+      provider = "consul"
       connect {
         sidecar_service {
           proxy {
@@ -44,13 +43,6 @@ job "administrator_service" {
         force_pull = true
         [[- end ]]
         image       = [[ .arad.administrator_service_image | quote ]]
-        ports       = ["http"]
-      }
-
-      service {
-        name     = "administrator-service"
-        port     = "80"
-        provider = "consul"
       }
 
       env {

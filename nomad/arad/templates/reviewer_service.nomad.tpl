@@ -6,17 +6,16 @@ job "reviewer_service" {
   datacenters = [ [[ range $idx, $dc := .arad.datacenters ]][[if $idx]],[[end]][[ $dc | quote ]][[ end ]] ]
 
   group "reviewer_service" {
+    [[ if (.arad.linux_host) ]]
     network {
-      [[ if (.arad.linux_host) ]]
       mode = "bridge"
-      [[ end ]]
-      port "http" {
-        to = [[ .arad.service_listen_port ]]
-      }
     }
+    [[ end ]]
 
     service {
       name = "reviewer-service"
+      port     = "80"
+      provider = "consul"
       connect {
         sidecar_service {
           proxy {
@@ -44,13 +43,6 @@ job "reviewer_service" {
         force_pull = true
         [[- end ]]
         image       = [[ .arad.reviewer_service_image | quote ]]
-        ports       = ["http"]
-      }
-
-      service {
-        name     = "reviewer-service"
-        port     = "80"
-        provider = "consul"
       }
 
       env {

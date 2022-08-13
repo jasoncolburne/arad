@@ -9,13 +9,16 @@ job "application_database" {
   group "application_database" {
     count = 1
 
+    [[ if (.arad.linux_host) ]]
     network {
-      [[ if (.arad.linux_host) ]]
       mode = "bridge"
-      [[ end ]]
-      port "db" {
-        to = [[ .arad.application_database_port ]]
-      }
+    }
+    [[ end ]]
+
+    service {
+      name     = "application-database"
+      port     = "5432"
+      provider = "consul"
     }
 
     task "postgres" {
@@ -28,16 +31,9 @@ job "application_database" {
 
       config {
         image          = "postgres:bullseye"
-        ports          = ["db"]
         auth_soft_fail = true
         volumes        = ["arad_application_database:/var/lib/postgresql/data"]
         volume_driver  = "local"
-      }
-
-      service {
-        name     = "application-database"
-        port     = "5432"
-        provider = "consul"
       }
 
       [[ template "resources" .arad.application_database_resources -]]

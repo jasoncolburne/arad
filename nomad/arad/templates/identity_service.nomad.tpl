@@ -6,17 +6,16 @@ job "identity_service" {
   datacenters = [ [[ range $idx, $dc := .arad.datacenters ]][[if $idx]],[[end]][[ $dc | quote ]][[ end ]] ]
 
   group "identity_service" {
+    [[ if (.arad.linux_host) ]]
     network {
-      [[ if (.arad.linux_host) ]]
       mode = "bridge"
-      [[ end ]]
-      port "http" {
-        to = [[ .arad.service_listen_port ]]
-      }
     }
+    [[ end ]]
 
     service {
       name = "identity-service"
+      port     = "80"
+      provider = "consul"
       connect {
         sidecar_service {
           proxy {
@@ -51,13 +50,6 @@ job "identity_service" {
         force_pull = true
         [[- end ]]
         image       = [[ .arad.identity_service_image | quote ]]
-        ports       = ["http"]
-      }
-
-      service {
-        name     = "identity-service"
-        port     = "80"
-        provider = "consul"
       }
 
       env {

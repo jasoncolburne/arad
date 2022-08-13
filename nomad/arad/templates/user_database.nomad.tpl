@@ -9,35 +9,31 @@ job "user_database" {
   group "user_database" {
     count = 1
 
+    [[ if (.arad.linux_host) ]]
     network {
-      [[ if (.arad.linux_host) ]]
       mode = "bridge"
-      [[ end ]]
-      port "db" {
-        to = [[ .arad.user_database_port ]]
-      }
+    }
+    [[ end ]]
+
+    service {
+      name     = "user-database"
+      port     = "5432"
+      provider = "consul"
     }
 
     task "postgres" {
       driver = "docker"
 
-      config {
-        image          = "postgres:bullseye"
-        ports          = ["db"]
-        auth_soft_fail = true
-        volumes        = ["arad_user_database:/var/lib/postgresql/data"]
-        volume_driver  = "local"
-      }
-
-      service {
-        name     = "user-database"
-        port     = "5432"
-        provider = "consul"
-      }
-
       env {
           POSTGRES_USER="postgres"
           POSTGRES_PASSWORD="passphrase"
+      }
+
+      config {
+        image          = "postgres:bullseye"
+        auth_soft_fail = true
+        volumes        = ["arad_user_database:/var/lib/postgresql/data"]
+        volume_driver  = "local"
       }
 
       [[ template "resources" .arad.user_database_resources -]]

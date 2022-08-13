@@ -20,6 +20,8 @@ job "api_service" {
 
     service {
       name = "api-service"
+      port     = "https"
+      provider = "consul"
       connect {
         sidecar_service {
           proxy {
@@ -68,13 +70,6 @@ job "api_service" {
         force_pull = true
         [[- end ]]
         image       = [[ .arad.api_service_image | quote ]]
-        ports       = ["https"]
-      }
-
-      service {
-        name     = "api-service"
-        port     = "443"
-        provider = "consul"
       }
 
       template {
