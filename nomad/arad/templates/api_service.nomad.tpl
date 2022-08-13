@@ -19,9 +19,6 @@ job "api_service" {
     }
 
     service {
-      name     = "api-service"
-      port     = "https"
-      provider = "consul"
       connect {
         sidecar_service {
           proxy {
@@ -77,6 +74,12 @@ job "api_service" {
         ports       = ["https"]
       }
 
+      service {
+        name     = "api-service"
+        port     = "https"
+        provider = "consul"
+      }
+      
       template {
         [[ template "secret_pem" "api_nginx_private_key" ]]
         destination = "secrets/nginx-private-key.pem"

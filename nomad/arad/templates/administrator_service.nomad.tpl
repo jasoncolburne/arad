@@ -16,9 +16,6 @@ job "administrator_service" {
     }
 
     service {
-      name     = "administrator-service"
-      port     = "http"
-      provider = "consul"
       connect {
         sidecar_service {
           proxy {
@@ -42,6 +39,20 @@ job "administrator_service" {
         policies = ["kv"]
       }
 
+      config {
+        [[ if .arad.remote_docker_registry -]]
+        force_pull = true
+        [[- end ]]
+        image       = [[ .arad.administrator_service_image | quote ]]
+        ports       = ["http"]
+      }
+
+      service {
+        name     = "administrator-service"
+        port     = "http"
+        provider = "consul"
+      }
+
       env {
         ALLOWED_ORIGINS = [[ .arad.back_end_allowed_origins | quote ]]
       }
@@ -52,14 +63,6 @@ DATABASE_URL="{{ with secret "kv/data/application_database_url" }}{{ .Data.data.
 EOH
         destination = "secrets/.env"
         env = true
-      }
-
-      config {
-        [[ if .arad.remote_docker_registry -]]
-        force_pull = true
-        [[- end ]]
-        image       = [[ .arad.administrator_service_image | quote ]]
-        ports       = ["http"]
       }
 
       [[ template "resources" .arad.service_resources -]]

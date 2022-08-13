@@ -16,9 +16,6 @@ job "identity_service" {
     }
 
     service {
-      name     = "identity-service"
-      port     = "http"
-      provider = "consul"
       connect {
         sidecar_service {
           proxy {
@@ -50,6 +47,20 @@ job "identity_service" {
         policies = ["kv"]
       }
 
+      config {
+        [[ if .arad.remote_docker_registry -]]
+        force_pull = true
+        [[- end ]]
+        image       = [[ .arad.identity_service_image | quote ]]
+        ports       = ["http"]
+      }
+
+      service {
+        name     = "identity-service"
+        port     = "http"
+        provider = "consul"
+      }
+
       env {
         ALLOWED_ORIGINS = [[ .arad.back_end_allowed_origins | quote ]]
         CACHE_URL = "redis://localhost:6379/0"
@@ -64,14 +75,6 @@ ACCESS_TOKEN_PUBLIC_KEY_PEM={{ with secret "kv/data/access_token_public_key_pem"
 EOH
         destination = "secrets/.env"
         env = true
-      }
-
-      config {
-        [[ if .arad.remote_docker_registry -]]
-        force_pull = true
-        [[- end ]]
-        image       = [[ .arad.identity_service_image | quote ]]
-        ports       = ["http"]
       }
 
       [[ template "resources" .arad.service_resources -]]
