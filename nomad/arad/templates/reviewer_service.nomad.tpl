@@ -22,7 +22,6 @@ job "reviewer_service" {
           proxy {
             upstreams {
               destination_name = "application-database"
-              local_bind_address = "127.0.0.1"
               local_bind_port  = 5432
               mesh_gateway {
                 mode = "local"
