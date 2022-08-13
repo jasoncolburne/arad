@@ -15,6 +15,26 @@ job "administrator_service" {
       }
     }
 
+    service {
+      name     = "administrator-service"
+      port     = "http"
+      provider = "consul"
+      connect {
+        sidecar_service {
+          proxy {
+            upstreams {
+              destination_name = "application-database"
+              local_bind_address = "127.0.0.1"
+              local_bind_port  = 5432
+              mesh_gateway {
+                mode = "local"
+              }
+            }
+          }
+        }
+      }
+    }
+
     task "fastapi" {
       driver = "docker"
 
@@ -40,26 +60,6 @@ EOH
         [[- end ]]
         image       = [[ .arad.administrator_service_image | quote ]]
         ports       = ["http"]
-      }
-
-      service {
-        name     = "administrator-service"
-        port     = "http"
-        provider = "consul"
-        connect {
-          sidecar_service {
-            proxy {
-              upstreams {
-                destination_name = "application-database"
-                local_bind_address = "127.0.0.1"
-                local_bind_port  = 5432
-                mesh_gateway {
-                  mode = "local"
-                }
-              }
-            }
-          }
-        }
       }
 
       [[ template "resources" .arad.service_resources -]]
