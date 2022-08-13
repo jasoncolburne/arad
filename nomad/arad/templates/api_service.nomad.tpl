@@ -48,44 +48,28 @@ job "api_service" {
       }
 
       template {
-        [[ if .arad.consul_enabled ]]
-          [[ template "upstream_consul" "administrator" ]]
-        [[ else ]]
-          [[ template "upstream_nomad" "administrator" ]]
-        [[ end ]]
+        [[ template "upstream_consul" "administrator" ]]
         destination = "local/administrator.conf"
         change_mode = "signal"
         change_signal = "SIGHUP"
       }
 
       template {
-        [[ if .arad.consul_enabled ]]
-          [[ template "upstream_consul" "reviewer" ]]
-        [[ else ]]
-          [[ template "upstream_nomad" "reviewer" ]]
-        [[ end ]]
+        [[ template "upstream_consul" "reviewer" ]]
         destination = "local/reviewer.conf"
         change_mode = "signal"
         change_signal = "SIGHUP"
       }
 
       template {
-        [[ if .arad.consul_enabled ]]
-          [[ template "upstream_consul" "reader" ]]
-        [[ else ]]
-          [[ template "upstream_nomad" "reader" ]]
-        [[ end ]]
+        [[ template "upstream_consul" "reader" ]]
         destination = "local/reader.conf"
         change_mode = "signal"
         change_signal = "SIGHUP"
       }
 
       template {
-        [[ if .arad.consul_enabled ]]
-          [[ template "upstream_consul" "identity" ]]
-        [[ else ]]
-          [[ template "upstream_nomad" "identity" ]]
-        [[ end ]]
+        [[ template "upstream_consul" "identity" ]]
         destination = "local/identity.conf"
         change_mode = "signal"
         change_signal = "SIGHUP"

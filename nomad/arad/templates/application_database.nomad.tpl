@@ -36,8 +36,8 @@ job "application_database" {
 
       service {
         name     = "application-database"
-        provider = [[ if (.arad.consul_enabled) -]]"consul"[[- else -]]"nomad"[[- end ]]
         port     = "db"
+        provider = "consul"
       }
 
       [[ template "resources" .arad.application_database_resources -]]

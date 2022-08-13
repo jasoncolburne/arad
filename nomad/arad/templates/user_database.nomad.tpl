@@ -31,8 +31,8 @@ job "user_database" {
 
       service {
         name     = "user-database"
-        provider = [[ if (.arad.consul_enabled) -]]"consul"[[- else -]]"nomad"[[- end ]]
         port     = "db"
+        provider = "consul"
       }
 
       env {

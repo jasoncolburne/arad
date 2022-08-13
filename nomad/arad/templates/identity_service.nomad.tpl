@@ -48,62 +48,32 @@ EOH
 
       service {
         name     = "identity-service"
-        provider = [[ if (.arad.consul_enabled) -]]"consul"[[- else -]]"nomad"[[- end ]]
         port     = "http"
-      }
-
-      template {
-        [[ if (.arad.consul_enabled) -]]
-        data = <<EOH
-upstream cache {
-{{- range service "token-cache" }}
-  server 10.1.0.1:{{ .Port }};
-{{- end }}
-}
-
-server {
-  listen 6379 so_keepalive=on;
-  proxy_pass cache;
-}
-
-upstream database {
-{{- range service "user-database" }}
-  server 10.1.0.1:{{ .Port }};
-{{- end }}
-}
-
-server {
-  listen 5432 so_keepalive=on;
-  proxy_pass database;
-}
-EOH
-        [[ else -]]
-        data = <<EOH
-upstream cache {
-{{- range nomadService "token-cache" }}
-  server 10.1.0.1:{{ .Port }};
-{{- end }}
-}
-
-server {
-  listen 6379 so_keepalive=on;
-  proxy_pass cache;
-}
-
-upstream database {
-{{- range nomadService "user-database" }}
-  server 10.1.0.1:{{ .Port }};
-{{- end }}
-}
-
-server {
-  listen 5432 so_keepalive=on;
-  proxy_pass database;
-}
-EOH
-        [[ end -]]
-        
-        destination = "local/upstreams.conf"
+        provider = "consul"
+        connect {
+          sidecar_service {
+            proxy {
+              upstreams = [
+                {
+                  destination_name = "user-database"
+                  local_bind_address = "127.0.0.1"
+                  local_bind_port  = 5432
+                  mesh_gateway {
+                    mode = "local"
+                  }
+                }
+                {
+                  destination_name = "token-cache"
+                  local_bind_address = "127.0.0.1"
+                  local_bind_port  = 6379
+                  mesh_gateway {
+                    mode = "local"
+                  }
+                }
+              ]
+            }
+          }
+        }
       }
 
       [[ template "resources" .arad.service_resources -]]

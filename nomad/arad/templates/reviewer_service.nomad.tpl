@@ -44,40 +44,24 @@ EOH
 
       service {
         name     = "reviewer-service"
-        provider = [[ if (.arad.consul_enabled) -]]"consul"[[- else -]]"nomad"[[- end ]]
         port     = "http"
-      }
-
-      template {
-        [[ if (.arad.consul_enabled) -]]
-        data = <<EOH
-upstream database {
-{{- range service "application-database" }}
-  server 10.1.0.1:{{ .Port }};
-{{- end }}
-}
-
-server {
-  listen 5432 so_keepalive=on;
-  proxy_pass database;
-}
-EOH
-        [[ else -]]
-        data = <<EOH
-upstream database {
-{{- range nomadService "application-database" }}
-  server 10.1.0.1:{{ .Port }};
-{{- end }}
-}
-
-server {
-  listen 5432 so_keepalive=on;
-  proxy_pass database;
-}
-EOH
-        [[ end -]]
-        
-        destination = "local/upstreams.conf"
+        provider = "consul"
+        connect {
+          sidecar_service {
+            proxy {
+              upstreams = [
+                {
+                  destination_name = "application-database"
+                  local_bind_address = "127.0.0.1"
+                  local_bind_port  = 5432
+                  mesh_gateway {
+                    mode = "local"
+                  }
+                }
+              ]
+            }
+          }
+        }
       }
 
       [[ template "resources" .arad.service_resources -]]
