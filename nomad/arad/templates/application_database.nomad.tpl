@@ -16,8 +16,7 @@ job "application_database" {
     [[ end ]]
 
     service {
-      name     = "application-database"
-      provider = "consul"
+      name        = "application-database"
       socket_path = "/var/run/postgresql/.s.PGSQL.5432"
       provider    = "consul"
       connect {
