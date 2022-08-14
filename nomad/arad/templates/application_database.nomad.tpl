@@ -19,6 +19,9 @@ job "application_database" {
       name     = "application-database"
       port     = "5432"
       provider = "consul"
+      connect {
+        sidecar_service {}
+      }
     }
 
     task "postgres" {
