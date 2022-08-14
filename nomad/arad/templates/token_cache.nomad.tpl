@@ -19,6 +19,9 @@ job "token_cache" {
       name     = "token-cache"
       port     = "6379"
       provider = "consul"
+      connect {
+        sidecar_service {}
+      }
     }
 
     task "redis" {
