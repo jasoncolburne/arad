@@ -19,23 +19,13 @@ job "identity_service" {
       connect {
         sidecar_service {
           proxy {
-            config {
-              protocol = "tcp"
-              mode = "transparent"
-            }
             upstreams {
               destination_name = "user-database"
-              local_bind_port  = 5432
-              mesh_gateway {
-                mode = "local"
-              }
+              local_bind_socket_path = "/var/run/postgresql/.s.PGSQL.5432"
             }
             upstreams {
               destination_name = "token-cache"
-              local_bind_port  = 6379
-              mesh_gateway {
-                mode = "local"
-              }
+              local_bind_socket_path = "/var/run/redis/socket"
             }
           }
         }

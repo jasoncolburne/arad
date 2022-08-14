@@ -15,12 +15,19 @@ job "token_cache" {
     }
     [[ end ]]
 
+    # https://medium.com/hashicorp-engineering/the-trouble-with-service-mesh-6b0336964323
     service {
-      name     = "token-cache"
-      port     = "6379"
-      provider = "consul"
+      name        = "token-cache"
+      socket_path = "/var/run/redis/socket"
+      provider    = "consul"
       connect {
         sidecar_service {}
+      }
+      check {
+        name = "ping"
+        args = ["/usr/local/bin/redis-cli", "-s", "/var/run/redis/socket", "PING"]
+        interval = "5s"
+        timeout = "1s"
       }
     }
 
@@ -28,7 +35,7 @@ job "token_cache" {
       driver = "docker"
 
       config {
-        image          = "redis:bullseye"
+        image          = [[ .arad.token_cache_image | quote ]]
         auth_soft_fail = true
       }
 

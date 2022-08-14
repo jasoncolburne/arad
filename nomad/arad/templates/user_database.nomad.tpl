@@ -15,12 +15,19 @@ job "user_database" {
     }
     [[ end ]]
 
+    # https://medium.com/hashicorp-engineering/the-trouble-with-service-mesh-6b0336964323
     service {
-      name     = "user-database"
-      port     = "5432"
-      provider = "consul"
+      name        = "user-database"
+      socket_path = "/var/run/postgresql/.s.PGSQL.5432"
+      provider    = "consul"
       connect {
         sidecar_service {}
+      }
+      check {
+        name = "pg_isready"
+        args = ["/usr/bin/pg_isready"]
+        interval = "5s"
+        timeout = "1s"
       }
     }
 

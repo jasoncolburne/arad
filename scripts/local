@@ -89,6 +89,12 @@ stack_build() {
   done
 
   echo
+  echo "building redis image..."
+  echo
+  docker build -f redis/Dockerfile -t arad_redis redis
+  docker tag arad_redis:latest arad_redis:local
+
+  echo
   echo "building snowflake core testing image..."
   echo
   docker build --build-arg DEPLOYMENT_ENVIRONMENT=development -f core/Dockerfile -t arad_core-test core

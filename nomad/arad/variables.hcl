@@ -142,6 +142,12 @@ variable "front_end_image" {
   default = "arad_front-end-nginx:local"
 }
 
+variable "token_cache_image" {
+  description = "The image to use for the token cache."
+  type = string
+  default = "arad_redis:local"
+}
+
 variable "remote_docker_registry" {
   description = "Whether to use a remote registry."
   type = bool
