@@ -28,7 +28,6 @@ job "front_end" {
         force_pull = true
         [[- end ]]
         image = [[ .arad.front_end_image | quote ]]
-        ports = ["https"]
       }
 
       template {

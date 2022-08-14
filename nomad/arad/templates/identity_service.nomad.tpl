@@ -6,12 +6,39 @@ job "identity_service" {
   datacenters = [ [[ range $idx, $dc := .arad.datacenters ]][[if $idx]],[[end]][[ $dc | quote ]][[ end ]] ]
 
   group "identity_service" {
+    [[ if (.arad.linux_host) ]]
     network {
-      [[ if (.arad.linux_host) ]]
       mode = "bridge"
-      [[ end ]]
-      port "http" {
-        to = [[ .arad.service_listen_port ]]
+    }
+    [[ end ]]
+
+    service {
+      name = "identity-service"
+      port     = "80"
+      provider = "consul"
+      connect {
+        sidecar_service {
+          proxy {
+            config {
+              protocol = "tcp"
+              mode = "transparent"
+            }
+            upstreams {
+              destination_name = "user-database"
+              local_bind_port  = 5432
+              mesh_gateway {
+                mode = "local"
+              }
+            }
+            upstreams {
+              destination_name = "token-cache"
+              local_bind_port  = 6379
+              mesh_gateway {
+                mode = "local"
+              }
+            }
+          }
+        }
       }
     }
 
@@ -20,6 +47,13 @@ job "identity_service" {
 
       vault {
         policies = ["kv"]
+      }
+
+      config {
+        [[ if .arad.remote_docker_registry -]]
+        force_pull = true
+        [[- end ]]
+        image       = [[ .arad.identity_service_image | quote ]]
       }
 
       env {
@@ -36,74 +70,6 @@ ACCESS_TOKEN_PUBLIC_KEY_PEM={{ with secret "kv/data/access_token_public_key_pem"
 EOH
         destination = "secrets/.env"
         env = true
-      }
-
-      config {
-        [[ if .arad.remote_docker_registry -]]
-        force_pull = true
-        [[- end ]]
-        image       = [[ .arad.identity_service_image | quote ]]
-        ports       = ["http"]
-      }
-
-      service {
-        name     = "identity-service"
-        provider = [[ if (.arad.consul_enabled) -]]"consul"[[- else -]]"nomad"[[- end ]]
-        port     = "http"
-      }
-
-      template {
-        [[ if (.arad.consul_enabled) -]]
-        data = <<EOH
-upstream cache {
-{{- range service "token-cache" }}
-  server 10.1.0.1:{{ .Port }};
-{{- end }}
-}
-
-server {
-  listen 6379 so_keepalive=on;
-  proxy_pass cache;
-}
-
-upstream database {
-{{- range service "user-database" }}
-  server 10.1.0.1:{{ .Port }};
-{{- end }}
-}
-
-server {
-  listen 5432 so_keepalive=on;
-  proxy_pass database;
-}
-EOH
-        [[ else -]]
-        data = <<EOH
-upstream cache {
-{{- range nomadService "token-cache" }}
-  server 10.1.0.1:{{ .Port }};
-{{- end }}
-}
-
-server {
-  listen 6379 so_keepalive=on;
-  proxy_pass cache;
-}
-
-upstream database {
-{{- range nomadService "user-database" }}
-  server 10.1.0.1:{{ .Port }};
-{{- end }}
-}
-
-server {
-  listen 5432 so_keepalive=on;
-  proxy_pass database;
-}
-EOH
-        [[ end -]]
-        
-        destination = "local/upstreams.conf"
       }
 
       [[ template "resources" .arad.service_resources -]]

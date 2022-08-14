@@ -9,12 +9,18 @@ job "token_cache" {
   group "token_cache" {
     count = 1
 
+    [[ if (.arad.linux_host) ]]
     network {
-      [[ if (.arad.linux_host) ]]
       mode = "bridge"
-      [[ end ]]
-      port "db" {
-        to = [[ .arad.token_cache_port ]]
+    }
+    [[ end ]]
+
+    service {
+      name     = "token-cache"
+      port     = "6379"
+      provider = "consul"
+      connect {
+        sidecar_service {}
       }
     }
 
@@ -23,14 +29,7 @@ job "token_cache" {
 
       config {
         image          = "redis:bullseye"
-        ports          = ["db"]
         auth_soft_fail = true
-      }
-
-      service {
-        name     = "token-cache"
-        provider = [[ if (.arad.consul_enabled) -]]"consul"[[- else -]]"nomad"[[- end ]]
-        port     = "db"
       }
 
       [[ template "resources" .arad.token_cache_resources -]]

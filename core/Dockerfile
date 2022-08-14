@@ -19,13 +19,13 @@ RUN apt-get -y install --no-install-recommends \
   gcc \
   libc-dev \
   curl \
-  ca-certificates \
-  nginx
+  ca-certificates
+  # nginx
 
-RUN rm -f /etc/nginx/sites-enabled/default
-RUN mkdir -p /etc/nginx/conf.d/streams
-RUN ln -sf /local/upstreams.conf /etc/nginx/conf.d/streams/upstreams.conf
-COPY nginx.conf /etc/nginx
+# RUN rm -f /etc/nginx/sites-enabled/default
+# RUN mkdir -p /etc/nginx/conf.d/streams
+# RUN ln -sf /local/upstreams.conf /etc/nginx/conf.d/streams/upstreams.conf
+# COPY nginx.conf /etc/nginx
 
 WORKDIR /app
 
@@ -49,6 +49,6 @@ RUN apt-get -y remove gcc libc-dev ca-certificates
 RUN apt-get -y autoremove
 
 COPY . .
-RUN rm nginx.conf
+RUN rm install-poetry.py # nginx.conf
 
 CMD ["bash", "-c", "./entrypoint.sh"]

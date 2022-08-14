@@ -18,6 +18,50 @@ job "api_service" {
       }
     }
 
+    service {
+      name = "api-service"
+      port     = "https"
+      provider = "consul"
+      connect {
+        sidecar_service {
+          proxy {
+            config {
+              protocol = "http"
+              mode = "direct"
+            }
+            upstreams {
+              destination_name = "identity-service"
+              local_bind_port = 8080
+              mesh_gateway {
+                mode = "local"
+              }
+            }
+            upstreams {
+              destination_name = "administrator-service"
+              local_bind_port = 8081
+              mesh_gateway {
+                mode = "local"
+              }
+            }
+            upstreams {
+              destination_name = "reviewer-service"
+              local_bind_port = 8082
+              mesh_gateway {
+                mode = "local"
+              }
+            }
+            upstreams {
+              destination_name = "reader-service"
+              local_bind_port = 8083
+              mesh_gateway {
+                mode = "local"
+              }
+            }
+          }
+        }
+      }
+    }
+
     task "nginx" {
       driver = "docker"
 
@@ -30,7 +74,6 @@ job "api_service" {
         force_pull = true
         [[- end ]]
         image       = [[ .arad.api_service_image | quote ]]
-        ports       = ["https"]
       }
 
       template {
@@ -48,45 +91,61 @@ job "api_service" {
       }
 
       template {
-        [[ if .arad.consul_enabled ]]
-          [[ template "upstream_consul" "administrator" ]]
-        [[ else ]]
-          [[ template "upstream_nomad" "administrator" ]]
-        [[ end ]]
+        data = <<EOH
+upstream identity {
+  server 127.0.0.1:8080;
+{{- $SERVICE_COUNT := len (service "identity-service") -}}
+{{- if (gt $SERVICE_COUNT 0) }}
+  keepalive {{ multiply $SERVICE_COUNT 2 }};
+{{ end -}}
+}
+EOH
+        destination = "local/identity.conf"
+        change_mode = "signal"
+        change_signal = "SIGHUP"
+      }
+
+      template {
+        data = <<EOH
+upstream administrator {
+  server 127.0.0.1:8081;
+{{- $SERVICE_COUNT := len (service "administrator-service") -}}
+{{- if (gt $SERVICE_COUNT 0) }}
+  keepalive {{ multiply $SERVICE_COUNT 2 }};
+{{ end -}}
+}
+EOH
         destination = "local/administrator.conf"
         change_mode = "signal"
         change_signal = "SIGHUP"
       }
 
       template {
-        [[ if .arad.consul_enabled ]]
-          [[ template "upstream_consul" "reviewer" ]]
-        [[ else ]]
-          [[ template "upstream_nomad" "reviewer" ]]
-        [[ end ]]
+        data = <<EOH
+upstream reviewer {
+  server 127.0.0.1:8082;
+{{- $SERVICE_COUNT := len (service "reviewer-service") -}}
+{{- if (gt $SERVICE_COUNT 0) }}
+  keepalive {{ multiply $SERVICE_COUNT 2 }};
+{{ end -}}
+}
+EOH
         destination = "local/reviewer.conf"
         change_mode = "signal"
         change_signal = "SIGHUP"
       }
 
       template {
-        [[ if .arad.consul_enabled ]]
-          [[ template "upstream_consul" "reader" ]]
-        [[ else ]]
-          [[ template "upstream_nomad" "reader" ]]
-        [[ end ]]
+        data = <<EOH
+upstream reader {
+  server 127.0.0.1:8083;
+{{- $SERVICE_COUNT := len (service "reader-service") -}}
+{{- if (gt $SERVICE_COUNT 0) }}
+  keepalive {{ multiply $SERVICE_COUNT 2 }};
+{{ end -}}
+}
+EOH
         destination = "local/reader.conf"
-        change_mode = "signal"
-        change_signal = "SIGHUP"
-      }
-
-      template {
-        [[ if .arad.consul_enabled ]]
-          [[ template "upstream_consul" "identity" ]]
-        [[ else ]]
-          [[ template "upstream_nomad" "identity" ]]
-        [[ end ]]
-        destination = "local/identity.conf"
         change_mode = "signal"
         change_signal = "SIGHUP"
       }
