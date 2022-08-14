@@ -17,8 +17,18 @@ job "application_database" {
 
     service {
       name     = "application-database"
-      port     = "5432"
       provider = "consul"
+      socket_path = "/var/run/postgresql/.s.PGSQL.5432"
+      provider    = "consul"
+      connect {
+        sidecar_service {}
+      }
+      check {
+        name = "pg_isready"
+        args = ["/usr/bin/pg_isready"]
+        interval = "5s"
+        timeout = "1s"
+      }
     }
 
     task "postgres" {
