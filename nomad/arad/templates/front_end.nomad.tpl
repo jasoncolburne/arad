@@ -44,7 +44,7 @@ job "front_end" {
         change_signal = "SIGHUP"
       }
 
-      [[ template "resources" .arad.front_end_resources -]]
+      [[ template "resources" .arad.nginx_resources -]]
     }
   }
 }

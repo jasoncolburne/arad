@@ -88,15 +88,15 @@ variable "service_resources" {
   }
 }
 
-variable "front_end_resources" {
+variable "nginx_resources" {
   description = "The resources to assign to the front-end."
   type = object({
     cpu    = number
     memory = number
   })
   default = {
-    cpu    = 2000,
-    memory = 3072
+    cpu    = 750,
+    memory = 64
   }
 }
 
