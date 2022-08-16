@@ -150,7 +150,7 @@ EOH
         change_signal = "SIGHUP"
       }
 
-      [[ template "resources" .arad.service_resources -]]
+      [[ template "resources" .arad.nginx_resources -]]
     }
   }
 }
