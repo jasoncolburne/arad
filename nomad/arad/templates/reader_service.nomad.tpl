@@ -20,7 +20,7 @@ job "reader_service" {
       tags = [
         "api.enable=true",
         "api.http.routers.reader.rule=PathPrefix(`/api/v1/read/`)",
-        "api.http.routers.reader.entrypoints=api"
+        "api.http.routers.reader.entrypoints=80"
       ]
 
       connect {
