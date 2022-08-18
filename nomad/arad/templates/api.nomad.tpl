@@ -20,6 +20,7 @@ job "api" {
     service {
       name     = "api"
       provider = "consul"
+      port     = "8443"
 
       connect {
         native = true
