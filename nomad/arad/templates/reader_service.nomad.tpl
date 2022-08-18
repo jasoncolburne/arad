@@ -14,13 +14,13 @@ job "reader_service" {
 
     service {
       name     = "reader-service"
-      port     = "80"
+      port     = "http"
       provider = "consul"
 
       tags = [
         "api.enable=true",
         "api.http.routers.reader.rule=PathPrefix(`/api/v1/read/`)",
-        "api.http.routers.reader.entrypoints=80"
+        "api.http.routers.reader.entrypoints=http"
       ]
 
       connect {

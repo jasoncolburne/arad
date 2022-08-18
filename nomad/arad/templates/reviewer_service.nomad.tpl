@@ -14,13 +14,13 @@ job "reviewer_service" {
 
     service {
       name = "reviewer-service"
-      port     = "80"
+      port     = "http"
       provider = "consul"
 
       tags = [
         "api.enable=true",
         "api.http.routers.reviewer.rule=PathPrefix(`/api/v1/review/`)",
-        "api.http.routers.reviewer.entrypoints=80"
+        "api.http.routers.reviewer.entrypoints=http"
       ]
 
       connect {

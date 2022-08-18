@@ -14,13 +14,13 @@ job "administrator_service" {
 
     service {
       name = "administrator-service"
-      port     = "80"
+      port     = "http"
       provider = "consul"
 
       tags = [
         "api.enable=true",
         "api.http.routers.administrator.rule=PathPrefix(`/api/v1/administrate/`)",
-        "api.http.routers.adminsitrator.entrypoints=80"
+        "api.http.routers.adminsitrator.entrypoints=http"
       ]
 
       connect {
