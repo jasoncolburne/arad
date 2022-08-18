@@ -80,7 +80,7 @@ job "api" {
     exposedByDefault = false
 
     [providers.consulCatalog.endpoint]
-      address = "127.0.0.1:8500"
+      address = "10.1.0.1:8500"
       scheme  = "http"
       token   = "{{- with secret "kv/data/api_consul_token" -}}{{ .Data.data.value  }}{{- end -}}"
 
