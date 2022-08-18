@@ -16,6 +16,13 @@ job "reviewer_service" {
       name = "reviewer-service"
       port     = "80"
       provider = "consul"
+
+      tags = [
+        "api.enable=true",
+        "api.https.routers.reviewer.rule=PathPrefix(`/api/v1/review/`)"
+        "api.https.routers.reviewer.entrypoints=api"
+      ]
+
       connect {
         sidecar_service {
           proxy {

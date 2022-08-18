@@ -6,6 +6,8 @@ job "identity_service" {
   datacenters = [ [[ range $idx, $dc := .arad.datacenters ]][[if $idx]],[[end]][[ $dc | quote ]][[ end ]] ]
 
   group "identity_service" {
+    count = 5
+
     [[ if (.arad.linux_host) ]]
     network {
       mode = "bridge"
@@ -13,9 +15,16 @@ job "identity_service" {
     [[ end ]]
 
     service {
-      name = "identity-service"
+      name     = "identity-service"
       port     = "80"
       provider = "consul"
+
+      tags = [
+        "api.enable=true",
+        "api.https.routers.identity.rule=PathPrefix(`/api/v1/identify/`)"
+        "api.https.routers.identity.entrypoints=api"
+      ]
+
       connect {
         sidecar_service {
           proxy {

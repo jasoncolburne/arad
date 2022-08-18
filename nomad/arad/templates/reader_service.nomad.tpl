@@ -16,6 +16,13 @@ job "reader_service" {
       name     = "reader-service"
       port     = "80"
       provider = "consul"
+
+      tags = [
+        "api.enable=true",
+        "api.https.routers.reader.rule=PathPrefix(`/api/v1/read/`)"
+        "api.https.routers.reader.entrypoints=api"
+      ]
+
       connect {
         sidecar_service {
           proxy {

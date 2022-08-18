@@ -16,6 +16,13 @@ job "administrator_service" {
       name = "administrator-service"
       port     = "80"
       provider = "consul"
+
+      tags = [
+        "api.enable=true",
+        "api.https.routers.administrator.rule=PathPrefix(`/api/v1/administrate/`)"
+        "api.https.routers.adminsitrator.entrypoints=api"
+      ]
+
       connect {
         sidecar_service {
           proxy {

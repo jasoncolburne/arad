@@ -100,6 +100,18 @@ variable "nginx_resources" {
   }
 }
 
+variable "api_resources" {
+  description = "The resources to assign to the api load balancer."
+  type = object({
+    cpu    = number
+    memory = number
+  })
+  default = {
+    cpu    = 100,
+    memory = 128
+  }
+}
+
 variable "back_end_allowed_origins" {
   description = "A string, comma separated list of origins to allow access to the backend. eg, https://arad.org"
   type = string
