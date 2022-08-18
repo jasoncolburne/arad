@@ -14,13 +14,11 @@ job "api" {
       [[ end ]]
       port "https" {
         static = 8443
-        to = 443
       }
     }
 
     service {
       name     = "api"
-      port     = "https"
       provider = "consul"
 
       connect {
@@ -61,26 +59,20 @@ job "api" {
       template {
         data = <<EOF
 [entryPoints]
-    [entryPoints.identity]
-    address = ":8080"
-    [entryPoints.administrator]
-    address = ":8081"
-    [entryPoints.reviewer]
-    address = ":8082"
-    [entryPoints.reader]
-    address = ":8083"
+  [entryPoints.websecure]
+    address = ":8443"
 
 [providers.consulCatalog]
-    prefix           = "api"
-    serviceName      = "api"
-    connectAware     = true
-    connectByDefault = true
-    exposedByDefault = false
+  prefix           = "api"
+  serviceName      = "api"
+  connectAware     = true
+  connectByDefault = true
+  exposedByDefault = false
 
-    [providers.consulCatalog.endpoint]
-      address = "unix:///alloc/tmp/consul_http.sock"
-      scheme  = "http"
-      token   = "{{- with secret "kv/data/api_consul_token" -}}{{ .Data.data.value  }}{{- end -}}"
+  [providers.consulCatalog.endpoint]
+    address = "unix:///alloc/tmp/consul_http.sock"
+    scheme  = "http"
+    token   = "{{- with secret "kv/data/api_consul_token" -}}{{ .Data.data.value  }}{{- end -}}"
 
 [[ "[[tls.certificates]]" ]]
   certFile = "/secrets/nginx-certificate.pem"
