@@ -46,13 +46,13 @@ job "api" {
 
       template {
         [[ template "secret_pem" "api_nginx_private_key" ]]
-        destination = "secrets/nginx-private-key.pem"
+        destination = "secrets/private-key.pem"
         change_mode = "restart"
       }
 
       template {
         [[ template "secret_pem" "api_nginx_certificate" ]]
-        destination = "secrets/nginx-certificate.pem"
+        destination = "secrets/certificate.pem"
         change_mode = "restart"
       }
 
@@ -75,8 +75,8 @@ job "api" {
     token   = "{{- with secret "kv/data/api_consul_token" -}}{{ .Data.data.value  }}{{- end -}}"
 
 [[ "[[tls.certificates]]" ]]
-  certFile = "/secrets/nginx-certificate.pem"
-  keyFile = "/secrets/nginx-private-key.pem"
+  certFile = "/secrets/certificate.pem"
+  keyFile = "/secrets/private-key.pem"
 
 [tls.options]
   [tls.options.default]

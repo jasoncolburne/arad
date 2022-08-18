@@ -20,7 +20,7 @@ job "reviewer_service" {
       tags = [
         "api.enable=true",
         "api.http.routers.reviewer.rule=PathPrefix(`/api/v1/review/`)",
-        "api.http.routers.reviewer.entrypoints=http"
+        "api.http.routers.reviewer.entrypoints=websecure"
       ]
 
       connect {

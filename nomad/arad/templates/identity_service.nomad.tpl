@@ -22,7 +22,7 @@ job "identity_service" {
       tags = [
         "api.enable=true",
         "api.http.routers.identity.rule=PathPrefix(`/api/v1/identify/`)",
-        "api.http.routers.identity.entrypoints=http"
+        "api.http.routers.identity.entrypoints=websecure"
       ]
 
       connect {
