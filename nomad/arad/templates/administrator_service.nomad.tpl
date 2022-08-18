@@ -19,8 +19,8 @@ job "administrator_service" {
 
       tags = [
         "api.enable=true",
-        "api.https.routers.administrator.rule=PathPrefix(`/api/v1/administrate/`)",
-        "api.https.routers.adminsitrator.entrypoints=api"
+        "api.http.routers.administrator.rule=PathPrefix(`/api/v1/administrate/`)",
+        "api.http.routers.adminsitrator.entrypoints=api"
       ]
 
       connect {

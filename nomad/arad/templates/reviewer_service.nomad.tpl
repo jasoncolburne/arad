@@ -19,8 +19,8 @@ job "reviewer_service" {
 
       tags = [
         "api.enable=true",
-        "api.https.routers.reviewer.rule=PathPrefix(`/api/v1/review/`)",
-        "api.https.routers.reviewer.entrypoints=api"
+        "api.http.routers.reviewer.rule=PathPrefix(`/api/v1/review/`)",
+        "api.http.routers.reviewer.entrypoints=api"
       ]
 
       connect {
