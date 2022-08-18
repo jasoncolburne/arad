@@ -82,6 +82,7 @@ job "api" {
     [providers.consulCatalog.endpoint]
       address = "127.0.0.1:8500"
       scheme  = "http"
+      token   = "{{- with secret "kv/data/api_consul_token" -}}{{ .Data.data.value  }}{{- end -}}"
 
 [[ "[[tls.certificates]]" ]]
   certFile = "/secrets/nginx-certificate.pem"
