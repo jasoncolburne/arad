@@ -116,11 +116,6 @@ EOF
         destination = "local/traefik.toml"
       }
 
-      resources {
-        cpu    = 100
-        memory = 128
-      }
-      
       [[ template "resources" .arad.api_resources -]]
     }
   }
