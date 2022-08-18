@@ -49,15 +49,13 @@ job "api" {
       template {
         [[ template "secret_pem" "api_nginx_private_key" ]]
         destination = "secrets/nginx-private-key.pem"
-        // change_mode = "signal"
-        // change_signal = "SIGHUP"
+        change_mode = "restart"
       }
 
       template {
         [[ template "secret_pem" "api_nginx_certificate" ]]
         destination = "secrets/nginx-certificate.pem"
-        // change_mode = "signal"
-        // change_signal = "SIGHUP"
+        change_mode = "restart"
       }
 
       template {
@@ -114,6 +112,7 @@ job "api" {
     curvePreferences = ["CurveP521", "CurveP384"]
 EOF
 
+        change_mode = "restart"
         destination = "local/traefik.toml"
       }
 
