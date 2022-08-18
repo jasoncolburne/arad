@@ -83,7 +83,7 @@ job "api" {
       address = "127.0.0.1:8500"
       scheme  = "http"
 
-[[tls.certificates]]
+[[ "[[tls.certificates]]" ]]
   certFile = "/secrets/nginx-certificate.pem"
   keyFile = "/secrets/nginx-private-key.pem"
 

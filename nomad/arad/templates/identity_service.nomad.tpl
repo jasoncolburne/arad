@@ -21,7 +21,7 @@ job "identity_service" {
 
       tags = [
         "api.enable=true",
-        "api.https.routers.identity.rule=PathPrefix(`/api/v1/identify/`)"
+        "api.https.routers.identity.rule=PathPrefix(`/api/v1/identify/`)",
         "api.https.routers.identity.entrypoints=api"
       ]
 
