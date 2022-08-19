@@ -23,7 +23,7 @@ job "administrator_service" {
         "api.http.middlewares.administrator-remove-prefix.replacepathregex.replacement=/$1",
         "api.http.routers.administrator.tls=true",
         "api.http.routers.administrator.entrypoints=https",
-        "api.http.routers.administrator.rule=\"Host(`[[ .arad.api_domain ]]`) && PathPrefix(`/api/v1/administrate/`)\"",
+        "api.http.routers.administrator.rule=Host(`[[ .arad.api_domain ]]`) && PathPrefix(`/api/v1/administrate/`)",
         "api.http.routers.administrator.middlewares=administrator-remove-prefix@consulcatalog"
       ]
 

@@ -23,7 +23,7 @@ job "reviewer_service" {
         "api.http.middlewares.reviewer-remove-prefix.replacepathregex.replacement=/$1",
         "api.http.routers.reviewer.tls=true",
         "api.http.routers.reviewer.entrypoints=https",
-        "api.http.routers.reviewer.rule=\"Host(`[[ .arad.api_domain ]]`) && PathPrefix(`/api/v1/review/`)\"",
+        "api.http.routers.reviewer.rule=Host(`[[ .arad.api_domain ]]`) && PathPrefix(`/api/v1/review/`)",
         "api.http.routers.reviewer.middlewares=reviewer-remove-prefix@consulcatalog"
       ]
 
