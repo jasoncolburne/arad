@@ -14,7 +14,7 @@ job "reader_service" {
 
     service {
       name     = "reader-service"
-      port     = "http"
+      port     = "80"
       provider = "consul"
 
       tags = [
