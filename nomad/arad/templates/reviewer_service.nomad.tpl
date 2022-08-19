@@ -19,10 +19,12 @@ job "reviewer_service" {
 
       tags = [
         "api.enable=true",
+        "api.http.routers.reviewer.tls=true",
+        "api.http.routers.reviewer.entrypoints=https",
         "api.http.routers.reviewer.rule=Host(`[[ .arad.api_domain ]]`)",
         "api.http.routers.reviewer.rule=PathPrefix(`/api/v1/review/`)",
-        "api.http.routers.reviewer.entrypoints=https",
-        "api.http.routers.reviewer.tls=true",
+        "api.http.middlewares.reviewer.replacepathregex.regex=^/api/v1/review/(.*)",
+        "api.http.middlewares.reviewer.replacepathregex.replacement=/$1",
       ]
 
       connect {

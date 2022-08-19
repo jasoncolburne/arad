@@ -19,10 +19,12 @@ job "administrator_service" {
 
       tags = [
         "api.enable=true",
+        "api.http.routers.administrator.tls=true",
+        "api.http.routers.administrator.entrypoints=https",
         "api.http.routers.administrator.rule=Host(`[[ .arad.api_domain ]]`)",
         "api.http.routers.administrator.rule=PathPrefix(`/api/v1/administrate/`)",
-        "api.http.routers.administrator.entrypoints=https",
-        "api.http.routers.administrator.tls=true",
+        "api.http.middlewares.administrator.replacepathregex.regex=^/api/v1/administrate/(.*)",
+        "api.http.middlewares.administrator.replacepathregex.replacement=/$1",
       ]
 
       connect {

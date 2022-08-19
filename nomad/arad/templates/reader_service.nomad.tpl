@@ -19,10 +19,12 @@ job "reader_service" {
 
       tags = [
         "api.enable=true",
+        "api.http.routers.reader.tls=true",
+        "api.http.routers.reader.entrypoints=https",
         "api.http.routers.reader.rule=Host(`[[ .arad.api_domain ]]`)",
         "api.http.routers.reader.rule=PathPrefix(`/api/v1/read/`)",
-        "api.http.routers.reader.entrypoints=https",
-        "api.http.routers.reader.tls=true",
+        "api.http.middlewares.reader.replacepathregex.regex=^/api/v1/read/(.*)",
+        "api.http.middlewares.reader.replacepathregex.replacement=/$1",
       ]
 
       connect {
