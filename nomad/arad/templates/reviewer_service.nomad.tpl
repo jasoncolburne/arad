@@ -19,8 +19,8 @@ job "reviewer_service" {
 
       tags = [
         "api.enable=true",
-        "api.http.middlewares.reviewer-remove-prefix.replacepathregex.regex=^/api/v1/review/(.*)",
-        "api.http.middlewares.reviewer-remove-prefix.replacepathregex.replacement=/$1",
+        "api.http.middlewares.reviewer-remove-prefix.stripprefix.prefixes=/api/v1/review",
+        "api.http.middlewares.reviewer-remove-prefix.stripprefix.forceSlash=false",
         "api.http.routers.reviewer.tls=true",
         "api.http.routers.reviewer.entrypoints=https",
         "api.http.routers.reviewer.rule=Host(`[[ .arad.api_domain ]]`) && PathPrefix(`/api/v1/review/`)",

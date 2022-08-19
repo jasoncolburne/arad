@@ -19,8 +19,8 @@ job "administrator_service" {
 
       tags = [
         "api.enable=true",
-        "api.http.middlewares.administrator-remove-prefix.replacepathregex.regex=^/api/v1/administrate/(.*)",
-        "api.http.middlewares.administrator-remove-prefix.replacepathregex.replacement=/$1",
+        "api.http.middlewares.administrator-remove-prefix.stripprefix.prefixes=/api/v1/administrate",
+        "api.http.middlewares.administrator-remove-prefix.stripprefix.forceSlash=false",
         "api.http.routers.administrator.tls=true",
         "api.http.routers.administrator.entrypoints=https",
         "api.http.routers.administrator.rule=Host(`[[ .arad.api_domain ]]`) && PathPrefix(`/api/v1/administrate/`)",

@@ -21,8 +21,8 @@ job "identity_service" {
 
       tags = [
         "api.enable=true",
-        "api.http.middlewares.identity-remove-prefix.replacepathregex.regex=^/api/v1/identify/(.*)",
-        "api.http.middlewares.identity-remove-prefix.replacepathregex.replacement=/$1",
+        "api.http.middlewares.identity-remove-prefix.stripprefix.prefixes=/api/v1/identify",
+        "api.http.middlewares.identity-remove-prefix.stripprefix.forceSlash=false",
         "api.http.routers.identity.tls=true",
         "api.http.routers.identity.entrypoints=https",
         "api.http.routers.identity.rule=Host(`[[ .arad.api_domain ]]`) && PathPrefix(`/api/v1/identify/`)",
