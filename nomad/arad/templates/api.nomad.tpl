@@ -20,7 +20,6 @@ job "api" {
     service {
       name     = "api"
       provider = "consul"
-      port     = "https"
 
       connect {
         native = true
@@ -60,7 +59,7 @@ job "api" {
       template {
         data = <<EOF
 [entryPoints]
-  [entryPoints.websecure]
+  [entryPoints.https]
     address = ":8443"
 
 [providers.consulCatalog]
