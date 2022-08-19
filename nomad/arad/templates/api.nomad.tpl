@@ -19,6 +19,7 @@ job "api" {
 
     service {
       name     = "api"
+      port     = "8443"
       provider = "consul"
 
       connect {
@@ -63,10 +64,6 @@ defaultEntrypoints = ["https"]
 [entryPoints]
   [entryPoints.https]
   address = ":8443"
-
-[[ "[[tls.certificates]]" ]]
-certFile = "/secrets/[[ .arad.api_domain ]].crt"
-keyFile = "/secrets/[[ .arad.api_domain ]].key"
 
 [providers.consulCatalog]
 prefix           = "api"

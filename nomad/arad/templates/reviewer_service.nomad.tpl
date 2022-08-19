@@ -22,6 +22,8 @@ job "reviewer_service" {
         "api.http.middlewares.reviewer-remove-prefix.stripprefix.prefixes=/api/v1/review",
         "api.http.middlewares.reviewer-remove-prefix.stripprefix.forceSlash=false",
         "api.http.routers.reviewer.tls=true",
+        "api.http.routers.reviewer.tls.certificates.certFile=/secrets/[[ .arad.api_domain ]].cert",
+        "api.http.routers.reviewer.tls.certificates.keyFile=/secrets/[[ .arad.api_domain ]].key",
         "api.http.routers.reviewer.entrypoints=https",
         "api.http.routers.reviewer.rule=Host(`[[ .arad.api_domain ]]`) && PathPrefix(`/api/v1/review/`)",
         "api.http.routers.reviewer.middlewares=reviewer-remove-prefix@consulcatalog"

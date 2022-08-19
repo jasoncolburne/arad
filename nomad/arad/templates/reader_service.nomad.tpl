@@ -22,6 +22,8 @@ job "reader_service" {
         "api.http.middlewares.reader-remove-prefix.stripprefix.prefixes=/api/v1/read",
         "api.http.middlewares.reader-remove-prefix.stripprefix.forceSlash=false",
         "api.http.routers.reader.tls=true",
+        "api.http.routers.reader.tls.certificates.certFile=/secrets/[[ .arad.api_domain ]].cert",
+        "api.http.routers.reader.tls.certificates.keyFile=/secrets/[[ .arad.api_domain ]].key",
         "api.http.routers.reader.entrypoints=https",
         "api.http.routers.reader.rule=Host(`[[ .arad.api_domain ]]`) && PathPrefix(`/api/v1/read/`)",
         "api.http.routers.reader.middlewares=reader-remove-prefix@consulcatalog"
