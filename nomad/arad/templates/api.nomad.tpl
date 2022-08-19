@@ -74,7 +74,7 @@ job "api" {
     scheme  = "http"
     token   = "{{- with secret "kv/data/api_consul_token" -}}{{ .Data.data.value  }}{{- end -}}"
 
-[[ "[[tls.certificates]]" ]]
+[tls.certificates]
   certFile = "/secrets/certificate.pem"
   keyFile = "/secrets/private-key.pem"
 
