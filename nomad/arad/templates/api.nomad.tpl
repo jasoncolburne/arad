@@ -63,10 +63,10 @@ defaultEntrypoints = ["https"]
 [entryPoints]
   [entryPoints.https]
   address = ":8443"
-    [entryPoints.https.tls]
-      [[ "[[entryPoints.https.tls.certificates]]" ]]
-      certFile = "/secrets/[[ .arad.api_domain ]].crt"
-      keyFile = "/secrets/[[ .arad.api_domain ]].key"
+
+[[ "[[tls.certificates]]" ]]
+certFile = "/secrets/[[ .arad.api_domain ]].crt"
+keyFile = "/secrets/[[ .arad.api_domain ]].key"
 
 [providers.consulCatalog]
 prefix           = "api"
