@@ -61,6 +61,10 @@ job "api" {
 [entryPoints]
   [entryPoints.https]
     address = ":8443"
+    [entryPoints.https.tls]
+      [[ "[[entryPoints.https.tls.certificates]]" ]]
+        certFile = "/secrets/[[ .arad.api_domain ]].crt"
+        keyFile = "/secrets/[[ .arad.api_domain ]].key"
 
 [providers.consulCatalog]
   prefix           = "api"
@@ -73,10 +77,6 @@ job "api" {
     address = "unix:///alloc/tmp/consul_http.sock"
     scheme  = "http"
     token   = "{{- with secret "kv/data/api_consul_token" -}}{{ .Data.data.value  }}{{- end -}}"
-
-[tls.certificates]
-  certFile = "/secrets/[[ .arad.api_domain ]].crt"
-  keyFile = "/secrets/[[ .arad.api_domain ]].key"
 
 [tls.options]
   [tls.options.default]
