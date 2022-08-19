@@ -113,7 +113,7 @@ variable "api_resources" {
 }
 
 variable "api_domain" {
-  decription = "The domain for the api gateway."
+  description = "The domain for the api gateway."
   type = string
   default = "localhost"
 }
