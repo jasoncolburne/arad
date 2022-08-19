@@ -46,13 +46,13 @@ job "api" {
 
       template {
         [[ template "secret_pem" "api_nginx_private_key" ]]
-        destination = "secrets/[[ .arad.api_domain ]].pem"
+        destination = "secrets/[[ .arad.api_domain ]].key"
         change_mode = "restart"
       }
 
       template {
         [[ template "secret_pem" "api_nginx_certificate" ]]
-        destination = "secrets/[[ .arad.api_domain ]].pem"
+        destination = "secrets/[[ .arad.api_domain ]].cert"
         change_mode = "restart"
       }
 
