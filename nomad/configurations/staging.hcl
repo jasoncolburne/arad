@@ -1,4 +1,5 @@
 back_end_allowed_origins = "https://arad-test.org"
+api_domain = "arad-test.org"
 
 front_end_image = "jcolburne/arad:front-end-nginx-main-latest"
 api_service_image = "jcolburne/arad:api-main-latest"

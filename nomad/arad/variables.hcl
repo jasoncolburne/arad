@@ -112,6 +112,12 @@ variable "api_resources" {
   }
 }
 
+variable "api_domain" {
+  decription = "The domain for the api gateway."
+  type = string
+  default = "localhost"
+}
+
 variable "back_end_allowed_origins" {
   description = "A string, comma separated list of origins to allow access to the backend. eg, https://arad.org"
   type = string
