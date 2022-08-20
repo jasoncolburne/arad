@@ -32,12 +32,10 @@ const Api = () => {
       }
 
       const mapHostnameToHostname = (currentHostname: string): string => {
-        return ["front-end-react", "front-end-nginx"].includes(
-          currentHostname
-        )
-          ? 'api'
+        return ["front-end-react", "front-end-nginx"].includes(currentHostname)
+          ? "api"
           : currentHostname;
-      }
+      };
 
       const mapHostnameToPort = (currentHostname: string): number => {
         if (["front-end-react", "front-end-nginx"].includes(currentHostname)) {
@@ -45,15 +43,15 @@ const Api = () => {
         }
 
         return currentHostname === "localhost" ? 8080 : 8443;
-      }
+      };
 
       const mapHostnameToProtocol = (currentHostname: string): string => {
         return ["front-end-react", "front-end-nginx", "localhost"].includes(
           currentHostname
         )
-          ? 'http'
-          : 'https';
-      }
+          ? "http"
+          : "https";
+      };
 
       const hostname = mapHostnameToHostname(currentHostname);
       const port = mapHostnameToPort(currentHostname);
