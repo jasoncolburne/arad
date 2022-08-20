@@ -24,8 +24,6 @@ job "identity_service" {
         "api.http.middlewares.identity-remove-prefix.stripprefix.prefixes=/api/v1/identify",
         "api.http.middlewares.identity-remove-prefix.stripprefix.forceSlash=false",
         "api.http.routers.identity.tls=true",
-        "api.http.routers.identity.tls.certificates.certFile=/secrets/[[ .arad.api_domain ]].cert",
-        "api.http.routers.identity.tls.certificates.keyFile=/secrets/[[ .arad.api_domain ]].key",
         "api.http.routers.identity.entrypoints=https",
         "api.http.routers.identity.rule=Host(`[[ .arad.api_domain ]]`) && PathPrefix(`/api/v1/identify/`)",
         "api.http.routers.identity.middlewares=identity-remove-prefix@consulcatalog"
