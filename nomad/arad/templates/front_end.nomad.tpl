@@ -21,7 +21,10 @@ job "front_end" {
         "front-end-load-balancer.enable=true",
         "front-end-load-balancer.http.routers.front-end.tls=true",
         "front-end-load-balancer.http.routers.front-end.entrypoints=https",
-        "front-end-load-balancer.http.routers.front-end.rule=Host(`[[ .arad.front_end_domain ]]`)"
+        "front-end-load-balancer.http.routers.front-end.rule=Host(`[[ .arad.front_end_domain ]]`)",
+        "front-end-load-balancer.http.routers.front-end.middlewares=add_slash_at_root",
+        "front-end-load-balancer.http.middlewares.add-slash-at-root.replacepathregex.regex=^$",
+        "front-end-load-balancer.http.middlewares.add-slash-at-root.replacepathregex.replacement=/"
       ]
 
       connect {
