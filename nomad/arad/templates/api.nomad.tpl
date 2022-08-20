@@ -19,7 +19,7 @@ job "api" {
 
     service {
       name     = "api"
-      port     = [[ arad.api_port | quote ]]
+      port     = [[ .arad.api_port | quote ]]
       provider = "consul"
 
       connect {
