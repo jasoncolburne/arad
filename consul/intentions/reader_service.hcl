@@ -3,6 +3,6 @@ Name = "reader-service"
 Sources = [
   {
     Action = "allow"
-    Name = "api-service"
+    Name = "api"
   }
 ]

@@ -88,7 +88,7 @@ variable "service_resources" {
   }
 }
 
-variable "nginx_resources" {
+variable "front_end_resources" {
   description = "The resources to assign to the front-end."
   type = object({
     cpu    = number
@@ -98,6 +98,12 @@ variable "nginx_resources" {
     cpu    = 750,
     memory = 64
   }
+}
+
+variable "front_end_domain" {
+  description = "The domain for the api gateway."
+  type = string
+  default = "localhost"
 }
 
 variable "api_resources" {

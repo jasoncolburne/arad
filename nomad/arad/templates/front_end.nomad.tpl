@@ -10,18 +10,27 @@ job "front_end" {
       [[ if (.arad.linux_host) ]]
       mode = "bridge"
       [[ end ]]
-      port "https" {
-        static = 443
-        to = 443
+    }
+
+    service {
+      name     = "front-end"
+      port     = "80"
+      provider = "consul"
+
+      tags = [
+        "front-end-load-balancer.enable=true",
+        "front-end-load-balancer.http.routers.front-end.tls=true",
+        "front-end-load-balancer.http.routers.front-end.entrypoints=https",
+        "front-end-load-balancer.http.routers.front-end.rule=Host(`[[ .arad.front_end_domain ]]`)"
+      ]
+
+      connect {
+        sidecar_service {}
       }
     }
 
     task "react" {
       driver = "docker"
-
-      vault {
-        policies = ["kv"]
-      }
 
       config {
         [[ if .arad.remote_docker_registry -]]
@@ -30,21 +39,7 @@ job "front_end" {
         image = [[ .arad.front_end_image | quote ]]
       }
 
-      template {
-        [[ template "secret_pem" "api_nginx_private_key" ]]
-        destination = "secrets/nginx-private-key.pem"
-        change_mode = "signal"
-        change_signal = "SIGHUP"
-      }
-
-      template {
-        [[ template "secret_pem" "api_nginx_certificate" ]]
-        destination = "secrets/nginx-certificate.pem"
-        change_mode = "signal"
-        change_signal = "SIGHUP"
-      }
-
-      [[ template "resources" .arad.nginx_resources -]]
+      [[ template "resources" .arad.front_end_resources -]]
     }
   }
 }

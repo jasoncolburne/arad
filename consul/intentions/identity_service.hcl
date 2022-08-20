@@ -3,6 +3,6 @@ Name = "identity-service"
 Sources = [
   {
     Action = "allow"
-    Name = "api-service"
+    Name = "api"
   }
 ]
