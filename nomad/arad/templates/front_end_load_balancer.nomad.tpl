@@ -1,4 +1,4 @@
-job "front_end_load_balancer" {
+job "load_balancer" {
   type = "service"
 
   [[ template "region" . ]]
@@ -70,8 +70,8 @@ defaultEntrypoints = ["https"]
       filename = "/local/dynamic.toml"
 
   [providers.consulCatalog]
-  prefix           = "front_end_load_balancer"
-  serviceName      = "front_end_load_balancer"
+  prefix           = "front-end-load-balancer"
+  serviceName      = "front-end-load-balancer"
   connectAware     = true
   connectByDefault = true
   exposedByDefault = false
