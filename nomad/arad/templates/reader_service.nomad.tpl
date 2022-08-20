@@ -6,6 +6,8 @@ job "reader_service" {
   datacenters = [ [[ range $idx, $dc := .arad.datacenters ]][[if $idx]],[[end]][[ $dc | quote ]][[ end ]] ]
 
   group "reader_service" {
+    count = [[ .arad.reader_service_count ]]
+
     [[ if (.arad.linux_host) ]]
     network {
       mode = "bridge"

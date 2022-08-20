@@ -6,6 +6,8 @@ job "front_end" {
   datacenters = [ [[ range $idx, $dc := .arad.datacenters ]][[if $idx]],[[end]][[ $dc | quote ]][[ end ]] ]
 
   group "front_end" {
+    count = [[ .arad.front_end_count ]]
+
     network {
       [[ if (.arad.linux_host) ]]
       mode = "bridge"

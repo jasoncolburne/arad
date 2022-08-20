@@ -6,7 +6,7 @@ job "identity_service" {
   datacenters = [ [[ range $idx, $dc := .arad.datacenters ]][[if $idx]],[[end]][[ $dc | quote ]][[ end ]] ]
 
   group "identity_service" {
-    count = 5
+    count = [[ .arad.identity_service_count ]]
 
     [[ if (.arad.linux_host) ]]
     network {

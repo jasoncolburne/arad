@@ -166,6 +166,36 @@ variable "front_end_image" {
   default = "arad_front-end-nginx:local"
 }
 
+variable "identity_service_count" {
+  description = "Desired count."
+  type = number
+  default = 2
+}
+
+variable "administrator_service_count" {
+  description = "Desired count."
+  type = number
+  default = 2
+}
+
+variable "reviewer_service_count" {
+  description = "Desired count."
+  type = number
+  default = 2
+}
+
+variable "reader_service_count" {
+  description = "Desired count."
+  type = number
+  default = 2
+}
+
+variable "front_end_count" {
+  description = "Desired count."
+  type = number
+  default = 2
+}
+
 variable "remote_docker_registry" {
   description = "Whether to use a remote registry."
   type = bool
