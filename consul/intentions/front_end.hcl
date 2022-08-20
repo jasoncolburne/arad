@@ -3,6 +3,6 @@ Name = "front-end"
 Sources = [
   {
     Action = "allow"
-    Name = "front-end-load-balancer"
+    Name = "load-balancer"
   }
 ]
