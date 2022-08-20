@@ -13,13 +13,13 @@ job "api" {
       mode = "bridge"
       [[ end ]]
       port "https" {
-        static = 8443
+        static = [[ .arad.api_port ]]
       }
     }
 
     service {
       name     = "api"
-      port     = "8443"
+      port     = [[ arad.api_port | quote ]]
       provider = "consul"
 
       connect {
@@ -46,13 +46,13 @@ job "api" {
       }
 
       template {
-        [[ template "secret_pem" "api_nginx_private_key" ]]
+        [[ template "secret_pem" "api_private_key" ]]
         destination = "secrets/[[ .arad.api_domain ]].key"
         change_mode = "restart"
       }
 
       template {
-        [[ template "secret_pem" "api_nginx_certificate" ]]
+        [[ template "secret_pem" "api_certificate" ]]
         destination = "secrets/[[ .arad.api_domain ]].cert"
         change_mode = "restart"
       }
@@ -63,7 +63,7 @@ defaultEntrypoints = ["https"]
 
 [entryPoints]
   [entryPoints.https]
-  address = ":8443"
+  address = ":[[ .arad.api_port ]]"
 
 [providers]
   [providers.file]
@@ -123,7 +123,7 @@ EOF
         destination = "local/dynamic.toml"
       }
 
-      [[ template "resources" .arad.api_resources -]]
+      [[ template "resources" .arad.traefik_resources -]]
     }
   }
 }

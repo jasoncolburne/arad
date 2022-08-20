@@ -5,7 +5,7 @@ job "load_balancer" {
 
   datacenters = [ [[ range $idx, $dc := .arad.datacenters ]][[if $idx]],[[end]][[ $dc | quote ]][[ end ]] ]
 
-  group "front_end_load_balancer" {
+  group "load_balancer" {
     count = 1  // do not change this, the host will try and bind multiple times on the same port
 
     network {
@@ -13,13 +13,13 @@ job "load_balancer" {
       mode = "bridge"
       [[ end ]]
       port "https" {
-        static = 443
+        static = [[ .arad.front_end_port ]]
       }
     }
 
     service {
-      name     = "front-end-load-balancer"
-      port     = "443"
+      name     = "load-balancer"
+      port     = [[ .arad.front_end_port | quote ]]
       provider = "consul"
 
       connect {
@@ -46,13 +46,13 @@ job "load_balancer" {
       }
 
       template {
-        [[ template "secret_pem" "api_nginx_private_key" ]]
+        [[ template "secret_pem" "front_end_private_key" ]]
         destination = "secrets/[[ .arad.front_end_domain ]].key"
         change_mode = "restart"
       }
 
       template {
-        [[ template "secret_pem" "api_nginx_certificate" ]]
+        [[ template "secret_pem" "front_end_certificate" ]]
         destination = "secrets/[[ .arad.front_end_domain ]].cert"
         change_mode = "restart"
       }
@@ -63,15 +63,15 @@ defaultEntrypoints = ["https"]
 
 [entryPoints]
   [entryPoints.https]
-  address = ":443"
+  address = ":[[ .arad.front_end_port ]]"
 
 [providers]
   [providers.file]
       filename = "/local/dynamic.toml"
 
   [providers.consulCatalog]
-  prefix           = "front-end-load-balancer"
-  serviceName      = "front-end-load-balancer"
+  prefix           = "load-balancer"
+  serviceName      = "load-balancer"
   connectAware     = true
   connectByDefault = true
   exposedByDefault = false
@@ -79,7 +79,7 @@ defaultEntrypoints = ["https"]
     [providers.consulCatalog.endpoint]
     address = "unix:///alloc/tmp/consul_http.sock"
     scheme  = "http"
-    token   = "{{- with secret "kv/data/front_end_load_balancer_consul_token" -}}{{ .Data.data.value  }}{{- end -}}"
+    token   = "{{- with secret "kv/data/load_balancer_consul_token" -}}{{ .Data.data.value  }}{{- end -}}"
 EOF
 
         change_mode = "restart"
@@ -123,7 +123,7 @@ EOF
         destination = "local/dynamic.toml"
       }
 
-      [[ template "resources" .arad.api_resources -]]
+      [[ template "resources" .arad.traefik_resources -]]
     }
   }
 }
