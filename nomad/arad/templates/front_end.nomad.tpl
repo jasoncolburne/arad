@@ -20,10 +20,10 @@ job "front_end" {
       provider = "consul"
 
       tags = [
-        "front-end-load-balancer.enable=true",
-        "front-end-load-balancer.http.routers.front-end.tls=true",
-        "front-end-load-balancer.http.routers.front-end.entrypoints=https",
-        "front-end-load-balancer.http.routers.front-end.rule=Host(`[[ .arad.front_end_domain ]]`)"
+        "load-balancer.enable=true",
+        "load-balancer.http.routers.front-end.tls=true",
+        "load-balancer.http.routers.front-end.entrypoints=https",
+        "load-balancer.http.routers.front-end.rule=Host(`[[ .arad.front_end_domain ]]`)"
       ]
 
       connect {
@@ -31,7 +31,7 @@ job "front_end" {
       }
     }
 
-    task "react" {
+    task "nginx" {
       driver = "docker"
 
       config {
