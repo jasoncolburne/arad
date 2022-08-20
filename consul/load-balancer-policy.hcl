@@ -1,8 +1,8 @@
-key_prefix "front-end-load-balancer" {
+key_prefix "load-balancer" {
   policy = "write"
 }
 
-service "front-end-load-balancer" {
+service "load-balancer" {
   policy = "write"
 }
 
