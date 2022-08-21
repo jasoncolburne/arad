@@ -2,8 +2,11 @@ back_end_allowed_origins = "https://arad-test.org"
 api_domain = "arad-test.org"
 front_end_domain = "arad-test.org"
 
-front_end_count = 5
-identity_service_count = 5
+front_end_count = 15
+identity_service_count = 10
+administrator_service_count = 3
+reviewer_service_count = 4
+reader_service_count = 12
 
 front_end_image = "jcolburne/arad:front-end-nginx-main-latest"
 identity_service_image = "jcolburne/arad:identity-main-latest"
