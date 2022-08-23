@@ -15,7 +15,9 @@ class DatabaseManager:
 
     def get_engine(self) -> AsyncEngine:
         if self.engine is None:
-            self.engine = create_async_engine(DATABASE_URL, echo=True, future=True)
+            self.engine = create_async_engine(
+                DATABASE_URL, echo=False, pool_recycle=900, future=True
+            )
 
         return self.engine
 

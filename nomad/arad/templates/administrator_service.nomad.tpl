@@ -64,6 +64,7 @@ job "administrator_service" {
 
       env {
         ALLOWED_ORIGINS = [[ .arad.back_end_allowed_origins | quote ]]
+        LISTEN_IP = "127.0.0.1"
       }
 
       template {
