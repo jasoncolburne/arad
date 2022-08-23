@@ -73,6 +73,7 @@ job "identity_service" {
         ALLOWED_ORIGINS = [[ .arad.back_end_allowed_origins | quote ]]
         CACHE_URL = "redis://localhost:6379/0"
         DEFAULT_ADMIN_EMAIL = "admin@domain.org"
+        LISTEN_IP = "127.0.0.1"
       }
 
       template {
