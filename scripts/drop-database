@@ -47,12 +47,8 @@ if [[ "${DATABASE_SET}" == "ci" ]]; then
   docker compose -f docker-compose.ci.yml run --rm identity bash -c "${USER_DATABASE_SCRIPT}"
   docker compose -f docker-compose.ci.yml run --rm administrator bash -c "${APPLICATION_DATABASE_SCRIPT}"
 else
-  ./scripts/local nomad-apply "${DATABASE_SET}"  
-
-  sleep 30
-
-  IDENTITY_ALLOC=$(nomad status identity_service | rg run | rg identity_service | cut -d' ' -f1)
-  ADMINISTRATOR_ALLOC=$(nomad status administrator_service | rg run | rg administrator_service | cut -d' ' -f1)
-  nomad alloc exec $IDENTITY_ALLOC bash -c "${USER_DATABASE_SCRIPT}"
-  nomad alloc exec $ADMINISTRATOR_ALLOC bash -c "${APPLICATION_DATABASE_SCRIPT}"
+  IDENTITY_ALLOC=$(nomad status identity_service | rg run | rg identity_service | head -n1 | cut -d' ' -f1)
+  ADMINISTRATOR_ALLOC=$(nomad status administrator_service | rg run | rg administrator_service | head -n1 | cut -d' ' -f1)
+  nomad alloc exec -task fastapi $IDENTITY_ALLOC bash -c "${USER_DATABASE_SCRIPT}"
+  nomad alloc exec -task fastapi $ADMINISTRATOR_ALLOC bash -c "${APPLICATION_DATABASE_SCRIPT}"
 fi
