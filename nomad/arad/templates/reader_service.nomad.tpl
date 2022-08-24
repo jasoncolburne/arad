@@ -52,7 +52,7 @@ job "reader_service" {
         type = "http"
         path = "/health"
         interval = "5s"
-        timeout = "1s"
+        timeout = "2s"
       }
     }
 
