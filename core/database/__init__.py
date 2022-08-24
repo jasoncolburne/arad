@@ -21,7 +21,7 @@ class DatabaseManager:
                 pool_size=3,
                 pool_recycle=300,
                 pool_pre_ping=True,
-                future=True
+                future=True,
             )
 
         return self.engine
