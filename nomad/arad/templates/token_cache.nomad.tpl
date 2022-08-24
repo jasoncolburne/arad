@@ -24,6 +24,7 @@ job "token_cache" {
       }
       check {
         name = "ping"
+        type = "script"
         command = "/usr/local/bin/redis-cli"
         args = ["-s", "/var/run/redis/socket", "PING"]
         interval = "5s"

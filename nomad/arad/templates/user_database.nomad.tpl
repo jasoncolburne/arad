@@ -24,6 +24,7 @@ job "user_database" {
       }
       check {
         name = "pg_isready"
+        type = "script"
         command = "/usr/bin/pg_isready"
         interval = "5s"
         timeout = "1s"
