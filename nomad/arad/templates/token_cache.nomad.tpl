@@ -33,11 +33,7 @@ job "token_cache" {
         interval = "5s"
         timeout = "1s"
 
-        check_restart {
-          limit = 3
-          grace = "5s"
-          ignore_warnings = false
-        }
+        [[ template "check_restart" . ]]
       }
     }
 

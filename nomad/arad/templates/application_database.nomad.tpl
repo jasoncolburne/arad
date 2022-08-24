@@ -15,30 +15,7 @@ job "application_database" {
     }
     [[ end ]]
 
-    service {
-      name     = "application-database"
-      port     = "5432"
-      provider = "consul"
-
-      connect {
-        sidecar_service {}
-      }
-
-      check {
-        name = "pg_isready"
-        task = "postgres"
-        type = "script"
-        command = "/usr/bin/pg_isready"
-        interval = "5s"
-        timeout = "1s"
-
-        check_restart {
-          limit = 3
-          grace = "5s"
-          ignore_warnings = false
-        }
-      }
-    }
+    [[ template "postgres_consul_service" "application" ]]
 
     task "postgres" {
       driver = "docker"
