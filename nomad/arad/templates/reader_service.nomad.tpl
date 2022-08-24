@@ -46,6 +46,14 @@ job "reader_service" {
           }
         }
       }
+
+      check {
+        name = "alive"
+        type = "http"
+        path = "/health"
+        interval = "5s"
+        timeout = "1s"
+      }
     }
 
     task "fastapi" {
