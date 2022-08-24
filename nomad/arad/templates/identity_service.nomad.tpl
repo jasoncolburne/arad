@@ -61,6 +61,7 @@ job "identity_service" {
         path = "/health"
         interval = "5s"
         timeout = "1s"
+        address_mode = "driver"
       }
     }
 
