@@ -53,16 +53,6 @@ job "identity_service" {
           }
         }
       }
-
-      check {
-        name = "alive"
-        type = "http"
-        port = "80"
-        path = "/health"
-        interval = "5s"
-        timeout = "1s"
-        address_mode = "driver"
-      }
     }
 
     task "fastapi" {
