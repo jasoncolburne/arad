@@ -9,7 +9,7 @@ reviewer_service_count = 4
 reader_service_count = 12
 
 front_end_image = "jcolburne/arad:front-end-nginx-main-latest"
-identity_service_image = "jcolburne/arad:identity-main-latest"
+identity_service_image = "jcolburne/arad:identity-database-disconnects-latest"
 administrator_service_image = "jcolburne/arad:administrator-main-latest"
 reviewer_service_image = "jcolburne/arad:reviewer-main-latest"
 reader_service_image = "jcolburne/arad:reader-main-latest"

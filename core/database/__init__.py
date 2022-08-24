@@ -15,8 +15,9 @@ class DatabaseManager:
 
     def get_engine(self) -> AsyncEngine:
         if self.engine is None:
+            # this pool_pre_ping doesn't seem to efficient but hopefully it works for now
             self.engine = create_async_engine(
-                DATABASE_URL, echo=False, pool_recycle=900, future=True
+                DATABASE_URL, pool_pre_ping=True, future=True
             )
 
         return self.engine
