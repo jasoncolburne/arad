@@ -1,4 +1,4 @@
-back_end_allowed_origins = "https://arad-test.org,http://localhost"
+back_end_allowed_origins = "https://arad-test.org,http://127.0.0.1"
 api_domain = "arad-test.org"
 front_end_domain = "arad-test.org"
 
