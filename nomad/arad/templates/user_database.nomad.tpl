@@ -22,6 +22,12 @@ job "user_database" {
       connect {
         sidecar_service {}
       }
+      check {
+        name = "pg_isready"
+        command = "/usr/bin/pg_isready"
+        interval = "5s"
+        timeout = "1s"
+      }
     }
 
     task "postgres" {

@@ -46,6 +46,15 @@ job "reviewer_service" {
           }
         }
       }
+
+      check {
+        name = "alive"
+        type = "http"
+        port = "80"
+        path = "/health"
+        interval = "5s"
+        timeout = "1s"
+      }
     }
 
     task "fastapi" {
@@ -59,7 +68,7 @@ job "reviewer_service" {
         [[ if .arad.remote_docker_registry -]]
         force_pull = true
         [[- end ]]
-        image       = [[ .arad.reviewer_service_image | quote ]]
+        image = [[ .arad.reviewer_service_image | quote ]]
       }
 
       env {

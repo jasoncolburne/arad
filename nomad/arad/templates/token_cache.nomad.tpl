@@ -22,6 +22,13 @@ job "token_cache" {
       connect {
         sidecar_service {}
       }
+      check {
+        name = "ping"
+        command = "/usr/local/bin/redis-cli"
+        args = ["-s", "/var/run/redis/socket", "PING"]
+        interval = "5s"
+        timeout = "1s"
+      }
     }
 
     task "redis" {
