@@ -1,0 +1,7 @@
+[[- define "check_restart" -]]
+check_restart {
+    limit = 3
+    grace = "5s"
+    ignore_warnings = false
+}
+[[- end -]]

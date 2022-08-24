@@ -19,9 +19,11 @@ job "token_cache" {
       name     = "token-cache"
       port     = "6379"
       provider = "consul"
+
       connect {
         sidecar_service {}
       }
+
       check {
         name = "ping"
         task = "redis"
@@ -30,6 +32,12 @@ job "token_cache" {
         args = ["PING"]
         interval = "5s"
         timeout = "1s"
+
+        check_restart {
+          limit = 3
+          grace = "5s"
+          ignore_warnings = false
+        }
       }
     }
 

@@ -1,0 +1,5 @@
+[[- define "kv_access" -]]
+vault {
+    policies = ["kv"]
+}
+[[ end -]]

@@ -30,9 +30,7 @@ job "load_balancer" {
     task "traefik" {
       driver = "docker"
 
-      vault {
-        policies = ["kv"]
-      }
+      [[ template "kv_access" . ]]
 
       config {
         [[ if .arad.remote_docker_registry -]]

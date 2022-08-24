@@ -19,9 +19,11 @@ job "application_database" {
       name     = "application-database"
       port     = "5432"
       provider = "consul"
+
       connect {
         sidecar_service {}
       }
+
       check {
         name = "pg_isready"
         task = "postgres"
@@ -29,6 +31,12 @@ job "application_database" {
         command = "/usr/bin/pg_isready"
         interval = "5s"
         timeout = "1s"
+
+        check_restart {
+          limit = 3
+          grace = "5s"
+          ignore_warnings = false
+        }
       }
     }
 

@@ -47,27 +47,13 @@ job "reader_service" {
         }
       }
 
-      // check {
-      //   name = "alive"
-      //   type = "http"
-      //   path = "/health"
-      //   interval = "5s"
-      //   timeout = "2s"
-
-      //   check_restart {
-      //     limit = 3
-      //     grace = "5s"
-      //     ignore_warnings = false
-      //   }
-      // }
+      [[ template "service_health_check" . ]]
     }
 
     task "fastapi" {
       driver = "docker"
 
-      vault {
-        policies = ["kv"]
-      }
+      [[ template "kv_access" . ]]
 
       config {
         [[ if .arad.remote_docker_registry -]]

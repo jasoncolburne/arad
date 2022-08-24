@@ -47,6 +47,22 @@ job "administrator_service" {
         }
       }
 
+      [[ template "service_health_check" . ]]
+      // check {
+      //   name = "healthy"
+      //   task = "fastapi"
+      //   type = "script"
+      //   command = "/usr/bin/curl"
+      //   args = ["http://127.0.0.1/health"]
+      //   interval = "5s"
+      //   timeout = "1s"
+
+      //   check_restart {
+      //     limit = 3
+      //     grace = "5s"
+      //     ignore_warnings = false
+      //   }
+      // }
       // check {
       //   name = "alive"
       //   type = "http"
@@ -65,9 +81,7 @@ job "administrator_service" {
     task "fastapi" {
       driver = "docker"
 
-      vault {
-        policies = ["kv"]
-      }
+      [[ template "kv_access" . ]]
 
       config {
         [[ if .arad.remote_docker_registry -]]
