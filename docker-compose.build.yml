@@ -29,6 +29,11 @@ services:
       context: administrator
       args: *common-args
 
+  token-cache:
+    build:
+      context: redis
+      args: *common-args
+
   core:
     build:
       context: core

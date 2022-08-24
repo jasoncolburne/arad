@@ -110,7 +110,7 @@ jobs:
       - run:
           name: Tag images
           command: |
-            IMAGES=(front-end-nginx front-end-react identity reader reviewer administrator core api)
+            IMAGES=(front-end-nginx front-end-react identity reader reviewer administrator core api token-cache)
             for IMAGE in "${IMAGES[@]}"; do
               LATEST_TAG="${IMAGE}-${CIRCLE_BRANCH}-latest"
               HASH_TAG="${IMAGE}-${CIRCLE_BRANCH}-$(git rev-parse --short HEAD)"
@@ -124,7 +124,7 @@ jobs:
       - run:
           name: Push images
           command: |
-            IMAGES=(front-end-nginx front-end-react identity reader reviewer administrator core api)
+            IMAGES=(front-end-nginx front-end-react identity reader reviewer administrator core api token-cache)
             for IMAGE in "${IMAGES[@]}"; do
               LATEST_TAG="${IMAGE}-${CIRCLE_BRANCH}-latest"
               HASH_TAG="${IMAGE}-${CIRCLE_BRANCH}-$(git rev-parse --short HEAD)"
