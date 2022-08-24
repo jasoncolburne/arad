@@ -53,6 +53,12 @@ job "administrator_service" {
         path = "/health"
         interval = "5s"
         timeout = "2s"
+
+        check_restart {
+          limit = 3
+          grace = "5s"
+          ignore_warnings = false
+        }
       }
     }
 
