@@ -6,6 +6,6 @@ app {
 pack {
   name        = "arad"
   description = "A deployment pack for ARAD"
-  url         = "https://github.com/jasoncolburne/nomad-packs/blob/main/packs/arad_pack"
+  url         = "https://github.com/jasoncolburne/arad/tree/main/nomad/arad"
   version     = "0.0.1"
 }

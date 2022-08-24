@@ -1,8 +1,8 @@
 Kind = "service-intentions"
-Name = "identity-service"
+Name = "front-end"
 Sources = [
   {
     Action = "allow"
-    Name = "api"
+    Name = "load-balancer"
   }
 ]

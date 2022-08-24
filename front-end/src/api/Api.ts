@@ -31,11 +31,34 @@ const Api = () => {
         options.body = JSON.stringify(body);
       }
 
-      const url = ["front-end-react", "front-end-nginx"].includes(
-        currentHostname
-      )
-        ? `https://api/api/v1/${endpoint}`
-        : `https://${currentHostname}:8443/api/v1/${endpoint}`;
+      const mapHostnameToHostname = (currentHostname: string): string => {
+        return ["front-end-react", "front-end-nginx"].includes(currentHostname)
+          ? "api"
+          : currentHostname;
+      };
+
+      const mapHostnameToPort = (currentHostname: string): number => {
+        if (["front-end-react", "front-end-nginx"].includes(currentHostname)) {
+          return 80;
+        }
+
+        return currentHostname === "localhost" ? 8080 : 8443;
+      };
+
+      const mapHostnameToProtocol = (currentHostname: string): string => {
+        return ["front-end-react", "front-end-nginx", "localhost"].includes(
+          currentHostname
+        )
+          ? "http"
+          : "https";
+      };
+
+      const hostname = mapHostnameToHostname(currentHostname);
+      const port = mapHostnameToPort(currentHostname);
+      const protocol = mapHostnameToProtocol(currentHostname);
+
+      const url = `${protocol}://${hostname}:${port}/api/v1/${endpoint}`;
+
       const response = await fetch(url, options);
 
       if (!response.ok) {

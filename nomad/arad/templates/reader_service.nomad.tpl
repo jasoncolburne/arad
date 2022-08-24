@@ -6,6 +6,8 @@ job "reader_service" {
   datacenters = [ [[ range $idx, $dc := .arad.datacenters ]][[if $idx]],[[end]][[ $dc | quote ]][[ end ]] ]
 
   group "reader_service" {
+    count = [[ .arad.reader_service_count ]]
+
     [[ if (.arad.linux_host) ]]
     network {
       mode = "bridge"
@@ -16,6 +18,17 @@ job "reader_service" {
       name     = "reader-service"
       port     = "80"
       provider = "consul"
+
+      tags = [
+        "api.enable=true",
+        "api.http.middlewares.reader-remove-prefix.stripprefix.prefixes=/api/v1/read",
+        "api.http.middlewares.reader-remove-prefix.stripprefix.forceSlash=false",
+        "api.http.routers.reader.tls=true",
+        "api.http.routers.reader.entrypoints=https",
+        "api.http.routers.reader.rule=Host(`[[ .arad.api_domain ]]`) && PathPrefix(`/api/v1/read/`)",
+        "api.http.routers.reader.middlewares=reader-remove-prefix@consulcatalog"
+      ]
+
       connect {
         sidecar_service {
           proxy {
@@ -51,6 +64,7 @@ job "reader_service" {
 
       env {
         ALLOWED_ORIGINS = [[ .arad.back_end_allowed_origins | quote ]]
+        LISTEN_IP = "127.0.0.1"
       }
 
       template {

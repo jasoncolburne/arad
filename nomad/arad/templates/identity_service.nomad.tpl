@@ -6,6 +6,8 @@ job "identity_service" {
   datacenters = [ [[ range $idx, $dc := .arad.datacenters ]][[if $idx]],[[end]][[ $dc | quote ]][[ end ]] ]
 
   group "identity_service" {
+    count = [[ .arad.identity_service_count ]]
+
     [[ if (.arad.linux_host) ]]
     network {
       mode = "bridge"
@@ -13,9 +15,20 @@ job "identity_service" {
     [[ end ]]
 
     service {
-      name = "identity-service"
+      name     = "identity-service"
       port     = "80"
       provider = "consul"
+
+      tags = [
+        "api.enable=true",
+        "api.http.middlewares.identity-remove-prefix.stripprefix.prefixes=/api/v1/identify",
+        "api.http.middlewares.identity-remove-prefix.stripprefix.forceSlash=false",
+        "api.http.routers.identity.tls=true",
+        "api.http.routers.identity.entrypoints=https",
+        "api.http.routers.identity.rule=Host(`[[ .arad.api_domain ]]`) && PathPrefix(`/api/v1/identify/`)",
+        "api.http.routers.identity.middlewares=identity-remove-prefix@consulcatalog"
+      ]
+
       connect {
         sidecar_service {
           proxy {
@@ -50,6 +63,7 @@ job "identity_service" {
         ALLOWED_ORIGINS = [[ .arad.back_end_allowed_origins | quote ]]
         CACHE_URL = "redis://localhost:6379/0"
         DEFAULT_ADMIN_EMAIL = "admin@domain.org"
+        LISTEN_IP = "127.0.0.1"
       }
 
       template {

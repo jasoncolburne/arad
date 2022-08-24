@@ -1,7 +1,11 @@
-variable "consul_enabled" {
-  description = "If Consul is configured for this deployment."
-  type        = bool
-  default     = false
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// General
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+variable "region" {
+  description = "The region where the job should be placed."
+  type        = string
+  default     = "global"
 }
 
 variable "datacenters" {
@@ -10,11 +14,27 @@ variable "datacenters" {
   default     = ["dc1"]
 }
 
-variable "region" {
-  description = "The region where the job should be placed."
-  type        = string
-  default     = "global"
+variable "remote_docker_registry" {
+  description = "Whether to use a remote registry."
+  type = bool
+  default = false
 }
+
+variable "linux_host" {
+  description = "Whether the host OS is Linux."
+  type = bool
+  default = false
+}
+
+variable "consul_enabled" {
+  description = "If Consul is configured for this deployment."
+  type        = bool
+  default     = false
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// Ports
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 variable "token_cache_port" {
   description = "The port to listen on."
@@ -22,8 +42,48 @@ variable "token_cache_port" {
   default = 6379
 }
 
+variable "user_database_port" {
+  description = "The port to listen on."
+  type = number
+  default = 5432
+}
+
+variable "application_database_port" {
+  description = "The port to listen on."
+  type = number
+  default = 5432
+}
+
+variable "front_end_port" {
+  description = "The public port to listen on."
+  type = number
+  default = 443
+}
+
+variable "api_port" {
+  description = "The public port to listen on."
+  type = number
+  default = 8443
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// Resources
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
 variable "token_cache_resources" {
   description = "The resources to assign to the cache."
+  type = object({
+    cpu    = number
+    memory = number
+  })
+  default = {
+    cpu    = 250,
+    memory = 128
+  }
+}
+
+variable "user_database_resources" {
+  description = "The resources to assign to the user database."
   type = object({
     cpu    = number
     memory = number
@@ -34,30 +94,6 @@ variable "token_cache_resources" {
   }
 }
 
-variable "user_database_port" {
-  description = "The port to listen on."
-  type = number
-  default = 5432
-}
-
-variable "user_database_resources" {
-  description = "The resources to assign to the user database."
-  type = object({
-    cpu    = number
-    memory = number
-  })
-  default = {
-    cpu    = 1000,
-    memory = 768
-  }
-}
-
-variable "application_database_port" {
-  description = "The port to listen on."
-  type = number
-  default = 5432
-}
-
 variable "application_database_resources" {
   description = "The resources to assign to the user database."
   type = object({
@@ -65,15 +101,9 @@ variable "application_database_resources" {
     memory = number
   })
   default = {
-    cpu    = 1000,
-    memory = 768
+    cpu    = 500,
+    memory = 256
   }
-}
-
-variable "service_listen_port" {
-  description = "The port services will listen on."
-  type = number
-  default = 80
 }
 
 variable "service_resources" {
@@ -83,8 +113,8 @@ variable "service_resources" {
     memory = number
   })
   default = {
-    cpu    = 750,
-    memory = 512
+    cpu    = 500,
+    memory = 256
   }
 }
 
@@ -95,9 +125,37 @@ variable "front_end_resources" {
     memory = number
   })
   default = {
-    cpu    = 2000,
-    memory = 3072
+    cpu    = 100,
+    memory = 64
   }
+}
+
+variable "traefik_resources" {
+  description = "The resources to assign to the api load balancer."
+  type = object({
+    cpu    = number
+    memory = number
+  })
+  default = {
+    cpu    = 100,
+    memory = 128
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// Domains
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+variable "api_domain" {
+  description = "The domain for the api gateway."
+  type = string
+  default = "localhost"
+}
+
+variable "front_end_domain" {
+  description = "The domain for the front end."
+  type = string
+  default = "localhost"
 }
 
 variable "back_end_allowed_origins" {
@@ -105,6 +163,10 @@ variable "back_end_allowed_origins" {
   type = string
   default = "http://arad-local.org"
 }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// Images
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 variable "identity_service_image" {
   description = "The image to use for the identity service."
@@ -130,12 +192,6 @@ variable "administrator_service_image" {
   default = "arad_administrator:local"
 }
 
-variable "api_service_image" {
-  description = "The image to use for the api service."
-  type = string
-  default = "arad_api:local"
-}
-
 variable "front_end_image" {
   description = "The image to use for the front-end."
   type = string
@@ -145,17 +201,39 @@ variable "front_end_image" {
 variable "token_cache_image" {
   description = "The image to use for the token cache."
   type = string
-  default = "arad_redis:local"
+  default = "arad_token-cache:local"
 }
 
-variable "remote_docker_registry" {
-  description = "Whether to use a remote registry."
-  type = bool
-  default = false
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// Scaling
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+variable "identity_service_count" {
+  description = "Desired count."
+  type = number
+  default = 2
 }
 
-variable "linux_host" {
-  description = "Whether the host OS is Linux."
-  type = bool
-  default = false
+variable "administrator_service_count" {
+  description = "Desired count."
+  type = number
+  default = 2
+}
+
+variable "reviewer_service_count" {
+  description = "Desired count."
+  type = number
+  default = 2
+}
+
+variable "reader_service_count" {
+  description = "Desired count."
+  type = number
+  default = 2
+}
+
+variable "front_end_count" {
+  description = "Desired count."
+  type = number
+  default = 2
 }

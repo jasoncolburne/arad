@@ -6,6 +6,8 @@ job "reviewer_service" {
   datacenters = [ [[ range $idx, $dc := .arad.datacenters ]][[if $idx]],[[end]][[ $dc | quote ]][[ end ]] ]
 
   group "reviewer_service" {
+    count = [[ .arad.reviewer_service_count ]]
+
     [[ if (.arad.linux_host) ]]
     network {
       mode = "bridge"
@@ -16,6 +18,17 @@ job "reviewer_service" {
       name = "reviewer-service"
       port     = "80"
       provider = "consul"
+
+      tags = [
+        "api.enable=true",
+        "api.http.middlewares.reviewer-remove-prefix.stripprefix.prefixes=/api/v1/review",
+        "api.http.middlewares.reviewer-remove-prefix.stripprefix.forceSlash=false",
+        "api.http.routers.reviewer.tls=true",
+        "api.http.routers.reviewer.entrypoints=https",
+        "api.http.routers.reviewer.rule=Host(`[[ .arad.api_domain ]]`) && PathPrefix(`/api/v1/review/`)",
+        "api.http.routers.reviewer.middlewares=reviewer-remove-prefix@consulcatalog"
+      ]
+
       connect {
         sidecar_service {
           proxy {
@@ -51,6 +64,7 @@ job "reviewer_service" {
 
       env {
         ALLOWED_ORIGINS = [[ .arad.back_end_allowed_origins | quote ]]
+        LISTEN_IP = "127.0.0.1"
       }
 
       template {

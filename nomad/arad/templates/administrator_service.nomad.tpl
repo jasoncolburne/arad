@@ -6,6 +6,8 @@ job "administrator_service" {
   datacenters = [ [[ range $idx, $dc := .arad.datacenters ]][[if $idx]],[[end]][[ $dc | quote ]][[ end ]] ]
 
   group "administrator_service" {
+    count = [[ .arad.administrator_service_count ]]
+
     [[ if (.arad.linux_host) ]]
     network {
       mode = "bridge"
@@ -16,6 +18,17 @@ job "administrator_service" {
       name = "administrator-service"
       port     = "80"
       provider = "consul"
+
+      tags = [
+        "api.enable=true",
+        "api.http.middlewares.administrator-remove-prefix.stripprefix.prefixes=/api/v1/administrate",
+        "api.http.middlewares.administrator-remove-prefix.stripprefix.forceSlash=false",
+        "api.http.routers.administrator.tls=true",
+        "api.http.routers.administrator.entrypoints=https",
+        "api.http.routers.administrator.rule=Host(`[[ .arad.api_domain ]]`) && PathPrefix(`/api/v1/administrate/`)",
+        "api.http.routers.administrator.middlewares=administrator-remove-prefix@consulcatalog"
+      ]
+
       connect {
         sidecar_service {
           proxy {
@@ -51,6 +64,7 @@ job "administrator_service" {
 
       env {
         ALLOWED_ORIGINS = [[ .arad.back_end_allowed_origins | quote ]]
+        LISTEN_IP = "127.0.0.1"
       }
 
       template {
