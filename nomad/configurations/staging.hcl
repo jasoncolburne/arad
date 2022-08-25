@@ -8,11 +8,11 @@ administrator_service_count = 3
 reviewer_service_count = 4
 reader_service_count = 12
 
-front_end_image = "jcolburne/arad:front-end-nginx-main-latest"
+front_end_image = "jcolburne/arad:front-end-nginx-database-disconnects-latest"
 identity_service_image = "jcolburne/arad:identity-database-disconnects-latest"
-administrator_service_image = "jcolburne/arad:administrator-main-latest"
-reviewer_service_image = "jcolburne/arad:reviewer-main-latest"
-reader_service_image = "jcolburne/arad:reader-main-latest"
+administrator_service_image = "jcolburne/arad:administrator-database-disconnects-latest"
+reviewer_service_image = "jcolburne/arad:reviewer-database-disconnects-latest"
+reader_service_image = "jcolburne/arad:reader-database-disconnects-latest"
 
 remote_docker_registry = true
 linux_host = true

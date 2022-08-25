@@ -12,5 +12,13 @@ Sources = [
   {
     Action = "allow"
     Name = "reader-service"
+  },
+  {
+    Action = "allow"
+    Name = "create-application-database"
+  },
+  {
+    Action = "allow"
+    Name = "migrate-application-database"
   }
 ]

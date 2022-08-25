@@ -34,6 +34,7 @@ job "identity_service" {
               protocol = "tcp"
               mode = "transparent"
             }
+
             upstreams {
               destination_name = "user-database"
               local_bind_port  = 5432
@@ -41,6 +42,7 @@ job "identity_service" {
                 mode = "local"
               }
             }
+
             upstreams {
               destination_name = "token-cache"
               local_bind_port  = 6379
@@ -74,7 +76,7 @@ job "identity_service" {
 
       template {
         data = <<EOH
-DATABASE_URL="{{ with secret "kv/data/user_database_url" }}{{ .Data.data.value }}{{ end }}"
+DATABASE_URL="postgresql+asyncpg://{{ with secret "kv/data/user_database_user" }}{{ .Data.data.value }}{{ end }}:{{ with secret "kv/data/user_database_password" }}{{ .Data.data.value }}{{ end }}@127.0.0.1:5432/arad_user"
 ACCESS_TOKEN_PRIVATE_KEY_PEM={{ with secret "kv/data/access_token_private_key_pem" }}{{ .Data.data.value | toJSON }}{{ end }}
 ACCESS_TOKEN_PUBLIC_KEY_PEM={{ with secret "kv/data/access_token_public_key_pem" }}{{ .Data.data.value | toJSON }}{{ end }}
 EOH

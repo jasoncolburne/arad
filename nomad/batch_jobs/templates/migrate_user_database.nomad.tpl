@@ -6,63 +6,52 @@ job "migrate_user_database" {
   datacenters = [ [[ range $idx, $dc := .batch_jobs.datacenters ]][[if $idx]],[[end]][[ $dc | quote ]][[ end ]] ]
 
   group "migrate_user_database" {
-    [[ if (.arad.linux_host) ]]
+
     network {
-      mode = "bridge"
+      mode = [[ .batch_jobs.network_mode | quote ]]
     }
-    [[ end ]]
+
+    service {
+      name     = "migrate-user-database"
+      provider = "consul"
+
+      connect {
+        sidecar_service {
+          proxy {
+            config {
+              protocol = "tcp"
+              mode = "transparent"
+            }
+
+            upstreams {
+              destination_name = "user-database"
+              local_bind_port  = 5432
+              mesh_gateway {
+                mode = "local"
+              }
+            }
+          }
+        }
+      }
+    }
 
     task "alembic" {
       driver = "docker"
 
+      [[ template "kv_access" . ]]
+
       config {
+        force_pull = [[ .batch_jobs.remote_docker_registry ]]
         image = [[ .batch_jobs.identity_service_image | quote ]]
-        entrypoint = ["bash", "-c", "service nginx start && ./migrate.sh"]
+        entrypoint = ["./migrate.sh"]
       }
 
       template {
         data = <<EOH
-DATABASE_URL="{{ with secret "kv/data/application_database_url" }}{{ .Data.data.value }}{{ end }}"
+DATABASE_URL="postgresql+asyncpg://{{ with secret "kv/data/user_database_user" }}{{ .Data.data.value }}{{ end }}:{{ with secret "kv/data/user_database_password" }}{{ .Data.data.value }}{{ end }}@127.0.0.1:5432/batch_jobs_user"
 EOH
         destination = "secrets/.env"
         env = true
-      }
-
-      restart {
-        attempts = 0
-      }
-
-      template {
-        [[ if (.batch_jobs.consul_enabled) -]]
-        data = <<EOH
-upstream database {
-{{- range service "user-database" }}
-  server 10.1.0.1:{{ .Port }};
-{{- end }}
-}
-
-server {
-  listen 5432 so_keepalive=on;
-  proxy_pass database;
-}
-EOH
-        [[ else -]]
-        data = <<EOH
-upstream database {
-{{- range nomadService "user-database" }}
-  server 10.1.0.1:{{ .Port }};
-{{- end }}
-}
-
-server {
-  listen 5432 so_keepalive=on;
-  proxy_pass database;
-}
-EOH
-        [[ end -]]
-        
-        destination = "local/upstreams.conf"
-        perms       = 0600
       }
 
       [[ template "resources" .batch_jobs.service_resources -]]

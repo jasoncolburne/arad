@@ -1,18 +1,18 @@
-job "migrate_application_database" {
+job "create_user_database" {
   type = "batch"
 
   [[ template "region" . ]]
 
   datacenters = [ [[ range $idx, $dc := .batch_jobs.datacenters ]][[if $idx]],[[end]][[ $dc | quote ]][[ end ]] ]
 
-  group "migrate_application_database" {
+  group "create_user_database" {
 
     network {
       mode = [[ .batch_jobs.network_mode | quote ]]
     }
 
     service {
-      name     = "migrate-application-database"
+      name     = "create-user-database"
       provider = "consul"
 
       connect {
@@ -24,7 +24,7 @@ job "migrate_application_database" {
             }
 
             upstreams {
-              destination_name = "application-database"
+              destination_name = "user-database"
               local_bind_port  = 5432
               mesh_gateway {
                 mode = "local"
@@ -42,13 +42,20 @@ job "migrate_application_database" {
 
       config {
         force_pull = [[ .batch_jobs.remote_docker_registry ]]
-        image = [[ .batch_jobs.administrator_service_image | quote ]]
-        entrypoint = ["./migrate.sh"]
+        image = [[ .batch_jobs.identity_service_image | quote ]]
+        entrypoint = ["./create-database.sh"]
+      }
+
+      env {
+        DATABASE_NAME = "arad_user"
       }
 
       template {
         data = <<EOH
-DATABASE_URL="postgresql+asyncpg://{{ with secret "kv/data/application_database_user" }}{{ .Data.data.value }}{{ end }}:{{ with secret "kv/data/application_database_password" }}{{ .Data.data.value }}{{ end }}@127.0.0.1:5432/batch_jobs_user"
+DATABASE_USER="{{ with secret "kv/data/user_database_user" }}{{ .Data.data.value }}{{ end }}"
+DATABASE_PASSWORD="{{ with secret "kv/data/user_database_password" }}{{ .Data.data.value }}{{ end }}"
+POSTGRES_USER="{{ with secret "kv/data/user_database_postgres_user" }}{{ .Data.data.value }}{{ end }}"
+POSTGRES_PASSWORD="{{ with secret "kv/data/user_database_postgres_password" }}{{ .Data.data.value }}{{ end }}"
 EOH
         destination = "secrets/.env"
         env = true
