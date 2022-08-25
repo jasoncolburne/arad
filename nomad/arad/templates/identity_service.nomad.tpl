@@ -9,7 +9,7 @@ job "identity_service" {
     count = [[ .arad.identity_service_count ]]
 
     network {
-      mode = [[ .arad.network_mode ]]
+      mode = [[ .arad.network_mode | quote ]]
     }
 
     service {

@@ -9,7 +9,7 @@ job "api" {
     count = 1  // do not change this, the host will try and bind multiple times on the same port
 
     network {
-      mode = [[ .arad.network_mode ]]
+      mode = [[ .arad.network_mode | quote ]]
       port "https" {
         static = [[ .arad.api_port ]]
       }

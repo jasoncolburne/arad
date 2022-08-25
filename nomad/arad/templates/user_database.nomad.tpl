@@ -9,7 +9,7 @@ job "user_database" {
     count = 1
 
     network {
-      mode = [[ .arad.network_mode ]]
+      mode = [[ .arad.network_mode | quote ]]
     }
 
     [[ template "postgres_consul_service" "user" ]]

@@ -9,7 +9,7 @@ job "token_cache" {
     count = 1
 
     network {
-      mode = [[ .arad.network_mode ]]
+      mode = [[ .arad.network_mode | quote ]]
     }
 
     service {

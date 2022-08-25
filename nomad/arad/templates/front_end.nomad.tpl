@@ -9,7 +9,7 @@ job "front_end" {
     count = [[ .arad.front_end_count ]]
 
     network {
-      mode = [[ .arad.network_mode ]]
+      mode = [[ .arad.network_mode | quote ]]
     }
 
     service {

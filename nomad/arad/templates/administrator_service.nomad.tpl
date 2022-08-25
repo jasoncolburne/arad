@@ -9,7 +9,7 @@ job "administrator_service" {
     count = [[ .arad.administrator_service_count ]]
 
     network {
-      mode = [[ .arad.network_mode ]]
+      mode = [[ .arad.network_mode | quote ]]
     }
 
     service {

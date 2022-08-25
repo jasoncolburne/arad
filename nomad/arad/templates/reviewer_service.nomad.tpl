@@ -9,7 +9,7 @@ job "reviewer_service" {
     count = [[ .arad.reviewer_service_count ]]
 
     network {
-      mode = [[ .arad.network_mode ]]
+      mode = [[ .arad.network_mode | quote ]]
     }
 
     service {
