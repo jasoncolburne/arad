@@ -84,7 +84,7 @@ EOH
         env = true
       }
 
-      [[ template "resources" .arad.service_resources -]]
+      [[ template "resources" .arad.service_resources ]]
     }
   }
 }

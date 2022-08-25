@@ -54,7 +54,7 @@ EOH
         env = true
       }
 
-      [[ template "resources" .batch_jobs.service_resources -]]
+      [[ template "resources" .batch_jobs.service_resources ]]
     }
   }
 }

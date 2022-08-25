@@ -26,7 +26,7 @@ job "user_database" {
         [[ template "postgres_config" "user" ]]
       }
 
-      [[ template "resources" .arad.user_database_resources -]]
+      [[ template "resources" .arad.user_database_resources ]]
     }
   }
 }

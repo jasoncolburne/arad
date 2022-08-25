@@ -44,7 +44,7 @@ job "administrator_service" {
 
       [[ template "application_task_env" . ]]
 
-      [[ template "resources" .arad.service_resources -]]
+      [[ template "resources" .arad.service_resources ]]
     }
   }
 }

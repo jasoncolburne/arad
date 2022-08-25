@@ -43,7 +43,7 @@ job "token_cache" {
         auth_soft_fail = true
       }
 
-      [[ template "resources" .arad.token_cache_resources -]]
+      [[ template "resources" .arad.token_cache_resources ]]
     }
   }
 }

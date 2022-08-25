@@ -78,7 +78,7 @@ EOF
 
       [[ template "traefik_dynamic_config" .arad.front_end_domain ]]
 
-      [[ template "resources" .arad.traefik_resources -]]
+      [[ template "resources" .arad.traefik_resources ]]
     }
   }
 }

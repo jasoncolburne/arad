@@ -37,7 +37,7 @@ job "front_end" {
         image = [[ .arad.front_end_image | quote ]]
       }
 
-      [[ template "resources" .arad.front_end_resources -]]
+      [[ template "resources" .arad.front_end_resources ]]
     }
   }
 }
