@@ -43,7 +43,7 @@ job "create_application_database" {
       config {
         force_pull = [[ .batch_jobs.remote_docker_registry ]]
         image = [[ .batch_jobs.administrator_service_image | quote ]]
-        entrypoint = ["./create-database.sh"]
+        entrypoint = ["bash", "-c", "./create-database.sh"]
       }
 
       env {
