@@ -43,7 +43,7 @@ job "migrate_user_database" {
       config {
         force_pull = [[ .batch_jobs.remote_docker_registry ]]
         image = [[ .batch_jobs.identity_service_image | quote ]]
-        entrypoint = ["./migrate.sh"]
+        entrypoint = ["bash", "-c", "./migrate.sh"]
       }
 
       template {
