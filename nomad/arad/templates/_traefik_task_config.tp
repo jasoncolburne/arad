@@ -1,0 +1,7 @@
+[[- define "traefik_task_config" -]]
+image = "traefik"
+auth_soft_fail = true
+volumes = [
+    "local/traefik.toml:/etc/traefik/traefik.toml",
+]
+[[- end -]]

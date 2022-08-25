@@ -1,0 +1,6 @@
+[[- define "postgres_config" -]]
+image          = "postgres:bullseye"
+auth_soft_fail = true
+volumes        = ["arad_[[ . ]]_database:/var/lib/postgresql/data"]
+volume_driver  = "local"
+[[- end -]]

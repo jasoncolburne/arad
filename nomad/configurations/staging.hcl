@@ -16,4 +16,5 @@ reader_service_image = "jcolburne/arad:reader-main-latest"
 
 remote_docker_registry = true
 linux_host = true
+network_mode = "bridge"
 consul_enabled = true

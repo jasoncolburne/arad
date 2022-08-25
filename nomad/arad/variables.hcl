@@ -26,6 +26,12 @@ variable "linux_host" {
   default = false
 }
 
+variable "network_mode" {
+  description = "The network mode to use."
+  type = string
+  default = "host"
+}
+
 variable "consul_enabled" {
   description = "If Consul is configured for this deployment."
   type        = bool

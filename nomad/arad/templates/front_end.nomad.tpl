@@ -9,9 +9,7 @@ job "front_end" {
     count = [[ .arad.front_end_count ]]
 
     network {
-      [[ if (.arad.linux_host) ]]
-      mode = "bridge"
-      [[ end ]]
+      mode = [[ .arad.network_mode ]]
     }
 
     service {
@@ -35,9 +33,7 @@ job "front_end" {
       driver = "docker"
 
       config {
-        [[ if .arad.remote_docker_registry -]]
-        force_pull = true
-        [[- end ]]
+        force_pull = [[ .arad.remote_docker_registry ]]
         image = [[ .arad.front_end_image | quote ]]
       }
 

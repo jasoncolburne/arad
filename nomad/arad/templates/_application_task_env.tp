@@ -1,0 +1,14 @@
+[[- define "application_task_env" -]]
+env {
+    ALLOWED_ORIGINS = [[ .arad.back_end_allowed_origins | quote ]]
+    LISTEN_IP = "127.0.0.1"
+}
+
+template {
+    data = <<EOH
+DATABASE_URL="{{ with secret "kv/data/application_database_url" }}{{ .Data.data.value }}{{ end }}"
+EOH
+    destination = "secrets/.env"
+    env = true
+}
+[[- end -]]

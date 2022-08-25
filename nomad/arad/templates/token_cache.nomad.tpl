@@ -3,17 +3,14 @@ job "token_cache" {
 
   [[ template "region" . ]]
 
-  // we only want a single instance of this cache, so we won't iterate
-  datacenters = [ [[ (index .arad.datacenters 0) | quote ]] ]
+  datacenters = [ [[ range $idx, $dc := .arad.datacenters ]][[if $idx]],[[end]][[ $dc | quote ]][[ end ]] ]
 
   group "token_cache" {
     count = 1
 
-    [[ if (.arad.linux_host) ]]
     network {
-      mode = "bridge"
+      mode = [[ .arad.network_mode ]]
     }
-    [[ end ]]
 
     service {
       name     = "token-cache"
@@ -41,6 +38,7 @@ job "token_cache" {
       driver = "docker"
 
       config {
+        force_pull = [[ .arad.remote_docker_registry ]]
         image          = "redis:bullseye"
         auth_soft_fail = true
       }

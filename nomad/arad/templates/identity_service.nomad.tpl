@@ -8,11 +8,9 @@ job "identity_service" {
   group "identity_service" {
     count = [[ .arad.identity_service_count ]]
 
-    [[ if (.arad.linux_host) ]]
     network {
-      mode = "bridge"
+      mode = [[ .arad.network_mode ]]
     }
-    [[ end ]]
 
     service {
       name     = "identity-service"
@@ -63,9 +61,7 @@ job "identity_service" {
       [[ template "kv_access" . ]]
 
       config {
-        [[ if .arad.remote_docker_registry -]]
-        force_pull = true
-        [[- end ]]
+        force_pull = [[ .arad.remote_docker_registry ]]
         image = [[ .arad.identity_service_image | quote ]]
       }
 

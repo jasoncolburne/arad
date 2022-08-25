@@ -8,11 +8,9 @@ job "administrator_service" {
   group "administrator_service" {
     count = [[ .arad.administrator_service_count ]]
 
-    [[ if (.arad.linux_host) ]]
     network {
-      mode = "bridge"
+      mode = [[ .arad.network_mode ]]
     }
-    [[ end ]]
 
     service {
       name = "administrator-service"
@@ -29,23 +27,7 @@ job "administrator_service" {
         "api.http.routers.administrator.middlewares=administrator-remove-prefix@consulcatalog"
       ]
 
-      connect {
-        sidecar_service {
-          proxy {
-            config {
-              protocol = "tcp"
-              mode = "transparent"
-            }
-            upstreams {
-              destination_name = "application-database"
-              local_bind_port  = 5432
-              mesh_gateway {
-                mode = "local"
-              }
-            }
-          }
-        }
-      }
+      [[ template "service_database_connect" "application" ]]
 
       [[ template "service_health_check" . ]]
     }
@@ -56,24 +38,11 @@ job "administrator_service" {
       [[ template "kv_access" . ]]
 
       config {
-        [[ if .arad.remote_docker_registry -]]
-        force_pull = true
-        [[- end ]]
+        force_pull = [[ .arad.remote_docker_registry ]]
         image = [[ .arad.administrator_service_image | quote ]]
       }
 
-      env {
-        ALLOWED_ORIGINS = [[ .arad.back_end_allowed_origins | quote ]]
-        LISTEN_IP = "127.0.0.1"
-      }
-
-      template {
-        data = <<EOH
-DATABASE_URL="{{ with secret "kv/data/application_database_url" }}{{ .Data.data.value }}{{ end }}"
-EOH
-        destination = "secrets/.env"
-        env = true
-      }
+      [[ template "application_task_env" . ]]
 
       [[ template "resources" .arad.service_resources -]]
     }
