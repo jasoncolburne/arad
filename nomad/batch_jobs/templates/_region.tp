@@ -1,5 +1,5 @@
 [[- define "region" -]]
-[[- if not (eq .batch_jobs.region "") -]]
-region = [[ .batch_jobs.region | quote ]]
+[[- if not (eq .arad.region "") -]]
+region = [[ .arad.region | quote ]]
 [[- end -]]
 [[- end -]]
