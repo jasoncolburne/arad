@@ -23,8 +23,13 @@ oauth2_scheme = fastapi.security.OAuth2PasswordBearer(tokenUrl="/identify/token"
     include_in_schema=False,
     response_model=common.datatypes.response.HealthCheckResponse,
 )
-async def health() -> common.datatypes.response.HealthCheckResponse:
-    return common.datatypes.response.HealthCheckResponse(status="ok")
+async def health(
+    _database: sqlmodel.Session = fastapi.Depends(database.get_session),
+) -> common.datatypes.response.HealthCheckResponse:
+    if await identity.orchestrations.healthy(database=_database):
+        return common.datatypes.response.HealthCheckResponse(status="ok")
+
+    return common.datatypes.response.HealthCheckResponse(status="unhealthy")
 
 
 @app.post("/register", response_model=identity.datatypes.response.RegisterResponse)

@@ -44,9 +44,10 @@
 /reader/nginx.conf
 /identity/nginx.conf
 
+/administrator/create-database.sh
+/identity/create-database.sh
+
 /administrator/migrate.sh
-/reviewer/migrate.sh
-/reader/migrate.sh
 /identity/migrate.sh
 
 /administrator/entrypoint.sh

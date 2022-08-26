@@ -1,0 +1,13 @@
+[[- define "service_health_check" -]]
+check {
+    name = "healthy"
+    task = "fastapi"
+    type = "script"
+    command = "/usr/bin/curl"
+    args = ["http://127.0.0.1/health"]
+    interval = "5s"
+    timeout = "1s"
+
+    [[ template "check_restart" . ]]
+}
+[[- end -]]

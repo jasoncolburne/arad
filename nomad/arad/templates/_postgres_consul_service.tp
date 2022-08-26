@@ -1,0 +1,13 @@
+[[- define "postgres_consul_service" -]]
+service {
+    name     = "[[ . ]]-database"
+    port     = "5432"
+    provider = "consul"
+
+    connect {
+        sidecar_service {}
+    }
+
+    [[ template "postgres_health_check" . ]]
+}
+[[- end -]]

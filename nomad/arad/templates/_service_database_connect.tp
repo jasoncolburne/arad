@@ -1,0 +1,20 @@
+[[- define "service_database_connect" -]]
+connect {
+    sidecar_service {
+        proxy {
+            config {
+                protocol = "tcp"
+                mode = "transparent"
+            }
+
+            upstreams {
+                destination_name = "[[ . ]]-database"
+                local_bind_port  = 5432
+                mesh_gateway {
+                    mode = "local"
+                }
+            }
+        }
+    }
+}
+[[- end -]]

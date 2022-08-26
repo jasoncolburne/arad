@@ -4,7 +4,7 @@ set -eo pipefail
 
 BACKENDS=(identity reader reviewer administrator)
 DIRECTORIES=(common)
-FILES=(Dockerfile .dockerignore mypy.ini .pylintrc echo_activate_path install-poetry.py nginx.conf migrate.sh entrypoint.sh)
+FILES=(Dockerfile .dockerignore mypy.ini .pylintrc echo_activate_path install-poetry.py nginx.conf create-database.sh migrate.sh entrypoint.sh)
 
 for BACKEND in "${BACKENDS[@]}"
 do
@@ -41,3 +41,4 @@ echo "removing unused files..."
 rm -fv reader/common/services/authorization.py
 rm -rfv reader/database/migrations
 rm -rfv reviewer/database/migrations
+rm -fv {reader,reviewer}/{migrate,create-database}.sh

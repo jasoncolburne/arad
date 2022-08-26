@@ -14,7 +14,7 @@ class UserRepository(identity.mixins.RolesForUserID):
     def __init__(self, _database: sqlmodel.Session):
         self.database = _database
 
-    async def _count(self, email_filter: str | None) -> int:
+    async def count(self, email_filter: str | None = None) -> int:
         if email_filter:
             query = sqlalchemy.select(
                 sqlalchemy.func.count(database.models.User.id)
@@ -59,7 +59,7 @@ class UserRepository(identity.mixins.RolesForUserID):
                 )
             )
 
-        total = await self._count(email_filter=email_filter)
+        total = await self.count(email_filter=email_filter)
         pages = (total - 1) / PAGE_SIZE_USER + 1
 
         return identity.datatypes.domain.UserPage(

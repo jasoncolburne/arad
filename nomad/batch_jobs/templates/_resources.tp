@@ -3,4 +3,4 @@ resources {
     cpu    = [[ .cpu ]]
     memory = [[ .memory ]]
 }
-[[ end -]]
+[[- end -]]
