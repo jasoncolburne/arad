@@ -31,9 +31,9 @@ COPY yarn.lock .
 
 RUN \
     if [ "${DEPLOYMENT_ENVIRONMENT}" = "production" ]; then \
-        yarn install --production=true; \
+        yarn install --production=true --frozen-lockfile; \
     else \
-        yarn install --production=false; \
+        yarn install --production=false --frozen-lockfile; \
     fi
 
 COPY . .
