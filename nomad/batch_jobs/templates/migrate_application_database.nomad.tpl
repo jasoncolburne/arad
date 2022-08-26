@@ -48,7 +48,7 @@ job "migrate_application_database" {
 
       template {
         data = <<EOH
-DATABASE_URL="postgresql+asyncpg://{{ with secret "kv/data/application_database_user" }}{{ .Data.data.value }}{{ end }}:{{ with secret "kv/data/application_database_password" }}{{ .Data.data.value }}{{ end }}@127.0.0.1:5432/batch_jobs_user"
+DATABASE_URL="postgresql+asyncpg://{{ with secret "kv/data/application_database_user" }}{{ .Data.data.value }}{{ end }}:{{ with secret "kv/data/application_database_password" }}{{ .Data.data.value }}{{ end }}@127.0.0.1:5432/arad_application"
 EOH
         destination = "secrets/.env"
         env = true
