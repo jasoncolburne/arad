@@ -10,11 +10,17 @@ import common.datatypes.exception
 import identity.datatypes.request
 import identity.datatypes.response
 import identity.services.auth
+import identity.services.health
 import identity.services.user
 
 
 DEFAULT_ADMIN_EMAIL = os.environ.get("DEFAULT_ADMIN_EMAIL")
 
+async def healthy(
+    database: sqlmodel.Session
+) -> bool:
+    health_service = identity.services.health.HealthService(database=database)
+    return await health_service.healthy()
 
 async def arad_register(
     email: str,
