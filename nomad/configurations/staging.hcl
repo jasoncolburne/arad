@@ -8,11 +8,11 @@ administrator_service_count = 3
 reviewer_service_count = 4
 reader_service_count = 12
 
-front_end_image = "jcolburne/arad:front-end-nginx-update-dependencies-latest"
-identity_service_image = "jcolburne/arad:identity-update-dependencies-latest"
-administrator_service_image = "jcolburne/arad:administrator-update-dependencies-latest"
-reviewer_service_image = "jcolburne/arad:reviewer-update-dependencies-latest"
-reader_service_image = "jcolburne/arad:reader-update-dependencies-latest"
+front_end_image = "jcolburne/arad:front-end-nginx-main-latest"
+identity_service_image = "jcolburne/arad:identity-main-latest"
+administrator_service_image = "jcolburne/arad:administrator-main-latest"
+reviewer_service_image = "jcolburne/arad:reviewer-main-latest"
+reader_service_image = "jcolburne/arad:reader-main-latest"
 
 remote_docker_registry = true
 linux_host = true
