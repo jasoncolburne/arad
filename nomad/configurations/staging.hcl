@@ -8,11 +8,16 @@ administrator_service_count = 3
 reviewer_service_count = 4
 reader_service_count = 12
 
-front_end_image = "jcolburne/arad:front-end-nginx-main-latest"
-identity_service_image = "jcolburne/arad:identity-main-latest"
-administrator_service_image = "jcolburne/arad:administrator-main-latest"
-reviewer_service_image = "jcolburne/arad:reviewer-main-latest"
-reader_service_image = "jcolburne/arad:reader-main-latest"
+front_end_image = "jcolburne/arad:front-end-nginx-working-repl-latest"
+identity_service_image = "jcolburne/arad:identity-working-repl-latest"
+administrator_service_image = "jcolburne/arad:administrator-working-repl-latest"
+reviewer_service_image = "jcolburne/arad:reviewer-working-repl-latest"
+reader_service_image = "jcolburne/arad:reader-working-repl-latest"
+
+service_resources = {
+    cpu    = 500,
+    memory = 420
+}
 
 remote_docker_registry = true
 linux_host = true
