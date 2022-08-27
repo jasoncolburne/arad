@@ -22,7 +22,7 @@ pydantic = {extras = ["email"], version = "*"}
 fastapi-utils = "*"
 alembic = "*"
 ipython = "*"
-SQLAlchemy = {extras = ["asyncio"], version = "^1.4.40"}
+SQLAlchemy = {extras = ["asyncio"], version = "*"}
 
 [tool.poetry.group.test.dependencies]
 pytest = "*"

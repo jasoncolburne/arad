@@ -19,7 +19,7 @@ sqlmodel = "*"
 pydantic = {extras = ["email"], version = "*"}
 fastapi-utils = "*"
 ipython = "*"
-SQLAlchemy = {extras = ["asyncio"], version = "^1.4.40"}
+SQLAlchemy = {extras = ["asyncio"], version = "*"}
 
 [tool.poetry.group.test.dependencies]
 pytest = "*"
