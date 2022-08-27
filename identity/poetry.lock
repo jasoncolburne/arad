@@ -1012,7 +1012,7 @@ python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,>=2.7"
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.10,<3.11"
-content-hash = "002c5508f39e918bebf497a03b7f3b14975d64a4e549f14cc1630bddfab52532"
+content-hash = "f6c0d725c3f4a63a21c75dd5a4f440c706edd3b31495d7cdebe6bd00e06513f1"
 
 [metadata.files]
 aioredis = [
