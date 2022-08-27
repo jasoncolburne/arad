@@ -1,0 +1,24 @@
+[[- define "postgres_task_config" -]]
+image          = "postgres:bullseye"
+auth_soft_fail = true
+
+command = "postgres"
+args = [
+    "-c",
+    "config_file=/etc/postgresql/postgresql.conf"
+]
+
+mount {
+    type = "volume"
+    target = "/var/lib/postgresql/data"
+    source = "arad_[[ . ]]_database"
+    readonly = false
+}
+
+mount {
+    type = "bind"
+    target = "/etc/postgresql/postgresql.conf"
+    source = "local/postgresql.conf"
+    readonly = true
+}
+[[- end -]]

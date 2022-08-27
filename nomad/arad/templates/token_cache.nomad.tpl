@@ -41,6 +41,22 @@ job "token_cache" {
         force_pull = [[ .arad.remote_docker_registry ]]
         image          = "redis:bullseye"
         auth_soft_fail = true
+        volumes = [
+          "local/redis.conf:/etc/redis/redis.conf",
+        ]
+        command = "redis-server"
+        args = [
+          "/etc/redis/redis.conf",
+        ]
+      }
+
+      template {
+        data = <<EOF
+bind 127.0.0.1
+EOF
+
+        change_mode = "restart"
+        destination = "local/redis.conf"
       }
 
       [[ template "resources" .arad.token_cache_resources ]]

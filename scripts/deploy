@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+[[ -f secrets.tgz ]] || cp ~/secrets.tgz .
+scripts/secrets restore
+
+export CONSUL_HTTP_TOKEN=$(cat ~/.consul.bootstrap.json | jq -r '.SecretID')
+
+POLICY_DIR=consul/policy
+consul acl policy create -name=api -rules=@${POLICY_DIR}/api.hcl
+consul acl policy create -name=load-balancer -rules=@${POLICY_DIR}/load-balancer.hcl
+
+consul acl token create -policy-name=api -description="api" -format=json | jq -r '.SecretID' | tr -d '\n' | scripts/secrets put api_consul_token
+consul acl token create -policy-name=load-balancer -description="load-balancer" -format=json | jq -r '.SecretID' | tr -d '\n' | scripts/secrets put load_balancer_consul_token
+
+INTENTION_DIR=consul/intention
+for INTENTION in ${INTENTION_DIR}/*; do
+  consul config write ${INTENTION}
+done

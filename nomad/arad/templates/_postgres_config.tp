@@ -1,6 +1,10 @@
 [[- define "postgres_config" -]]
-image          = "postgres:bullseye"
-auth_soft_fail = true
-volumes        = ["arad_[[ . ]]_database:/var/lib/postgresql/data"]
-volume_driver  = "local"
+template {
+    data = <<EOF
+listen_addresses '127.0.0.1'
+EOF
+
+    change_mode = "restart"
+    destination = "local/postgresql.conf"
+}
 [[- end -]]
