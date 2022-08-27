@@ -21,6 +21,9 @@ class Cache:
         else:
             self.redis = redis
 
+    async def count(self) -> int:
+        return await self.redis.dbsize()
+
     async def store_refresh_token(
         self, refresh_token: str, user_id: uuid.UUID, expiration: datetime.datetime
     ) -> None:
