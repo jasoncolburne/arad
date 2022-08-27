@@ -1,14 +1,24 @@
 [[- define "postgres_task_config" -]]
 image          = "postgres:bullseye"
 auth_soft_fail = true
-volumes        = [
-    "local/postgresql.conf:/etc/postgresql/postgresql.conf",
-    "arad_[[ . ]]_database:/var/lib/postgresql/data",
-]
-volume_driver  = "local"
+
 command = "postgres"
 args = [
     "-c",
     "config_file=/etc/postgresql/postgresql.conf"
 ]
+
+mount {
+    type = "volume"
+    target = "/var/lib/postgresql/data"
+    source = "arad_[[ . ]]_database"
+    readonly = false
+}
+
+mount {
+    type = "bind"
+    target = "/etc/postgresql/postgresql.conf"
+    source = "local/postgresql.conf"
+    readonly = true
+}
 [[- end -]]
