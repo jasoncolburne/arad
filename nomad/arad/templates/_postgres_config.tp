@@ -1,7 +1,7 @@
 [[- define "postgres_config" -]]
 template {
     data = <<EOF
-listen_addresses 127.0.0.1
+listen_addresses '127.0.0.1'
 EOF
 
     change_mode = "restart"
