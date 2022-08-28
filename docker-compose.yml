@@ -12,6 +12,7 @@ x-common-environment: &common-environment
     -----END PUBLIC KEY-----
   ALLOWED_ORIGINS: http://localhost,http://front-end-react
   DATABASE_URL: postgresql+asyncpg://arad_application:arad_application@database:5432/arad_application
+  LISTEN_IP: "0.0.0.0"
 
 x-healthcheck: &healthcheck
   test: ["CMD-SHELL", "curl http://localhost/health > /dev/null"]

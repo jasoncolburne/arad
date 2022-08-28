@@ -5,8 +5,8 @@ import toml
 import uvicorn
 
 
-DEPLOYMENT_ENVIRONMENT = os.environ.get("DEPLOYMENT_ENVIRONMENT")
-LISTEN_IP = os.environ.get("LISTEN_IP", "0.0.0.0")
+DEPLOYMENT_ENVIRONMENT = os.environ.get("DEPLOYMENT_ENVIRONMENT", "production")
+LISTEN_IP = os.environ.get("LISTEN_IP", "127.0.0.1")
 LISTEN_PORT = int(os.environ.get("LISTEN_PORT", "80"))
 LOCAL = DEPLOYMENT_ENVIRONMENT == "development"
 
