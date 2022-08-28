@@ -3,7 +3,7 @@ logging {
     type = "syslog"
     config = {
         syslog-address = "tcp://127.0.0.1:514"
-        tag            = "${NOMAD_JOB_NAME}-${NOMAD_TASK_NAME}"
+        tag            = [[ . | quote ]]
     }
 }
 [[- end -]]
