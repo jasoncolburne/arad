@@ -27,16 +27,13 @@ async def test_roles_for_user_id__fetches_from_database() -> None:
     role_model = database.models.Role(id=role_id, name=role.value)
     role_models = [role_model]
 
-    mock_scalars = unittest.mock.Mock()
-    mock_scalars.all = unittest.mock.Mock(
+    mock_result = unittest.mock.Mock()
+    mock_result.scalars = unittest.mock.Mock(
         side_effect=[
             role_ids,
             role_models,
         ]
     )
-
-    mock_result = unittest.mock.Mock()
-    mock_result.scalars = unittest.mock.Mock(return_value=mock_scalars)
 
     mock_database = sqlmodel.Session()
     mock_database.execute = unittest.mock.AsyncMock(return_value=mock_result)

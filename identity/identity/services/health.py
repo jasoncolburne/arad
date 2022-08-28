@@ -1,4 +1,3 @@
-import concurrent.futures
 import sqlmodel
 
 import identity.cache
@@ -28,12 +27,7 @@ class HealthService:
             raise Exception()
 
     async def healthy(self) -> bool:
-        with concurrent.futures.ProcessPoolExecutor() as executor:
-            futures = [
-                executor.submit(self.user_repository.count),
-                executor.submit(self.token_cache.count),
-            ]
-
-        concurrent.futures.wait(futures)
+        await self.user_repository.count()
+        await self.token_cache.count()
 
         return True

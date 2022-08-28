@@ -17,7 +17,6 @@ toml = "*"
 asyncpg = "*"
 sqlmodel = "*"
 pydantic = {extras = ["email"], version = "*"}
-fastapi-utils = "*"
 ipython = "*"
 
 [tool.poetry.group.test.dependencies]

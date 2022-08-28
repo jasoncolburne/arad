@@ -21,7 +21,6 @@ python-jose = {extras = ["cryptography"], version = "*"}
 passlib = {extras = ["argon2"], version = "*"}
 pydantic = {extras = ["email"], version = "*"}
 aioredis = "*"
-fastapi-utils = "*"
 alembic = "*"
 ipython = "*"
 

@@ -2,21 +2,21 @@
 
 """Role
 
-Revision ID: f8bfefd4b530
-Revises: 402096afc5b9
-Create Date: 2022-07-18 13:50:27.728822
+Revision ID: 06b996e3fd46
+Revises: 310956c511c7
+Create Date: 2022-08-28 10:11:13.115568
 
 """
 from alembic import op
 import sqlalchemy as sa
 import sqlmodel
-import fastapi_utils
+import common.datatypes.database
 import common.datatypes.domain
 
 
 # revision identifiers, used by Alembic.
-revision = "f8bfefd4b530"
-down_revision = "402096afc5b9"
+revision = "06b996e3fd46"
+down_revision = "310956c511c7"
 branch_labels = None
 depends_on = None
 
@@ -27,7 +27,7 @@ def upgrade() -> None:
         "role",
         sa.Column(
             "id",
-            fastapi_utils.guid_type.GUID(),
+            common.datatypes.database.GUID(),
             server_default=sa.text("gen_random_uuid()"),
             nullable=False,
         ),

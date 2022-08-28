@@ -37,9 +37,7 @@ async def test_page__fetches_from_database() -> None:
     mock_database = sqlmodel.Session()
 
     mock_result = unittest.mock.Mock()
-    mock_scalars = unittest.mock.Mock()
-    mock_result.scalars = unittest.mock.Mock(return_value=mock_scalars)
-    mock_scalars.all = unittest.mock.Mock(return_value=user_models)
+    mock_result.scalars = unittest.mock.Mock(return_value=user_models)
 
     mock_database.execute = unittest.mock.AsyncMock(return_value=mock_result)
     mock_database.scalar = unittest.mock.AsyncMock(

@@ -1,0 +1,66 @@
+#!/usr/bin/env bash
+
+set -eo pipefail
+
+ACTIVATE_SCRIPT=". \$(./echo_activate_path)"
+ENVIRONMENT="staging"
+
+# render the batch jobs to .nomad files
+render_batch() {
+  rm -f nomad/batch_jobs/*.nomad
+
+  nomad-pack render -o nomad -f "nomad/configurations/${ENVIRONMENT}.hcl" nomad/batch_jobs
+  hclfmt -w nomad/batch_jobs/*.nomad
+}
+
+# render the arad pack to the screen
+render() {
+  nomad-pack render -f "nomad/configurations/${ENVIRONMENT}.hcl" nomad/arad | hclfmt
+}
+
+plan() {
+  nomad-pack plan -f "nomad/configurations/${ENVIRONMENT}.hcl" nomad/arad
+}
+
+apply() {
+  nomad-pack run -f "nomad/configurations/${ENVIRONMENT}.hcl" nomad/arad
+}
+
+destroy() {
+  nomad-pack destroy -f "nomad/configurations/${ENVIRONMENT}.hcl" nomad/arad
+}
+
+stop() {
+  nomad-pack stop -f "nomad/configurations/${ENVIRONMENT}.hcl" nomad/arad
+}
+
+migrate() {
+  nomad run nomad/batch_jobs/migrate_user_database.nomad
+  nomad run nomad/batch_jobs/migrate_application_database.nomad
+}
+
+execute() {
+  local COMMAND=$1
+  local ARGUMENTS=$(echo $2 | sed "s/^ *//" | sed "s/ *\$//")
+
+  if [[ "${COMMAND}" == "render" ]]; then
+    render
+  elif [[ "${COMMAND}" == "render-batch" ]]; then
+    render_batch
+  elif [[ "${COMMAND}" == "plan" ]]; then
+    plan
+  elif [[ "${COMMAND}" == "apply" ]]; then
+    apply
+  elif [[ "${COMMAND}" == "destroy" ]]; then
+    destroy
+  elif [[ "${COMMAND}" == "stop" ]]; then
+    stop
+  elif [[ "${COMMAND}" == "migrate" ]]; then
+    migrate
+  else
+    echo "unknown command ${COMMAND}"
+    exit 1
+  fi
+}
+
+execute "$1" "$2 $3 $4 $5 $6 $7 $8 $9"

@@ -33,7 +33,7 @@ global_passphrase_context = passlib.context.CryptContext(
 )
 
 
-class AuthService:
+class AuthService:  # pylint: disable=too-many-instance-attributes
     def __init__(
         self,
         database: sqlmodel.Session | None = None,

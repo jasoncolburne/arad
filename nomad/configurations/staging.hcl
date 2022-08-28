@@ -14,6 +14,11 @@ administrator_service_image = "jcolburne/arad:administrator-main-latest"
 reviewer_service_image = "jcolburne/arad:reviewer-main-latest"
 reader_service_image = "jcolburne/arad:reader-main-latest"
 
+service_resources = {
+    cpu    = 666,
+    memory = 420
+}
+
 remote_docker_registry = true
 linux_host = true
 network_mode = "bridge"
