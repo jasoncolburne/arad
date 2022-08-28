@@ -25,9 +25,7 @@ class AuthRepository(identity.mixins.RolesForUserID):
 
         query = sqlalchemy.select(database.models.Role)
         result = await self.database.execute(query)  # type: ignore
-        global_role_id_cache.update(
-            {role.name: role.id for role in result.scalars()}
-        )
+        global_role_id_cache.update({role.name: role.id for role in result.scalars()})
 
     async def all_roles(self) -> list[common.datatypes.domain.Role]:
         await self._warm_global_role_id_cache()
@@ -60,9 +58,11 @@ class AuthRepository(identity.mixins.RolesForUserID):
     async def verify_user_email_and_passphrase(
         self, email: str, passphrase: str, verify: typing.Callable[[str, str], bool]
     ) -> identity.datatypes.domain.User:
-        query = sqlalchemy.select(database.models.User).where(
-            database.models.User.email == email
-        ).limit(1)
+        query = (
+            sqlalchemy.select(database.models.User)
+            .where(database.models.User.email == email)
+            .limit(1)
+        )
         result = await self.database.execute(query)  # type: ignore
         user = result.scalars().one()
         roles = await self.roles_for_user_id(user_id=user.id)
