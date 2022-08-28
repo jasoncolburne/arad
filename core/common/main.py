@@ -21,11 +21,11 @@ LOGGING_CONFIG = {
     "formatters": {
         "default": {
             "()": "uvicorn.logging.DefaultFormatter",
-            "format": f"%(asctime)s %(levelprefix)-9s [{DATACENTER}|{JOB_NAME}|{SHORT_ALLOC_ID}|%(name)s|{TASK_NAME}] %(message)s",
+            "format": f"%(asctime)s %(levelprefix)-9s [{DATACENTER}|{JOB_NAME}|{SHORT_ALLOC_ID}|%(name)s|{TASK_NAME}|%(module)s] %(message)s",  # pylint: disable=line-too-long
         },
         "access": {
             "()": "uvicorn.logging.AccessFormatter",
-            "format": f'%(asctime)s %(levelprefix)-9s [{DATACENTER}|{JOB_NAME}|{SHORT_ALLOC_ID}|%(name)s|{TASK_NAME}] %(client_addr)s "%(request_line)s" %(status_code)s',
+            "format": f'%(asctime)s %(levelprefix)-9s [{DATACENTER}|{JOB_NAME}|{SHORT_ALLOC_ID}|%(name)s|{TASK_NAME}] %(client_addr)s "%(request_line)s" %(status_code)s',  # pylint: disable=line-too-long
         },
     },
     "handlers": {
