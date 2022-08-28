@@ -6,7 +6,7 @@
 # from sqlalchemy.sql.schema import Column, ForeignKey, UniqueConstraint
 # from sqlmodel import Field, SQLModel
 # from sqlmodel.sql.sqltypes import AutoString
-# from fastapi_utils.guid_type import GUID, GUID_SERVER_DEFAULT_POSTGRESQL
+# from common.datatypes.database import GUID, GUID_SERVER_DEFAULT_POSTGRESQL
 
 
 # class User(SQLModel, table=True):
