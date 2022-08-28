@@ -26,7 +26,7 @@ class AuthRepository(identity.mixins.RolesForUserID):
         query = sqlalchemy.select(database.models.Role)
         result = await self.database.execute(query)  # type: ignore
         global_role_id_cache.update(
-            {role.name: role.id for role in result.scalars().all()}
+            {role.name: role.id for role in result.fetchall()}
         )
 
     async def all_roles(self) -> list[common.datatypes.domain.Role]:

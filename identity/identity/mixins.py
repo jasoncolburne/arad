@@ -22,6 +22,6 @@ class RolesForUserID:
 
         query = sqlalchemy.select(database.models.Role).where(database.models.Role.id.in_(role_ids))  # type: ignore # pylint: disable=no-member
         result = await self.database.execute(query)  # type: ignore
-        roles = result.scalars().all()
+        roles = result.fetchall()
 
         return [common.datatypes.domain.Role(role.name) for role in roles]

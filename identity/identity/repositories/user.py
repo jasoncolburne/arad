@@ -47,7 +47,7 @@ class UserRepository(identity.mixins.RolesForUserID):
         query = query.order_by(database.models.User.email).limit(limit).offset(offset)
 
         result = await self.database.execute(query)  # type: ignore
-        user_models = result.scalars().all()
+        user_models = result.fetchall()
         users: list[identity.datatypes.domain.User] = []
         for user_model in user_models:
             roles = await self.roles_for_user_id(user_id=user_model.id)

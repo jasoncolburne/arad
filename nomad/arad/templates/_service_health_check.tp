@@ -5,8 +5,8 @@ check {
     type = "script"
     command = "/usr/bin/curl"
     args = ["http://127.0.0.1/health"]
-    interval = "5s"
-    timeout = "1s"
+    interval = "10s"
+    timeout = "2s"
 
     [[ template "check_restart" . ]]
 }
