@@ -26,7 +26,7 @@ class DatabaseManager:
 global_database_manager = DatabaseManager()
 
 
-async def get_session() -> sqlalchemy.ext.asyncio.AsyncEngine:  # type: ignore
+async def get_session():  # type: ignore
     async_session = sqlalchemy.orm.sessionmaker(
         global_database_manager.get_engine(),
         class_=sqlalchemy.ext.asyncio.AsyncSession,
