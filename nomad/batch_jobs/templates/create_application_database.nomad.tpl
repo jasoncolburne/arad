@@ -35,7 +35,7 @@ job "create_application_database" {
       }
     }
 
-    task "alembic" {
+    task "create" {
       driver = "docker"
 
       [[ template "kv_access" . ]]

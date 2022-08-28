@@ -1,0 +1,9 @@
+[[- define "logging_config" -]]
+logging {
+    type = "syslog"
+    config = {
+        syslog-address = "udp://10.1.0.1:514"
+        tag            = [[ . | quote ]]
+    }
+}
+[[- end -]]

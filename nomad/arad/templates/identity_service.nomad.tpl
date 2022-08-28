@@ -65,13 +65,13 @@ job "identity_service" {
       config {
         force_pull = [[ .arad.remote_docker_registry ]]
         image = [[ .arad.identity_service_image | quote ]]
+        [[ template "logging_config" "identity" ]]
       }
 
       env {
         ALLOWED_ORIGINS = [[ .arad.back_end_allowed_origins | quote ]]
         CACHE_URL = "redis://localhost:6379/0"
         DEFAULT_ADMIN_EMAIL = "admin@domain.org"
-        LISTEN_IP = "127.0.0.1"
       }
 
       template {
