@@ -1,6 +1,5 @@
 # Make sure you are editing this file in arad/core
 
-import logging
 import os
 import toml
 import uvicorn
