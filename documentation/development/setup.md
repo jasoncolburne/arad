@@ -43,28 +43,3 @@ You can edit any code, front-end or back-end, and it should live-update. Just re
 
 These steps are confirmed to work on MacOS Monterey/Intel and Ubuntu 20.04.4/WSL2 on Windows 10. Please reach out if
 you run into problems so that we can update this page with requirements and steps for other systems.
-
-## Nomad
-
-If you want to try using the nomad tools to run things, first install nomad and nomad-pack, and then:
-
-In a dedicated terminal:
-```
-arad $ scripts/local nomad-server
-```
-
-In another terminal:
-```
-arad $ scripts/local build
-arad $ scripts/provision-database local
-arad $ scripts/local nomad-plan local
-arad $ scripts/local nomad-apply local
-```
-
-The last thing you need to do to test locally with nomad is add this line in /etc/hosts:
-
-```
-127.0.0.1 arad-local.org
-```
-
-That should be it! We haven't made code syncing work in Nomad yet.
