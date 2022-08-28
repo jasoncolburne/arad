@@ -18,20 +18,13 @@ stack_down() {
   docker compose down
 }
 
-nomad_server() {
-  local ENVIRONMENT=$1
-
-  nomad agent -dev -bind=0.0.0.0 -log-level INFO -config="nomad/client.${ENVIRONMENT}.hcl"
-}
-
-# render the batch jobs to .nomad files
+# render the batch jobs to the screen
 nomad_batch() {
   local ENVIRONMENT=$1
 
   rm -f nomad/batch_jobs/*.nomad
 
-  nomad-pack render -o nomad -f "nomad/configurations/${ENVIRONMENT}.hcl" nomad/batch_jobs
-  hclfmt -w nomad/batch_jobs/*.nomad
+  nomad-pack render -f "nomad/configurations/${ENVIRONMENT}.hcl" nomad/batch_jobs | hclfmt
 }
 
 # render the arad pack to the screen
@@ -39,33 +32,6 @@ nomad_render() {
   local ENVIRONMENT=$1
 
   nomad-pack render -f "nomad/configurations/${ENVIRONMENT}.hcl" nomad/arad | hclfmt
-}
-
-nomad_plan() {
-  local ENVIRONMENT=$1
-
-  nomad-pack plan -f "nomad/configurations/${ENVIRONMENT}.hcl" nomad/arad
-}
-
-nomad_apply() {
-  local ENVIRONMENT=$1
-
-  nomad-pack run -f "nomad/configurations/${ENVIRONMENT}.hcl" nomad/arad
-}
-
-nomad_destroy() {
-  local ENVIRONMENT=$1
-
-  nomad-pack destroy -f "nomad/configurations/${ENVIRONMENT}.hcl" nomad/arad
-}
-
-nomad_migrate() {
-  nomad run nomad/batch_jobs/migrate_user_database.nomad
-  nomad run nomad/batch_jobs/migrate_application_database.nomad
-
-  sleep 3
-
-  nomad system gc
 }
 
 stack_build() {
@@ -184,20 +150,10 @@ execute() {
     stack_daemonize
   elif [[ "${COMMAND}" == "down" ]]; then
     stack_down
-  elif [[ "${COMMAND}" == "nomad-server" ]]; then
-    nomad_server "${ARGUMENTS}"
   elif [[ "${COMMAND}" == "nomad-batch" ]]; then
     nomad_batch "${ARGUMENTS}"
   elif [[ "${COMMAND}" == "nomad-render" ]]; then
     nomad_render "${ARGUMENTS}"
-  elif [[ "${COMMAND}" == "nomad-plan" ]]; then
-    nomad_plan "${ARGUMENTS}"
-  elif [[ "${COMMAND}" == "nomad-apply" ]]; then
-    nomad_apply "${ARGUMENTS}"
-  elif [[ "${COMMAND}" == "nomad-destroy" ]]; then
-    nomad_destroy "${ARGUMENTS}"
-  elif [[ "${COMMAND}" == "nomad-migrate" ]]; then
-    nomad_migrate
   elif [[ "${COMMAND}" == "build" ]]; then
     stack_build
   elif [[ "${COMMAND}" == "relock" ]]; then
