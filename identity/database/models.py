@@ -6,7 +6,7 @@ from pydantic import EmailStr  # pylint: disable=no-name-in-module
 from sqlalchemy.sql.schema import Column, ForeignKey, UniqueConstraint
 from sqlmodel import Field, SQLModel
 from sqlmodel.sql.sqltypes import AutoString
-from fastapi_utils.guid_type import GUID, GUID_SERVER_DEFAULT_POSTGRESQL
+from common.datatypes.database import GUID, GUID_SERVER_DEFAULT_POSTGRESQL
 
 
 class User(SQLModel, table=True):
@@ -59,12 +59,3 @@ class UserRole(SQLModel, table=True):
     role_id: UUID = Field(
         sa_column=Column("role_id", GUID, ForeignKey("role.id"), nullable=False)
     )
-
-
-# class Article(SQLModel, table=True):
-#     id: int | None = Field(default=None, primary_key=True, nullable=False)
-#     digital_object_identifier: str = Field(index=True, sa_column=Column("name", String, unique=True))
-#     author: str = Field(index=True)
-#     title: str = Field(index=True)
-#     journal: str = Field(index=True)
-#     year: date = Field(index=True)

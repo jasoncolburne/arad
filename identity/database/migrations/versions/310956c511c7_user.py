@@ -2,19 +2,19 @@
 
 """User
 
-Revision ID: 402096afc5b9
+Revision ID: 310956c511c7
 Revises: 
-Create Date: 2022-07-18 13:31:36.726822
+Create Date: 2022-08-28 10:10:27.126908
 
 """
 from alembic import op
 import sqlalchemy as sa
 import sqlmodel
-import fastapi_utils
+import common.datatypes.database
 
 
 # revision identifiers, used by Alembic.
-revision = "402096afc5b9"
+revision = "310956c511c7"
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -26,7 +26,7 @@ def upgrade() -> None:
         "user",
         sa.Column(
             "id",
-            fastapi_utils.guid_type.GUID(),
+            common.datatypes.database.GUID(),
             server_default=sa.text("gen_random_uuid()"),
             nullable=False,
         ),

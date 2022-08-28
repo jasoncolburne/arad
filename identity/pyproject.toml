@@ -21,10 +21,8 @@ python-jose = {extras = ["cryptography"], version = "*"}
 passlib = {extras = ["argon2"], version = "*"}
 pydantic = {extras = ["email"], version = "*"}
 aioredis = "*"
-fastapi-utils = "*"
 alembic = "*"
 ipython = "*"
-SQLAlchemy = {extras = ["asyncio"], version = "*"}
 
 [tool.poetry.group.test.dependencies]
 pytest = "*"

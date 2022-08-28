@@ -19,10 +19,8 @@ sqlmodel = "*"
 python-multipart = "*"
 python-jose = {extras = ["cryptography"], version = "*"}
 pydantic = {extras = ["email"], version = "*"}
-fastapi-utils = "*"
 alembic = "*"
 ipython = "*"
-SQLAlchemy = {extras = ["asyncio"], version = "*"}
 
 [tool.poetry.group.test.dependencies]
 pytest = "*"

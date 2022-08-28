@@ -2,20 +2,20 @@
 
 """UserRole
 
-Revision ID: 4e162e80fbba
-Revises: f8bfefd4b530
-Create Date: 2022-07-20 10:27:09.711761
+Revision ID: b4954e3e6909
+Revises: 06b996e3fd46
+Create Date: 2022-08-28 10:11:40.776243
 
 """
 from alembic import op
 import sqlalchemy as sa
 import sqlmodel
-import fastapi_utils
+import common.datatypes.database
 
 
 # revision identifiers, used by Alembic.
-revision = "4e162e80fbba"
-down_revision = "f8bfefd4b530"
+revision = "b4954e3e6909"
+down_revision = "06b996e3fd46"
 branch_labels = None
 depends_on = None
 
@@ -26,12 +26,12 @@ def upgrade() -> None:
         "userrole",
         sa.Column(
             "id",
-            fastapi_utils.guid_type.GUID(),
+            common.datatypes.database.GUID(),
             server_default=sa.text("gen_random_uuid()"),
             nullable=False,
         ),
-        sa.Column("user_id", fastapi_utils.guid_type.GUID(), nullable=False),
-        sa.Column("role_id", fastapi_utils.guid_type.GUID(), nullable=False),
+        sa.Column("user_id", common.datatypes.database.GUID(), nullable=False),
+        sa.Column("role_id", common.datatypes.database.GUID(), nullable=False),
         sa.ForeignKeyConstraint(
             ["role_id"],
             ["role.id"],
