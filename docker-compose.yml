@@ -71,6 +71,7 @@ services:
     restart: always
     environment:
       <<: *common-environment
+      NOMAD_JOB_NAME: identity_service
       DATABASE_URL: postgresql+asyncpg://arad_user:arad_user@database:5432/arad_user
       CACHE_URL: redis://cache:6379/0
       DEFAULT_ADMIN_EMAIL: admin@domain.org
@@ -94,7 +95,9 @@ services:
       context: reader
       args: *common-args
     restart: always
-    environment: *common-environment
+    environment:
+      <<: *common-environment
+      NOMAD_JOB_NAME: reader_service
     volumes:
       - './reader:/app'
     depends_on: *database-dependency
@@ -105,7 +108,9 @@ services:
       context: reviewer
       args: *common-args
     restart: always
-    environment: *common-environment
+    environment:
+      <<: *common-environment
+      NOMAD_JOB_NAME: reviewer_service
     volumes:
       - './reviewer:/app'
     depends_on: *database-dependency
@@ -116,7 +121,9 @@ services:
       context: administrator
       args: *common-args
     restart: always
-    environment: *common-environment
+    environment:
+      <<: *common-environment
+      NOMAD_JOB_NAME: administrator_service
     volumes:
       - './administrator:/app'
     depends_on: *database-dependency

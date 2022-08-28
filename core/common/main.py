@@ -11,7 +11,7 @@ LISTEN_PORT = int(os.environ.get("LISTEN_PORT", "80"))
 LOCAL = DEPLOYMENT_ENVIRONMENT == "development"
 
 JOB_NAME = os.environ.get("NOMAD_JOB_NAME", "service")
-SHORT_ALLOC_ID = os.environ.get("NOMAD_SHORT_ALLOC_ID", "ffffffff")
+SHORT_ALLOC_ID = os.environ.get("NOMAD_SHORT_ALLOC_ID", "00000000")
 DATACENTER = os.environ.get("NOMAD_DC", "dc1")
 TASK_NAME = os.environ.get("NOMAD_TASK_NAME", "fastapi")
 
