@@ -63,6 +63,7 @@ const Login = () => {
             email
             <InputGroup size="2xl">
               <Input
+                autoFocus
                 id="login-email"
                 type="email"
                 borderRadius="lg"

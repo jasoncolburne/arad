@@ -28,8 +28,6 @@ const Users = () => {
   const [users, setUsers] = React.useState<User[]>([]);
   const [roles, setRoles] = React.useState<Role[]>([]);
   const [errorMessage, setErrorMessage] = React.useState("");
-  // TODO: remove this disable once we are using pagination on the front end
-  // eslint-disable-next-line
   const [page, setPage] = React.useState(1);
   const [totalPages, setTotalPages] = React.useState(1);
   const [filterText, setFilterText] = React.useState("");
@@ -47,7 +45,7 @@ const Users = () => {
 
   React.useEffect(() => {
     const handleAccessErrors = (response: Response) => {
-      if ([401, 403].includes(response.status)) {
+      if (response.status === 401) {
         setState(emptyState);
         navigate("/login");
       } else {
@@ -88,7 +86,7 @@ const Users = () => {
 
   React.useEffect(() => {
     const handleErrors = (response: Response) => {
-      if ([401, 403].includes(response.status)) {
+      if (response.status === 401) {
         const newState = modifyAccessToken(state, Roles.Administrator, "");
         setState(newState);
         setErrorMessage("not authorized");
@@ -129,7 +127,7 @@ const Users = () => {
 
   React.useEffect(() => {
     const handleErrors = (response: Response) => {
-      if ([401, 403].includes(response.status)) {
+      if (response.status === 401) {
         const newState = modifyAccessToken(state, Roles.Administrator, "");
         setState(newState);
         setErrorMessage("not authorized");
@@ -171,6 +169,7 @@ const Users = () => {
           <UserList
             users={users}
             roles={roles}
+            filterText={filterText}
             setFilterText={setFilterText}
             page={page}
             setPage={setPage}

@@ -9,6 +9,7 @@ import { Paginator } from "../../../components/Paginator";
 interface UserListProps {
   users: User[];
   roles: Role[];
+  filterText: string;
   setFilterText: Function;
   page: number;
   setPage: Function;
@@ -16,7 +17,8 @@ interface UserListProps {
 }
 
 const UserList = (props: UserListProps) => {
-  const { users, roles, setFilterText, page, setPage, totalPages } = props;
+  const { users, roles, filterText, setFilterText, page, setPage, totalPages } =
+    props;
   const [currentTimer, setCurrentTimer] = React.useState<NodeJS.Timeout | null>(
     null
   );
@@ -42,9 +44,11 @@ const UserList = (props: UserListProps) => {
           <Tr>
             <Td key="email-filter">
               <Input
+                autoFocus
                 id="users-filter"
                 borderRadius="lg"
                 focusBorderColor="black"
+                defaultValue={filterText}
                 placeholder="email filter"
                 onChange={delayFilterChange}
               />

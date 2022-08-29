@@ -69,6 +69,7 @@ const Register = () => {
             email
             <InputGroup size="2xl">
               <Input
+                autoFocus
                 id="register-email"
                 type="email"
                 borderRadius="lg"
