@@ -3,7 +3,7 @@ job "api" {
 
   [[ template "region" . ]]
 
-  datacenters = [ [[ range $idx, $dc := .arad.datacenters ]][[if $idx]],[[end]][[ $dc | quote ]][[ end ]] ]
+  datacenters = ["dc1"]
 
   group "api" {
     count = 1  // do not change this, the host will try and bind multiple times on the same port

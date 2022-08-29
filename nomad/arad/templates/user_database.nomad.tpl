@@ -3,7 +3,7 @@ job "user_database" {
 
   [[ template "region" . ]]
 
-  datacenters = [ [[ range $idx, $dc := .arad.datacenters ]][[if $idx]],[[end]][[ $dc | quote ]][[ end ]] ]
+  datacenters = ["dc1"]
 
   group "user_database" {
     count = 1
