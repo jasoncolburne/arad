@@ -35,8 +35,6 @@ describe("users", () => {
           .intercept("**/api/v1/identify/users").as("users")
           .get("#arad-usersLink").should("be.visible").click()
           .wait("@users")
-          .get("#users-filter").should("be.visible").type("xxx")
-          .wait("@users")
           .get("#users-filter").should("be.visible").type("admin")
           .wait("@users")
           .intercept("**/api/v1/identify/role").as("role")
