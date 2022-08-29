@@ -6,5 +6,6 @@ update {
     healthy_deadline  = "1m"
     progress_deadline = "2m"
     auto_revert       = true
+    auto_promote      = true
 }
 [[- end -]]
