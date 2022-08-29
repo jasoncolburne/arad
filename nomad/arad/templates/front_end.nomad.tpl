@@ -3,6 +3,8 @@ job "front_end" {
 
   [[ template "region" . ]]
 
+  [[ template "service_update" . ]]
+
   datacenters = [ [[ range $idx, $dc := .arad.datacenters ]][[if $idx]],[[end]][[ $dc | quote ]][[ end ]] ]
 
   group "front_end" {

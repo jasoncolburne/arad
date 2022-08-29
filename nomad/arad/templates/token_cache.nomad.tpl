@@ -3,7 +3,7 @@ job "token_cache" {
 
   [[ template "region" . ]]
 
-  datacenters = [ [[ range $idx, $dc := .arad.datacenters ]][[if $idx]],[[end]][[ $dc | quote ]][[ end ]] ]
+  datacenters = ["dc1"]
 
   group "token_cache" {
     count = 1
