@@ -16,6 +16,7 @@ gunicorn = "*"
 toml = "*"
 asyncpg = "*"
 sqlmodel = "*"
+python-jose = {extras = ["cryptography"], version = "*"}
 pydantic = {extras = ["email"], version = "*"}
 ipython = "*"
 
