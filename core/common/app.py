@@ -2,10 +2,12 @@
 
 import logging
 import os
+import typing
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+import common.current_user_cache
 
 DEPLOYMENT_ENVIRONMENT = os.environ.get("DEPLOYMENT_ENVIRONMENT")
 LOCAL = DEPLOYMENT_ENVIRONMENT == "development"
@@ -17,6 +19,17 @@ class HealthCheckFilter(logging.Filter):
 
 
 logging.getLogger("uvicorn.access").addFilter(HealthCheckFilter())
+
+old_factory = logging.getLogRecordFactory()
+
+
+def record_factory(*args: typing.Any, **kwargs: typing.Any) -> logging.LogRecord:
+    record = old_factory(*args, **kwargs)
+    record.user_id = common.current_user_cache.application_cache.get_current_user_id()
+    return record
+
+
+logging.setLogRecordFactory(record_factory)
 
 
 def get_application(root_path: str) -> FastAPI:

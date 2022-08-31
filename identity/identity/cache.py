@@ -42,12 +42,12 @@ class Cache:
         await self.redis.hset(user_key, token_key, str(int(expiration.timestamp())))
         await self.redis.expire(user_key, REFRESH_TOKEN_EXPIRATION_SECONDS)
 
-    async def purge_refresh_token(self, refresh_token: str) -> None:
+    async def purge_refresh_token(self, refresh_token: str) -> uuid.UUID | None:
         token_key = self._token_key(refresh_token=refresh_token)
 
         user_id_string = await self.redis.hget(token_key, "user_id")
         if user_id_string is None:
-            return
+            return None
 
         user_id = uuid.UUID(user_id_string)
 
@@ -55,6 +55,8 @@ class Cache:
 
         user_key = self._user_key(user_id)
         await self.redis.hdel(user_key, token_key)
+
+        return user_id
 
     async def purge_all_refresh_tokens_for_user_id(self, user_id: uuid.UUID) -> None:
         user_key = self._user_key(user_id=user_id)

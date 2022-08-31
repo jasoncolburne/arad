@@ -4,6 +4,7 @@ import os
 import sqlalchemy
 import sqlmodel
 
+import common.current_user_cache
 import common.datatypes.domain
 import common.datatypes.exception
 
@@ -42,6 +43,8 @@ async def arad_register(
     except sqlalchemy.exc.IntegrityError as ex:
         raise common.datatypes.exception.BadRequestException() from ex
 
+    common.current_user_cache.application_cache.set_current_user_id(str(user.id))
+
     if DEFAULT_ADMIN_EMAIL and email == DEFAULT_ADMIN_EMAIL:
         await auth_service.assign_role_for_user_id(
             user_id=user.id, role=common.datatypes.domain.Role.ADMINISTRATOR
@@ -76,6 +79,8 @@ async def arad_login(
     except sqlalchemy.exc.NoResultFound as ex:
         raise common.datatypes.exception.UnauthorizedException() from ex
 
+    common.current_user_cache.application_cache.set_current_user_id(str(user.id))
+
     refresh_token = await auth_service.create_refresh_token(user_id=user.id)
 
     return identity.datatypes.response.LoginResponse(
@@ -95,7 +100,10 @@ async def arad_logout(
     if auth_service is None:
         auth_service = identity.services.auth.AuthService(database=database)
 
-    await auth_service.destroy_refresh_token(refresh_token=refresh_token)
+    user_id = await auth_service.destroy_refresh_token(refresh_token=refresh_token)
+    
+    if user_id:
+        common.current_user_cache.application_cache.set_current_user_id(str(user_id))
 
     return identity.datatypes.response.LogoutResponse(status="ok")
 
@@ -115,6 +123,8 @@ async def arad_access_token(
     user_id = await auth_service.verify_and_extract_user_id_from_refresh_token(
         refresh_token=refresh_token
     )
+
+    common.current_user_cache.application_cache.set_current_user_id(str(user_id))
 
     access_token = await auth_service.verify_role_and_create_access_token(
         user_id=user_id, scope=scope
