@@ -97,9 +97,7 @@ async def access_token(
 
 
 @app.get("/roles", response_model=identity.datatypes.response.RolesResponse)
-@common.decorators.require_authorization(
-    common.datatypes.domain.Role.ADMINISTRATOR
-)
+@common.decorators.require_authorization(common.datatypes.domain.Role.ADMINISTRATOR)
 async def roles(
     token: str = fastapi.Depends(oauth2_scheme),  # pylint: disable=unused-argument
     _database: sqlmodel.Session = fastapi.Depends(database.get_session),
@@ -108,9 +106,7 @@ async def roles(
 
 
 @app.put("/role", response_model=identity.datatypes.response.RoleResponse)
-@common.decorators.require_authorization(
-    common.datatypes.domain.Role.ADMINISTRATOR
-)
+@common.decorators.require_authorization(common.datatypes.domain.Role.ADMINISTRATOR)
 async def assign_role(
     request: identity.datatypes.request.RoleRequest,
     token: str = fastapi.Depends(oauth2_scheme),  # pylint: disable=unused-argument
@@ -125,9 +121,7 @@ async def assign_role(
 
 
 @app.post("/users", response_model=identity.datatypes.response.UsersResponse)
-@common.decorators.require_authorization(
-    common.datatypes.domain.Role.ADMINISTRATOR
-)
+@common.decorators.require_authorization(common.datatypes.domain.Role.ADMINISTRATOR)
 async def users(
     request: identity.datatypes.request.UsersRequest,
     token: str = fastapi.Depends(oauth2_scheme),  # pylint: disable=unused-argument

@@ -101,7 +101,7 @@ async def arad_logout(
         auth_service = identity.services.auth.AuthService(database=database)
 
     user_id = await auth_service.destroy_refresh_token(refresh_token=refresh_token)
-    
+
     if user_id:
         common.current_user_cache.application_cache.set_current_user_id(str(user_id))
 

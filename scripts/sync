@@ -38,7 +38,6 @@ done
 # reader is unauthenticated
 echo
 echo "removing unused files..."
-rm -fv reader/common/services/authorization.py
 rm -rfv reader/database/migrations
 rm -rfv reviewer/database/migrations
 rm -fv {reader,reviewer}/{migrate,create-database}.sh
