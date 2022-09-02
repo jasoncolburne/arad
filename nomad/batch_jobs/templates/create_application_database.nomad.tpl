@@ -35,7 +35,7 @@ job "create_application_database" {
       }
     }
 
-    task "create" {
+    task "create_database" {
       driver = "docker"
 
       [[ template "kv_access" . ]]

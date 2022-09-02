@@ -25,8 +25,8 @@ then
   echo -n "user$(dd if=/dev/urandom bs=8 count=1 | od -t x1 -A n | sed 's/ //g')" | scripts/secrets put user_database_postgres_user
   echo -n "user$(dd if=/dev/urandom bs=8 count=1 | od -t x1 -A n | sed 's/ //g')" | scripts/secrets put application_database_user
   echo -n "user$(dd if=/dev/urandom bs=8 count=1 | od -t x1 -A n | sed 's/ //g')" | scripts/secrets put application_database_postgres_user
-  echo -n "$(dd if=/dev/urandom bs=32 count=1 | od -t x1 -A n | sed 's/ //g')" | scripts/secrets put user_database_password
-  echo -n "$(dd if=/dev/urandom bs=32 count=1 | od -t x1 -A n | sed 's/ //g')" | scripts/secrets put user_database_postgres_password
-  echo -n "$(dd if=/dev/urandom bs=32 count=1 | od -t x1 -A n | sed 's/ //g')" | scripts/secrets put application_database_password
-  echo -n "$(dd if=/dev/urandom bs=32 count=1 | od -t x1 -A n | sed 's/ //g')" | scripts/secrets put application_database_postgres_password
+  echo -n "$(dd if=/dev/urandom bs=32 count=1 | od -t x1 -A n | sed 's/ //g' | tr -d '\n')" | scripts/secrets put user_database_password
+  echo -n "$(dd if=/dev/urandom bs=32 count=1 | od -t x1 -A n | sed 's/ //g' | tr -d '\n')" | scripts/secrets put user_database_postgres_password
+  echo -n "$(dd if=/dev/urandom bs=32 count=1 | od -t x1 -A n | sed 's/ //g' | tr -d '\n')" | scripts/secrets put application_database_password
+  echo -n "$(dd if=/dev/urandom bs=32 count=1 | od -t x1 -A n | sed 's/ //g' | tr -d '\n')" | scripts/secrets put application_database_postgres_password
 fi
