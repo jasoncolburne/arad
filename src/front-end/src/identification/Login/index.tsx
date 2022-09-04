@@ -28,7 +28,7 @@ const Login = () => {
   }, [state.credentials, navigate]);
 
   const handleErrors = (response: Response) => {
-    if ([401, 403].includes(response.status)) {
+    if (response.status === 401) {
       setErrorMessage("incorrect username or password");
     } else {
       setErrorMessage("something went wrong");
