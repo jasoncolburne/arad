@@ -66,7 +66,8 @@ const Api = () => {
           `error fetching ${endpoint}: ${response.status}, ${response.statusText}`
         );
         handleErrors(response);
-        return undefined;
+        throw new Error(url);
+        //        return undefined;  // this is very suspicious, is this magic or a mistake?
       }
 
       return await response.json();
