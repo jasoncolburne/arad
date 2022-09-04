@@ -104,7 +104,7 @@ jobs:
           name: Create front-end image from base
           command: |
             docker compose -f docker-compose.build.yml up -d front-end-base
-            docker compose -f docker-compose.build.yml cp front-end-base:/app/build front-end-nginx
+            docker compose -f docker-compose.build.yml cp front-end-base:/app/build infrastructure/front-end-nginx
             docker compose -f docker-compose.build.yml down
             docker build -t project_front-end-nginx:latest infrastructure/front-end-nginx
       - run:
