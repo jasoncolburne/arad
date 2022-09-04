@@ -6,41 +6,41 @@ x-common-args: &common-args
 services:
   api:
     build:
-      context: api
+      context: infrastructure/api
       args: *common-args
 
   identity:
     build:
-      context: identity
+      context: src/service/identity
       args: *common-args
 
   reader:
     build:
-      context: reader
+      context: src/service/reader
       args: *common-args
 
   reviewer:
     build:
-      context: reviewer
+      context: src/service/reviewer
       args: *common-args
 
   administrator:
     build:
-      context: administrator
+      context: src/service/administrator
       args: *common-args
 
   core:
     build:
-      context: core
+      context: src/service/core
       args: *common-args
 
   front-end-base:
     build:
-      context: front-end
+      context: src/front-end
       args: *common-args
 
   front-end-react:
     build:
-      context: front-end
+      context: src/front-end
       args:
         DEPLOYMENT_ENVIRONMENT: ci

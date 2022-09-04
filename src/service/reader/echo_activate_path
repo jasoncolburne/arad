@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+echo /root/.cache/pypoetry/virtualenvs/*/bin/activate
