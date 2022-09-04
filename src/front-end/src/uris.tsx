@@ -27,4 +27,7 @@ const port = mapHostnameToPort(currentHostname);
 const protocol = mapHostnameToProtocol(currentHostname);
 const apiUri = `${protocol}://${hostname}:${port}/api/v1`;
 
+console.log(currentHostname);
+console.log(apiUri);
+
 export { currentHostname, apiUri };
