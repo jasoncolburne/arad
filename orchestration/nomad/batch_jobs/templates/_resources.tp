@@ -1,0 +1,6 @@
+[[- define "resources" -]]
+resources { 
+    cpu    = [[ .cpu ]]
+    memory = [[ .memory ]]
+}
+[[- end -]]

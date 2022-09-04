@@ -22,16 +22,16 @@ stack_down() {
 nomad_batch() {
   local ENVIRONMENT=$1
 
-  rm -f nomad/batch_jobs/*.nomad
+  rm -f orchestration/nomad/batch_jobs/*.nomad
 
-  nomad-pack render -f "nomad/configurations/${ENVIRONMENT}.hcl" nomad/batch_jobs | hclfmt
+  nomad-pack render -f "orchestration/nomad/configurations/${ENVIRONMENT}.hcl" orchestration/nomad/batch_jobs | hclfmt
 }
 
 # render the arad pack to the screen
 nomad_render() {
   local ENVIRONMENT=$1
 
-  nomad-pack render -f "nomad/configurations/${ENVIRONMENT}.hcl" nomad/arad | hclfmt
+  nomad-pack render -f "orchestration/nomad/configurations/${ENVIRONMENT}.hcl" orchestration/nomad/arad | hclfmt
 }
 
 stack_build() {
@@ -57,15 +57,15 @@ stack_build() {
   echo
   echo "building snowflake core testing image..."
   echo
-  docker build --build-arg DEPLOYMENT_ENVIRONMENT=development -f core/Dockerfile -t arad_core-test core
+  docker build --build-arg DEPLOYMENT_ENVIRONMENT=development -f src/service/core/Dockerfile -t arad_core-test src/service/core
 
   echo
   echo "building nginx front-end"
   echo
   docker compose -f docker-compose.build.yml up -d front-end-base
-  docker compose -f docker-compose.build.yml cp front-end-base:/app/build front-end-nginx
+  docker compose -f docker-compose.build.yml cp front-end-base:/app/build infrastructure/front-end-nginx
   docker compose -f docker-compose.build.yml down
-  docker build -t arad_front-end-nginx:latest front-end-nginx
+  docker build -t arad_front-end-nginx:latest infrastructure/front-end-nginx
   docker tag arad_front-end-nginx:latest arad_front-end-nginx:local
 
   echo
@@ -73,9 +73,9 @@ stack_build() {
   echo
   # this is required since we mount the volume in the same directory, meaning that the node_modules
   # directory on the container would be erased when it launched if we didn't do this
-  rm -rf front-end/node_modules
+  rm -rf src/front-end/node_modules
   CONTAINER_ID=$(docker run --rm -d arad_front-end-react sleep 600)
-  docker cp $CONTAINER_ID:/app/node_modules front-end
+  docker cp $CONTAINER_ID:/app/node_modules src/front-end
   docker kill $CONTAINER_ID
 }
 

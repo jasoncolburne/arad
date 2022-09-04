@@ -27,10 +27,10 @@ x-database-dependency: &database-dependency
 services:
   front-end-react:
     build:
-      context: front-end
+      context: src/front-end
       args: *common-args
     volumes:
-      - './front-end:/app'
+      - './src/front-end:/app'
       - '/app/node_modules'
     depends_on:
       api:
@@ -45,7 +45,7 @@ services:
 
   api:
     build:
-      context: api
+      context: infrastructure/api
       args: *common-args
     depends_on:
       identity:
@@ -66,7 +66,7 @@ services:
 
   identity:
     build:
-      context: identity
+      context: src/service/identity
       args: *common-args
     restart: always
     environment:
@@ -83,7 +83,7 @@ services:
         itSvryMab9luaL0GDMJu30M+Q5wJ3lY=
         -----END EC PRIVATE KEY-----
     volumes:
-      - './identity:/app'
+      - './src/service/identity:/app'
     depends_on:
       <<: *database-dependency
       cache:
@@ -92,40 +92,40 @@ services:
 
   reader:
     build:
-      context: reader
+      context: src/service/reader
       args: *common-args
     restart: always
     environment:
       <<: *common-environment
       NOMAD_JOB_NAME: reader_service
     volumes:
-      - './reader:/app'
+      - './src/service/reader:/app'
     depends_on: *database-dependency
     healthcheck: *healthcheck
 
   reviewer:
     build:
-      context: reviewer
+      context: src/service/reviewer
       args: *common-args
     restart: always
     environment:
       <<: *common-environment
       NOMAD_JOB_NAME: reviewer_service
     volumes:
-      - './reviewer:/app'
+      - './src/service/reviewer:/app'
     depends_on: *database-dependency
     healthcheck: *healthcheck
 
   administrator:
     build:
-      context: administrator
+      context: src/service/administrator
       args: *common-args
     restart: always
     environment:
       <<: *common-environment
       NOMAD_JOB_NAME: administrator_service
     volumes:
-      - './administrator:/app'
+      - './src/service/administrator:/app'
     depends_on: *database-dependency
     healthcheck: *healthcheck
 
