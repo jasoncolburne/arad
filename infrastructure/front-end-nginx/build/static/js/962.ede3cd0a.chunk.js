@@ -1,2 +1,0 @@
-"use strict";(self.webpackChunkfront_end=self.webpackChunkfront_end||[]).push([[962],{8962:function(e,n,s){s.r(n);s(2791);var r=s(184);n.default=function(){return(0,r.jsx)("div",{className:"Confirm",children:(0,r.jsx)("p",{children:"Confirm Passphrase Reset"})})}}}]);
-//# sourceMappingURL=962.ede3cd0a.chunk.js.map
