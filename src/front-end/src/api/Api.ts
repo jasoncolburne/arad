@@ -31,7 +31,7 @@ const Api = () => {
         options.body = JSON.stringify(body);
       }
 
-      console.log(window.location.hostname);
+      console.error(window.location.hostname);
       const response = await fetch(`${apiUri}/${endpoint}`, options);
 
       if (!response.ok) {
