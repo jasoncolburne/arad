@@ -1,67 +1,62 @@
 # Additional content resides in front-end/.gitignore
 
-/administrator/common
-/reviewer/common
-/reader/common
-/identity/common
+/src/service/administrator/common
+/src/service/reviewer/common
+/src/service/reader/common
+/src/service/identity/common
 
-/administrator/database
-/reviewer/database
-/reader/database
+/src/service/administrator/database
+/src/service/reviewer/database
+/src/service/reader/database
 
-/administrator/Dockerfile
-/reviewer/Dockerfile
-/reader/Dockerfile
-/identity/Dockerfile
+/src/service/administrator/Dockerfile
+/src/service/reviewer/Dockerfile
+/src/service/reader/Dockerfile
+/src/service/identity/Dockerfile
 
-/administrator/.dockerignore
-/reviewer/.dockerignore
-/reader/.dockerignore
-/identity/.dockerignore
+/src/service/administrator/.dockerignore
+/src/service/reviewer/.dockerignore
+/src/service/reader/.dockerignore
+/src/service/identity/.dockerignore
 
-/administrator/mypy.ini
-/reviewer/mypy.ini
-/reader/mypy.ini
-/identity/mypy.ini
+/src/service/administrator/mypy.ini
+/src/service/reviewer/mypy.ini
+/src/service/reader/mypy.ini
+/src/service/identity/mypy.ini
 
-/administrator/.pylintrc
-/reviewer/.pylintrc
-/reader/.pylintrc
-/identity/.pylintrc
+/src/service/administrator/.pylintrc
+/src/service/reviewer/.pylintrc
+/src/service/reader/.pylintrc
+/src/service/identity/.pylintrc
 
-/administrator/echo_activate_path
-/reviewer/echo_activate_path
-/reader/echo_activate_path
-/identity/echo_activate_path
+/src/service/administrator/echo_activate_path
+/src/service/reviewer/echo_activate_path
+/src/service/reader/echo_activate_path
+/src/service/identity/echo_activate_path
 
-/administrator/install-poetry.py
-/reviewer/install-poetry.py
-/reader/install-poetry.py
-/identity/install-poetry.py
+/src/service/administrator/install-poetry.py
+/src/service/reviewer/install-poetry.py
+/src/service/reader/install-poetry.py
+/src/service/identity/install-poetry.py
 
-/administrator/nginx.conf
-/reviewer/nginx.conf
-/reader/nginx.conf
-/identity/nginx.conf
+/src/service/administrator/create-database.sh
+/src/service/identity/create-database.sh
 
-/administrator/create-database.sh
-/identity/create-database.sh
+/src/service/administrator/migrate.sh
+/src/service/identity/migrate.sh
 
-/administrator/migrate.sh
-/identity/migrate.sh
+/src/service/administrator/entrypoint.sh
+/src/service/reviewer/entrypoint.sh
+/src/service/reader/entrypoint.sh
+/src/service/identity/entrypoint.sh
 
-/administrator/entrypoint.sh
-/reviewer/entrypoint.sh
-/reader/entrypoint.sh
-/identity/entrypoint.sh
+/src/front-end/cypress/screenshots
+/src/front-end/cypress/videos
+/src/front-end/cypress/downloads
 
-/front-end/cypress/screenshots
-/front-end/cypress/videos
-/front-end/cypress/downloads
+/orchestration/nomad/batch_jobs/*.nomad
 
-/nomad/batch_jobs/*.nomad
-
-/front-end-nginx/build
+/infrastructure/front-end-nginx/build
 
 /.vscode
 

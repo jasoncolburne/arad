@@ -1,2 +1,0 @@
-"use strict";(self.webpackChunkfront_end=self.webpackChunkfront_end||[]).push([[257],{9257:function(e,s,n){n.r(s);n(2791);var t=n(184);s.default=function(){return(0,t.jsx)("div",{className:"Request",children:(0,t.jsx)("p",{children:"Request Passphrase Reset"})})}}}]);
-//# sourceMappingURL=257.078441e8.chunk.js.map

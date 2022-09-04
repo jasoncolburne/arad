@@ -1,2 +1,0 @@
-"use strict";(self.webpackChunkfront_end=self.webpackChunkfront_end||[]).push([[197],{3197:function(e,n,s){s.r(n);s(2791);var a=s(184);n.default=function(){return(0,a.jsx)("div",{className:"Change",children:(0,a.jsx)("p",{children:"Change Passphrase"})})}}}]);
-//# sourceMappingURL=197.c69a5e59.chunk.js.map

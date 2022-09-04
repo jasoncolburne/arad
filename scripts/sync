@@ -6,7 +6,7 @@ cd src/service
 
 BACKENDS=(identity reader reviewer administrator)
 DIRECTORIES=(common)
-FILES=(Dockerfile .dockerignore mypy.ini .pylintrc echo_activate_path install-poetry.py nginx.conf create-database.sh migrate.sh entrypoint.sh)
+FILES=(Dockerfile .dockerignore mypy.ini .pylintrc echo_activate_path install-poetry.py create-database.sh migrate.sh entrypoint.sh)
 
 for BACKEND in "${BACKENDS[@]}"
 do
