@@ -12,8 +12,6 @@ import { GlobalState } from "./GlobalState";
 
 import "./Arad.css";
 
-const currentHostname = window.location.hostname;
-
 const Arad = () => {
   return (
     <GlobalState value={emptyState}>
@@ -30,4 +28,4 @@ const Arad = () => {
   );
 };
 
-export { Arad, currentHostname };
+export { Arad };
