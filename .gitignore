@@ -39,11 +39,6 @@
 /src/service/reader/install-poetry.py
 /src/service/identity/install-poetry.py
 
-/src/service/administrator/nginx.conf
-/src/service/reviewer/nginx.conf
-/src/service/reader/nginx.conf
-/src/service/identity/nginx.conf
-
 /src/service/administrator/create-database.sh
 /src/service/identity/create-database.sh
 
