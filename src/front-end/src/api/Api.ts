@@ -38,7 +38,7 @@ const Api = () => {
           `error fetching ${endpoint}: ${response.status}, ${response.statusText}`
         );
         handleErrors(response);
-        return undefined;  // this is used by the caller when the response is not actionable
+        return undefined; // this is used by the caller when the response is not actionable
       }
 
       return await response.json();
