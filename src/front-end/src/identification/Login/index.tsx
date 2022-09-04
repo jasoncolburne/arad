@@ -105,7 +105,7 @@ const Login = () => {
             loadingText="Logging in..."
             onClick={postLogin}
           >
-            ASSHAT
+            Login
           </Button>
           <Center id="login-errorMessage">
             {errorMessage !== "" ? errorMessage : null}
