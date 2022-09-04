@@ -47,16 +47,20 @@ const Register = () => {
       setErrorMessage("cannot be blank");
     } else {
       const request: RegisterRequest = { email, passphrase };
-      const response: RegisterResponse | undefined = await Api().post(
-        "identify/register",
-        null,
-        request,
-        handleErrors
-      );
+      try {
+        const response: RegisterResponse | undefined = await Api().post(
+          "identify/register",
+          null,
+          request,
+          handleErrors
+        );
 
-      if (response !== undefined) {
-        const newState = stateFromAuthenticationResponseData(response);
-        setState(newState);
+        if (response !== undefined) {
+          const newState = stateFromAuthenticationResponseData(response);
+          setState(newState);
+        }
+      } catch(error) {
+        setErrorMessage(error.message);
       }
     }
   };
