@@ -42,6 +42,7 @@ job "administrator_service" {
       config {
         force_pull = [[ .arad.remote_docker_registry ]]
         image = [[ .arad.administrator_service_image | quote ]]
+        [[ template "logging_config" "arad.administrator" ]]
       }
 
       [[ template "application_task_env" . ]]

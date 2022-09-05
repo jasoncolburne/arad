@@ -24,6 +24,7 @@ job "application_database" {
       config {
         force_pull = [[ .arad.remote_docker_registry ]]
         [[ template "postgres_task_config" "application" ]]
+        [[ template "logging_config" "arad.application_database" ]]
       }
 
       [[ template "postgres_config" . ]]

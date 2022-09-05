@@ -33,6 +33,7 @@ job "load_balancer" {
       config {
         force_pull = [[ .arad.remote_docker_registry ]]
         [[ template "traefik_task_config" . ]]
+        [[ template "logging_config" "arad.load_balancer" ]]
       }
 
       template {
