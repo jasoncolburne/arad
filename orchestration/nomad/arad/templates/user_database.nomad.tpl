@@ -24,6 +24,7 @@ job "user_database" {
       config {
         force_pull = [[ .arad.remote_docker_registry ]]
         [[ template "postgres_task_config" "user" ]]
+        [[ template "logging_config" "arad.user_database" ]]
       }
 
       [[ template "postgres_config" . ]]

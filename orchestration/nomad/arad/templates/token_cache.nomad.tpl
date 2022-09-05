@@ -60,6 +60,8 @@ job "token_cache" {
           source = "local/redis.conf"
           readonly = true
         }
+
+        [[ template "logging_config" "arad.token_cache" ]]
       }
 
       template {

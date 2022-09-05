@@ -37,6 +37,7 @@ job "front_end" {
       config {
         force_pull = [[ .arad.remote_docker_registry ]]
         image = [[ .arad.front_end_image | quote ]]
+        [[ template "logging_config" "arad.front_end" ]]
       }
 
       [[ template "resources" .arad.front_end_resources ]]

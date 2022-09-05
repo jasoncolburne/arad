@@ -67,7 +67,7 @@ job "identity_service" {
       config {
         force_pull = [[ .arad.remote_docker_registry ]]
         image = [[ .arad.identity_service_image | quote ]]
-        [[ template "logging_config" "identity" ]]
+        [[ template "logging_config" "arad.identity" ]]
       }
 
       env {

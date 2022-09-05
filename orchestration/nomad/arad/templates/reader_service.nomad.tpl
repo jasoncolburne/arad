@@ -42,6 +42,7 @@ job "reader_service" {
       config {
         force_pull = [[ .arad.remote_docker_registry ]]
         image = [[ .arad.reader_service_image | quote ]]
+        [[ template "logging_config" "arad.reader" ]]
       }
 
       [[ template "application_task_env" . ]]
