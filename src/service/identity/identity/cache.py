@@ -4,6 +4,7 @@ import uuid
 
 import aioredis
 
+import common.current_user_cache
 import common.datatypes.exception
 
 
@@ -42,12 +43,14 @@ class Cache:
         await self.redis.hset(user_key, token_key, str(int(expiration.timestamp())))
         await self.redis.expire(user_key, REFRESH_TOKEN_EXPIRATION_SECONDS)
 
-    async def purge_refresh_token(self, refresh_token: str) -> uuid.UUID | None:
+    async def purge_refresh_token(self, refresh_token: str) -> None:
         token_key = self._token_key(refresh_token=refresh_token)
 
         user_id_string = await self.redis.hget(token_key, "user_id")
         if user_id_string is None:
             return None
+
+        common.current_user_cache.application_cache.set_current_user_id(user_id_string)
 
         user_id = uuid.UUID(user_id_string)
 
@@ -55,8 +58,6 @@ class Cache:
 
         user_key = self._user_key(user_id)
         await self.redis.hdel(user_key, token_key)
-
-        return user_id
 
     async def purge_all_refresh_tokens_for_user_id(self, user_id: uuid.UUID) -> None:
         user_key = self._user_key(user_id=user_id)
@@ -74,14 +75,21 @@ class Cache:
         token_data = await self.redis.hgetall(token_key)
 
         try:
+            user_id = token_data["user_id"]
+        except KeyError as ex:
+            raise common.datatypes.exception.UnauthorizedException() from ex
+
+        common.current_user_cache.application_cache.set_current_user_id(str(user_id))
+
+        try:
             expiration_timestamp = int(token_data["expiration"])
-        except KeyError as exc:
-            raise common.datatypes.exception.UnauthorizedException() from exc
+        except KeyError as ex:
+            raise common.datatypes.exception.UnauthorizedException() from ex
 
         if expiration_timestamp < int(datetime.datetime.utcnow().timestamp()):
             raise common.datatypes.exception.UnauthorizedException()
 
-        return uuid.UUID(token_data["user_id"])
+        return uuid.UUID(user_id)
 
     def _token_key(self, refresh_token: str) -> str:
         return f"refresh-token-{refresh_token}"

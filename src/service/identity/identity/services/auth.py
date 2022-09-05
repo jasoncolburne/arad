@@ -125,8 +125,8 @@ class AuthService:  # pylint: disable=too-many-instance-attributes
 
         return refresh_token
 
-    async def destroy_refresh_token(self, refresh_token: str) -> uuid.UUID | None:
-        return await self.token_cache.purge_refresh_token(refresh_token=refresh_token)
+    async def destroy_refresh_token(self, refresh_token: str) -> None:
+        await self.token_cache.purge_refresh_token(refresh_token=refresh_token)
 
     async def destroy_all_refresh_tokens_for_user_id(self, user_id: uuid.UUID) -> None:
         await self.token_cache.purge_all_refresh_tokens_for_user_id(user_id=user_id)

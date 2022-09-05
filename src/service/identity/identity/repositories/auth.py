@@ -2,8 +2,10 @@ import typing
 import uuid
 
 import sqlalchemy
+import sqlalchemy.exc
 import sqlmodel
 
+import common.current_user_cache
 import common.datatypes.domain
 import common.datatypes.exception
 import database.models
@@ -40,8 +42,29 @@ class AuthRepository(identity.mixins.RolesForUserID):
     ) -> identity.datatypes.domain.User:
         user = database.models.User(email=email, hashed_passphrase=hashed_passphrase)
         self.database.add(user)
-        await self.database.commit()  # type: ignore
+        try:
+            await self.database.commit()  # type: ignore
+        except sqlalchemy.exc.IntegrityError as ex:
+            try:
+                await self.database.rollback()  # type: ignore
 
+                query = (
+                    sqlalchemy.select(database.models.User.id)
+                    .where(database.models.User.email == email)
+                    .limit(1)
+                )
+
+                result = await self.database.execute(query)  # type: ignore
+                user_id = result.scalars().one()
+                common.current_user_cache.application_cache.set_current_user_id(
+                    str(user_id)
+                )
+            except Exception:  # pylint: disable=broad-except
+                pass
+
+            raise common.datatypes.exception.BadRequestException() from ex
+
+        common.current_user_cache.application_cache.set_current_user_id(str(user.id))
         default_roles = DEFAULT_USER_ROLES
         await self._warm_global_role_id_cache()
 
@@ -66,6 +89,8 @@ class AuthRepository(identity.mixins.RolesForUserID):
         result = await self.database.execute(query)  # type: ignore
         user = result.scalars().one()
         roles = await self.roles_for_user_id(user_id=user.id)
+
+        common.current_user_cache.application_cache.set_current_user_id(str(user.id))
 
         # it's a bit less efficient to verify before grabbing roles, but it protects against information leakage
         if not verify(passphrase, user.hashed_passphrase):
