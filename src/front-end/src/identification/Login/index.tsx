@@ -12,6 +12,7 @@ import {
   useGlobalState,
 } from "../../GlobalState";
 import { loggedIn } from "../../utility/authorization";
+import { validateEmailAddress } from "../../utility/validation";
 
 const Login = () => {
   const { state, setState } = useGlobalState();
@@ -39,6 +40,8 @@ const Login = () => {
     event.preventDefault();
     if ([email, passphrase].includes("")) {
       setErrorMessage("cannot be blank");
+    } else if (!validateEmailAddress(email)) {
+      setErrorMessage("invalid email address");
     } else {
       const request: LoginRequest = { email, passphrase };
       const response: LoginResponse | undefined = await Api().post(

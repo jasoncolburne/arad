@@ -40,7 +40,7 @@ describe("registration", () => {
     const passphrase = "passphrase";
 
     cy.register(email, passphrase)
-      .get("#register-errorMessage").contains("email address unavailable")
+      .get("#register-errorMessage").contains("invalid email address")
       .refreshToken().should("be.empty")
       .pathShouldEqual("/register");
   });

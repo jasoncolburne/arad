@@ -13,6 +13,7 @@ import {
   useGlobalState,
 } from "../../GlobalState";
 import { loggedIn } from "../../utility/authorization";
+import { validateEmailAddress } from "../../utility/validation";
 
 const Register = () => {
   const { state, setState } = useGlobalState();
@@ -45,6 +46,8 @@ const Register = () => {
       setErrorMessage("passphrases must match");
     } else if ([email, passphrase, verification].includes("")) {
       setErrorMessage("cannot be blank");
+    } else if (!validateEmailAddress(email)) {
+      setErrorMessage("invalid email address");
     } else {
       const request: RegisterRequest = { email, passphrase };
       const response: RegisterResponse | undefined = await Api().post(
