@@ -26,10 +26,21 @@ oauth2_scheme = fastapi.security.OAuth2PasswordBearer(tokenUrl="/identify/token"
 async def health(
     _database: sqlmodel.Session = fastapi.Depends(database.get_session),
 ) -> common.datatypes.response.HealthCheckResponse:
-    if await identity.orchestrations.healthy(database=_database):
-        return common.datatypes.response.HealthCheckResponse(status="ok")
+    try:
+        healthy = await identity.orchestrations.healthy(database=_database)
+    except Exception as ex:  # pylint: disable=broad-except
+        raise fastapi.HTTPException(
+            status_code=fastapi.status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="health check failed (error)",
+        ) from ex
 
-    return common.datatypes.response.HealthCheckResponse(status="unhealthy")
+    if not healthy:
+        raise fastapi.HTTPException(
+            status_code=fastapi.status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="health check failed (unhealthy)",
+        )
+
+    return common.datatypes.response.HealthCheckResponse(status="ok")
 
 
 @app.post("/register", response_model=identity.datatypes.response.RegisterResponse)
@@ -43,11 +54,11 @@ async def register(
             passphrase=request.passphrase,
             database=_database,
         )
-    except common.datatypes.exception.BadRequestException as exc:
+    except common.datatypes.exception.BadRequestException as ex:
         raise fastapi.HTTPException(
             status_code=fastapi.status.HTTP_400_BAD_REQUEST,
             detail="email address unavailable",
-        ) from exc
+        ) from ex
 
 
 @app.post("/login", response_model=identity.datatypes.response.LoginResponse)
@@ -61,11 +72,11 @@ async def login(
             passphrase=request.passphrase,
             database=_database,
         )
-    except common.datatypes.exception.UnauthorizedException as exc:
+    except common.datatypes.exception.UnauthorizedException as ex:
         raise fastapi.HTTPException(
             status_code=fastapi.status.HTTP_401_UNAUTHORIZED,
             detail="incorrect email or password",
-        ) from exc
+        ) from ex
 
 
 @app.post("/logout", response_model=identity.datatypes.response.LogoutResponse)
@@ -89,11 +100,11 @@ async def access_token(
             scope=request.scope,
             database=_database,
         )
-    except common.datatypes.exception.UnauthorizedException as exc:
+    except common.datatypes.exception.UnauthorizedException as ex:
         raise fastapi.HTTPException(
             status_code=fastapi.status.HTTP_401_UNAUTHORIZED,
             detail="not authorized",
-        ) from exc
+        ) from ex
 
 
 @app.get("/roles", response_model=identity.datatypes.response.RolesResponse)
