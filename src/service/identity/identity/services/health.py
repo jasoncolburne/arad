@@ -1,5 +1,7 @@
 import sqlmodel
 
+import common.datatypes.exception
+
 import identity.cache
 import identity.repositories.user
 
@@ -24,7 +26,7 @@ class HealthService:
                 _database=database
             )
         else:
-            raise Exception()
+            raise common.datatypes.exception.AradException()
 
     async def healthy(self) -> bool:
         await self.user_repository.count()

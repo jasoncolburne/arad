@@ -1,22 +1,32 @@
 import datetime
 import os
 import uuid
+import typing
 
-import aioredis
+from redis import asyncio as aioredis
 
 import common.current_user_cache
 import common.datatypes.exception
 
 
+if typing.TYPE_CHECKING:
+    _Redis = aioredis.Redis[bytes]
+    _Mapping = typing.Mapping[
+        typing.Union[str, bytes], typing.Union[int, float, str, bytes]
+    ]
+else:
+    _Redis = aioredis.Redis
+    _Mapping = typing.Dict[str, str]
+
 # TODO move all this stuff into a settings file
 REFRESH_TOKEN_EXPIRATION_DAYS = 7
 SECONDS_IN_ONE_DAY = 86400  # 24 * 60 * 60
 REFRESH_TOKEN_EXPIRATION_SECONDS = REFRESH_TOKEN_EXPIRATION_DAYS * SECONDS_IN_ONE_DAY
-CACHE_URL = os.environ.get("CACHE_URL")
+CACHE_URL = os.environ.get("CACHE_URL", "")
 
 
 class Cache:
-    def __init__(self, redis: aioredis.Redis | None = None) -> None:
+    def __init__(self, redis: _Redis | None = None) -> None:
         if redis is None:
             self.redis = aioredis.from_url(CACHE_URL, decode_responses=True)
         else:
@@ -29,7 +39,7 @@ class Cache:
         self, refresh_token: str, user_id: uuid.UUID, expiration: datetime.datetime
     ) -> None:
         token_key = self._token_key(refresh_token=refresh_token)
-        token_data = {
+        token_data: _Mapping = {
             "user_id": str(user_id),
             "expiration": str(int(expiration.timestamp())),
         }

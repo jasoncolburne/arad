@@ -1,5 +1,7 @@
 import sqlmodel
 
+import common.datatypes.exception
+
 import identity.datatypes.domain
 import identity.repositories.user
 
@@ -17,7 +19,7 @@ class UserService:
                 _database=database
             )
         else:
-            raise Exception()
+            raise common.datatypes.exception.AradException()
 
     # TODO make this fast with a single query after figuring out sqlalchemy
     async def page(

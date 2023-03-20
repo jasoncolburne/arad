@@ -29,7 +29,7 @@ async def arad_register(
     database: sqlmodel.Session | None = None,
 ) -> identity.datatypes.response.RegisterResponse:
     if auth_service is None and database is None:
-        raise Exception()
+        raise common.datatypes.exception.AradException()
 
     if auth_service is None:
         auth_service = identity.services.auth.AuthService(database=database)
@@ -60,7 +60,7 @@ async def arad_login(
     database: sqlmodel.Session | None = None,
 ) -> identity.datatypes.response.LoginResponse:
     if auth_service is None and database is None:
-        raise Exception()
+        raise common.datatypes.exception.AradException()
 
     if auth_service is None:
         auth_service = identity.services.auth.AuthService(database=database)
@@ -87,7 +87,7 @@ async def arad_logout(
     database: sqlmodel.Session | None = None,
 ) -> identity.datatypes.response.LogoutResponse:
     if auth_service is None and database is None:
-        raise Exception()
+        raise common.datatypes.exception.AradException()
 
     if auth_service is None:
         auth_service = identity.services.auth.AuthService(database=database)
@@ -104,7 +104,7 @@ async def arad_access_token(
     database: sqlmodel.Session | None = None,
 ) -> identity.datatypes.response.TokenResponse:
     if auth_service is None and database is None:
-        raise Exception()
+        raise common.datatypes.exception.AradException()
 
     if auth_service is None:
         auth_service = identity.services.auth.AuthService(database=database)
@@ -125,7 +125,7 @@ async def arad_roles(
     database: sqlmodel.Session | None = None,
 ) -> identity.datatypes.response.RolesResponse:
     if auth_service is None and database is None:
-        raise Exception()
+        raise common.datatypes.exception.AradException()
 
     if auth_service is None:
         auth_service = identity.services.auth.AuthService(database=database)
@@ -143,7 +143,7 @@ async def arad_modify_role_assignment(
     database: sqlmodel.Session | None = None,
 ) -> identity.datatypes.response.RoleResponse:
     if auth_service is None and database is None:
-        raise Exception()
+        raise common.datatypes.exception.AradException()
 
     if auth_service is None:
         auth_service = identity.services.auth.AuthService(database=database)
@@ -155,7 +155,7 @@ async def arad_modify_role_assignment(
     elif action == identity.datatypes.request.RoleAction.REVOKE:
         await auth_service.revoke_role_for_user_id(user_id=user_id, role=role)
     else:
-        raise Exception()
+        raise common.datatypes.exception.AradException()
 
     await auth_service.destroy_all_refresh_tokens_for_user_id(user_id=user_id)
 
@@ -169,7 +169,7 @@ async def arad_users(
     user_service: identity.services.user.UserService | None,
 ) -> identity.datatypes.response.UsersResponse:
     if user_service is None and database is None:
-        raise Exception()
+        raise common.datatypes.exception.AradException()
 
     if user_service is None:
         user_service = identity.services.user.UserService(database=database)

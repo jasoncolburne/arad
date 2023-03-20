@@ -49,9 +49,9 @@ def require_authorization(
     return _callable
 
 
-def no_authorization() -> typing.Callable[
-    ..., typing.Callable[..., typing.Awaitable[typing.Any]]
-]:
+def no_authorization() -> (
+    typing.Callable[..., typing.Callable[..., typing.Awaitable[typing.Any]]]
+):
     def _callable(
         func: typing.Callable[..., typing.Awaitable[typing.Any]]
     ) -> typing.Callable[..., typing.Awaitable[typing.Any]]:
