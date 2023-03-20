@@ -9,7 +9,7 @@ description = "Reader Service"
 authors = ["Jason Colburne <j.colburne@gmail.com>"]
 
 [tool.poetry.dependencies]
-python = ">=3.10,<3.11"
+python = ">=3.10,<4.0.0"
 fastapi = "*"
 uvicorn = "*"
 gunicorn = "*"
@@ -27,6 +27,9 @@ pylint = "*"
 mypy = "*"
 asyncpg-stubs = "*"
 pytest-asyncio = "*"
+types-PyYAML = "*"
+types-toml = "*"
+types-ujson = "*"
 
 [tool.poetry.scripts]
 start = "common.main:start"

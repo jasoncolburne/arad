@@ -1,6 +1,7 @@
 import sqlalchemy
 import sqlmodel
 
+import common.datatypes.exception
 import database.models
 
 import identity.datatypes.domain
@@ -31,7 +32,7 @@ class UserRepository(identity.mixins.RolesForUserID):
         self, email_filter: str, number: int | None = 1
     ) -> identity.datatypes.domain.UserPage:
         if number is None:
-            raise Exception()
+            raise common.datatypes.exception.AradException()
 
         limit = PAGE_SIZE_USER
         offset = (number - 1) * limit

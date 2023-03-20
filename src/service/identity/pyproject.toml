@@ -9,7 +9,7 @@ description = "Identity Service"
 authors = ["Jason Colburne <j.colburne@gmail.com>"]
 
 [tool.poetry.dependencies]
-python = ">=3.10,<3.11"
+python = ">=3.10,<4.0.0"
 fastapi = "*"
 uvicorn = "*"
 gunicorn = "*"
@@ -20,7 +20,7 @@ python-multipart = "*"
 python-jose = {extras = ["cryptography"], version = "*"}
 passlib = {extras = ["argon2"], version = "*"}
 pydantic = {extras = ["email"], version = "*"}
-aioredis = "*"
+redis = "*"
 alembic = "*"
 ipython = "*"
 
@@ -31,6 +31,10 @@ pylint = "*"
 mypy = "*"
 asyncpg-stubs = "*"
 pytest-asyncio = "*"
+types-PyYAML = "*"
+types-toml = "*"
+types-ujson = "*"
+types-redis = "*"
 
 [tool.poetry.scripts]
 start = "common.main:start"

@@ -55,7 +55,7 @@ class AuthService:  # pylint: disable=too-many-instance-attributes
                 _database=database
             )
         else:
-            raise Exception()
+            raise common.datatypes.exception.AradException()
 
     async def create_user_with_passphrase(
         self, email: str, passphrase: str

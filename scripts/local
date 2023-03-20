@@ -83,6 +83,9 @@ poetry_relock() {
   for BACKEND in "${BACKENDS[@]}"; do
     docker compose run --rm $BACKEND bash -c "rm -f poetry.lock && poetry lock -vv"
   done
+
+#  docker build --build-arg DEPLOYMENT_ENVIRONMENT=development -f src/service/core/Dockerfile -t arad_core-test src/service/core
+  docker run --rm -v "$(pwd)/src/service/core:/app" arad_core-test bash -c "rm -f poetry.lock && poetry lock -vv"
 }
 
 be_exec() {

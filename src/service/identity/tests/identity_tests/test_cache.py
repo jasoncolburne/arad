@@ -3,7 +3,7 @@ import secrets
 import unittest.mock
 import uuid
 
-import aioredis
+from redis import asyncio as aioredis
 import pytest
 
 import common.datatypes.exception
