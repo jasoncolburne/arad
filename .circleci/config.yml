@@ -1,403 +1,403 @@
-# version: 2.1
+version: 2.1
 
-# x-docker-auth: &docker-auth
-#   username: $DOCKERHUB_USER
-#   password: $DOCKERHUB_ACCESS_TOKEN
+x-docker-auth: &docker-auth
+  username: $DOCKERHUB_USER
+  password: $DOCKERHUB_ACCESS_TOKEN
 
-# x-install-python-test-dependencies: &install-python-test-dependencies
-#   name: Install test dependencies
-#   command: |
-#     cd /app
-#     poetry install --no-root --with test
-
-
-# x-black-steps: &black-steps
-#   - run: *install-python-test-dependencies
-#   - run:
-#       name: Blacken
-#       command: |
-#         cd /app
-#         . $(./echo_activate_path)
-#         black --check .
-
-# x-pytest-steps: &pytest-steps
-#   - run: *install-python-test-dependencies
-#   - run:
-#       name: Pytest
-#       command: |
-#         cd /app
-#         . $(./echo_activate_path)
-#         pytest .
-
-# x-pylint-steps: &pylint-steps
-#   - run: *install-python-test-dependencies
-#   - run:
-#       name: Pylint
-#       command: |
-#         cd /app
-#         . $(./echo_activate_path)
-#         find . -maxdepth 1 -type d -not -name '.*' | xargs pylint
-
-# x-mypy-steps: &mypy-steps
-#   - run: *install-python-test-dependencies
-#   - run:
-#       name: Mypy
-#       command: |
-#         cd /app
-#         . $(./echo_activate_path)
-#         mypy --install-types --non-interactive .
-
-# x-identity-common: &identity-common
-#   resource_class: small
-#   docker:
-#     - image: "${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:identity-${CIRCLE_BRANCH}-latest"
-#       auth: *docker-auth
-
-# x-administrator-common: &administrator-common
-#   resource_class: small
-#   docker:
-#     - image: "${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:administrator-${CIRCLE_BRANCH}-latest"
-#       auth: *docker-auth
-
-# x-reviewer-common: &reviewer-common
-#   resource_class: small
-#   docker:
-#     - image: "${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:reviewer-${CIRCLE_BRANCH}-latest"
-#       auth: *docker-auth
-
-# x-reader-common: &reader-common
-#   resource_class: small
-#   docker:
-#     - image: "${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:reader-${CIRCLE_BRANCH}-latest"
-#       auth: *docker-auth
-
-# x-core-common: &core-common
-#   resource_class: small
-#   docker:
-#     - image: "${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:core-${CIRCLE_BRANCH}-latest"
-#       auth: *docker-auth
+x-install-python-test-dependencies: &install-python-test-dependencies
+  name: Install test dependencies
+  command: |
+    cd /app
+    poetry install --no-root --with test
 
 
-# jobs:
-#   build-images:
-#     resource_class: large
-#     docker:
-#       - image: cimg/base:stable
-#     steps:
-#       - checkout
-#       - setup_remote_docker:
-#           docker_layer_caching: true
-#           version: 20.10.14
-#       - run:
-#           name: Update package manager
-#           command: sudo apt-get update
-#       - run:
-#           name: Install dependencies
-#           command: sudo apt-get -y install rsync
-#       - run:
-#           name: Sync common code
-#           command: ./scripts/sync
-#       - run:
-#           name: Build images from docker-compose.yml
-#           command: docker compose -f docker-compose.build.yml build
-#       - run:
-#           name: Create front-end image from base
-#           command: |
-#             docker compose -f docker-compose.build.yml up -d front-end-base
-#             docker compose -f docker-compose.build.yml cp front-end-base:/app/build infrastructure/front-end-nginx
-#             docker compose -f docker-compose.build.yml down
-#             docker build -t project_front-end-nginx:latest infrastructure/front-end-nginx
-#       - run:
-#           name: Tag images
-#           command: |
-#             IMAGES=(front-end-nginx front-end-react identity reader reviewer administrator core api)
-#             for IMAGE in "${IMAGES[@]}"; do
-#               LATEST_TAG="${IMAGE}-${CIRCLE_BRANCH}-latest"
-#               HASH_TAG="${IMAGE}-${CIRCLE_BRANCH}-$(git rev-parse --short HEAD)"
+x-black-steps: &black-steps
+  - run: *install-python-test-dependencies
+  - run:
+      name: Blacken
+      command: |
+        cd /app
+        . $(./echo_activate_path)
+        black --check .
 
-#               docker tag "project_${IMAGE}:latest" "${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:${LATEST_TAG}"
-#               docker tag "project_${IMAGE}:latest" "${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:${HASH_TAG}"
-#             done
-#       - run:
-#           name: Login to DockerHub
-#           command: docker login -u "${DOCKERHUB_USER}" -p "${DOCKERHUB_ACCESS_TOKEN}"
-#       - run:
-#           name: Push images
-#           command: |
-#             IMAGES=(front-end-nginx front-end-react identity reader reviewer administrator core api)
-#             for IMAGE in "${IMAGES[@]}"; do
-#               LATEST_TAG="${IMAGE}-${CIRCLE_BRANCH}-latest"
-#               HASH_TAG="${IMAGE}-${CIRCLE_BRANCH}-$(git rev-parse --short HEAD)"
+x-pytest-steps: &pytest-steps
+  - run: *install-python-test-dependencies
+  - run:
+      name: Pytest
+      command: |
+        cd /app
+        . $(./echo_activate_path)
+        pytest .
 
-#               docker push "${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:${LATEST_TAG}" --quiet
-#               docker push "${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:${HASH_TAG}" --quiet
-#             done
+x-pylint-steps: &pylint-steps
+  - run: *install-python-test-dependencies
+  - run:
+      name: Pylint
+      command: |
+        cd /app
+        . $(./echo_activate_path)
+        find . -maxdepth 1 -type d -not -name '.*' | xargs pylint
 
-#   end-to-end:
-#     resource_class: large
-#     docker:
-#       - image: cimg/base:stable
-#     steps:
-#       - checkout
-#       - setup_remote_docker:
-#           docker_layer_caching: true
-#           version: 20.10.14
-#       - run:
-#           name: Update package manager
-#           command: sudo apt-get update
-#       - run:
-#           name: Install dependencies
-#           command: sudo apt-get -y install rsync git
-#       - run:
-#           name: Sync common code
-#           command: ./scripts/sync
-#       - run:
-#           name: Login to DockerHub
-#           command: docker login -u "${DOCKERHUB_USER}" -p "${DOCKERHUB_ACCESS_TOKEN}"
-#       - run:
-#           name: Create .env file
-#           command: |
-#             echo "DOCKERHUB_USER=${DOCKERHUB_USER}" > .env
-#             echo "CIRCLE_PROJECT_REPONAME=${CIRCLE_PROJECT_REPONAME}" >> .env
-#             echo "CIRCLE_BRANCH=${CIRCLE_BRANCH}" >> .env
-#             echo "GIT_REVISION=$(git rev-parse --short HEAD)" >> .env
-#       - run:
-#           name: Provision Database
-#           command: ./scripts/provision-database ci
-#       - run:
-#           name: Spin up stack
-#           command: docker compose -f docker-compose.ci.yml up -d database cache identity administrator reviewer reader api front-end-nginx
-#       - run:
-#           name: Wait for front-end
-#           command: |
-#             COUNT=24
-#             for COUNTER in $(seq ${COUNT}); do
-#               if [[ $(docker inspect "$(docker ps | grep project-front-end-nginx-1 | cut -d' ' -f1)" --format '{{ .State.Health.Status }}') == "healthy" ]]; then
-#                 break
-#               else
-#                 echo "waiting for front-end to spin up..."
-#                 sleep 5
-#               fi
-#             done
+x-mypy-steps: &mypy-steps
+  - run: *install-python-test-dependencies
+  - run:
+      name: Mypy
+      command: |
+        cd /app
+        . $(./echo_activate_path)
+        mypy --install-types --non-interactive .
 
-#             if [[ $(docker inspect "$(docker ps | grep project-front-end-nginx-1 | cut -d' ' -f1)" --format '{{ .State.Health.Status }}') != "healthy" ]]; then
-#               echo "front-end still unhealthy!"
-#               exit 1
-#             fi
-#       - run:
-#           name: End to End Tests
-#           command: docker compose -f docker-compose.ci.yml run e2e-client bash -c "yarn cypress:ci"
+x-identity-common: &identity-common
+  resource_class: small
+  docker:
+    - image: "${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:identity-${CIRCLE_BRANCH}-latest"
+      auth: *docker-auth
 
-#   black-identity:
-#     <<: *identity-common
-#     steps: *black-steps
+x-administrator-common: &administrator-common
+  resource_class: small
+  docker:
+    - image: "${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:administrator-${CIRCLE_BRANCH}-latest"
+      auth: *docker-auth
 
-#   black-administrator:
-#     <<: *administrator-common
-#     steps: *black-steps
+x-reviewer-common: &reviewer-common
+  resource_class: small
+  docker:
+    - image: "${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:reviewer-${CIRCLE_BRANCH}-latest"
+      auth: *docker-auth
 
-#   black-reviewer:
-#     <<: *reviewer-common
-#     steps: *black-steps
+x-reader-common: &reader-common
+  resource_class: small
+  docker:
+    - image: "${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:reader-${CIRCLE_BRANCH}-latest"
+      auth: *docker-auth
 
-#   black-reader:
-#     <<: *reader-common
-#     steps: *black-steps
-
-#   black-core:
-#     <<: *core-common
-#     steps: *black-steps
-
-#   pytest-identity:
-#     environment:
-#       ACCESS_TOKEN_PRIVATE_KEY_PEM: |
-#         -----BEGIN EC PRIVATE KEY-----
-#         MIGkAgEBBDDjQPP27NwYB6EuNB/V4lUTjgcQgWNdX5T/n6iogIkNzF2ieKyYjAe1
-#         6+dKIhGyqK+gBwYFK4EEACKhZANiAAQ3rRv3r68ceJVEcPTYGdtpqucxAd7Sk2TC
-#         dyHS+QqQAOaH2Edz/pyKsNkMOvnTn+j5EeR0jTVtEv904Ng6C/mh9rRdHVLdS6Cl
-#         itSvryMab9luaL0GDMJu30M+Q5wJ3lY=
-#         -----END EC PRIVATE KEY-----
-#       DEFAULT_ADMIN_EMAIL: admin@domain.org
-#     <<: *identity-common
-#     steps: *pytest-steps
-
-#   pytest-administrator:
-#     <<: *administrator-common
-#     steps: *pytest-steps
-
-#   pytest-reviewer:
-#     <<: *reviewer-common
-#     steps: *pytest-steps
-
-#   pytest-reader:
-#     <<: *reader-common
-#     steps: *pytest-steps
-
-#   pytest-core:
-#     environment:
-#       ACCESS_TOKEN_PUBLIC_KEY_PEM: |
-#         -----BEGIN PUBLIC KEY-----
-#         MHYwEAYHKoZIzj0CAQYFK4EEACIDYgAEN60b96+vHHiVRHD02BnbaarnMQHe0pNk
-#         wnch0vkKkADmh9hHc/6cirDZDDr505/o+RHkdI01bRL/dODYOgv5ofa0XR1S3Uug
-#         pYrUr68jGm/Zbmi9BgzCbt9DPkOcCd5W
-#         -----END PUBLIC KEY-----
-#     <<: *core-common
-#     steps: *pytest-steps
-
-#   pylint-identity:
-#     <<: *identity-common
-#     steps: *pylint-steps
-
-#   pylint-administrator:
-#     <<: *administrator-common
-#     steps: *pylint-steps
-
-#   pylint-reviewer:
-#     <<: *reviewer-common
-#     steps: *pylint-steps
-
-#   pylint-reader:
-#     <<: *reader-common
-#     steps: *pylint-steps
-
-#   pylint-core:
-#     <<: *core-common
-#     steps: *pylint-steps
-
-#   mypy-identity:
-#     <<: *identity-common
-#     steps: *mypy-steps
-
-#   mypy-administrator:
-#     <<: *administrator-common
-#     steps: *mypy-steps
-
-#   mypy-reviewer:
-#     <<: *reviewer-common
-#     steps: *mypy-steps
-
-#   mypy-reader:
-#     <<: *reader-common
-#     steps: *mypy-steps
-
-#   mypy-core:
-#     <<: *core-common
-#     steps: *mypy-steps
-
-#   eslint-front-end:
-#     resource_class: small
-#     docker:
-#       - image: "${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:front-end-react-${CIRCLE_BRANCH}-latest"
-#         auth: *docker-auth
-#     steps:
-#       - run:
-#           name: Eslint
-#           command: |
-#             cd /app
-#             yarn lint
-
-#   prettier-front-end:
-#     resource_class: small
-#     docker:
-#       - image: "${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:front-end-react-${CIRCLE_BRANCH}-latest"
-#         auth: *docker-auth
-#     steps:
-#       - run:
-#           name: Prettier
-#           command: |
-#             cd /app
-#             yarn prettier
-
-#   typecheck-front-end:
-#     resource_class: small
-#     docker:
-#       - image: "${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:front-end-react-${CIRCLE_BRANCH}-latest"
-#         auth: *docker-auth
-#     steps:
-#       - run:
-#           name: Typecheck
-#           command: |
-#             cd /app
-#             yarn typecheck
+x-core-common: &core-common
+  resource_class: small
+  docker:
+    - image: "${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:core-${CIRCLE_BRANCH}-latest"
+      auth: *docker-auth
 
 
-# workflows:
-#   everything:
-#     jobs:
-#       - hold:
-#           type: approval
-#       - build-images:
-#           requires:
-#             - hold
-#       - end-to-end:
-#           requires:
-#             - build-images
-#       - black-identity:
-#           requires:
-#             - build-images
-#       - black-administrator:
-#           requires:
-#             - build-images
-#       - black-reviewer:
-#           requires:
-#             - build-images
-#       - black-reader:
-#           requires:
-#             - build-images
-#       - black-core:
-#           requires:
-#             - build-images
-#       - pytest-identity:
-#           requires:
-#             - build-images
-#       - pytest-administrator:
-#           requires:
-#             - build-images
-#       - pytest-reviewer:
-#           requires:
-#             - build-images
-#       - pytest-reader:
-#           requires:
-#             - build-images
-#       - pytest-core:
-#           requires:
-#             - build-images
-#       - pylint-identity:
-#           requires:
-#             - build-images
-#       - pylint-administrator:
-#           requires:
-#             - build-images
-#       - pylint-reviewer:
-#           requires:
-#             - build-images
-#       - pylint-reader:
-#           requires:
-#             - build-images
-#       - pylint-core:
-#           requires:
-#             - build-images
-#       - mypy-identity:
-#           requires:
-#             - build-images
-#       - mypy-administrator:
-#           requires:
-#             - build-images
-#       - mypy-reviewer:
-#           requires:
-#             - build-images
-#       - mypy-reader:
-#           requires:
-#             - build-images
-#       - mypy-core:
-#           requires:
-#             - build-images
-#       - typecheck-front-end:
-#           requires:
-#             - build-images
-#       - eslint-front-end:
-#           requires:
-#             - build-images
-#       - prettier-front-end:
-#           requires:
-#             - build-images
+jobs:
+  build-images:
+    resource_class: large
+    docker:
+      - image: cimg/base:stable
+    steps:
+      - checkout
+      - setup_remote_docker:
+          docker_layer_caching: true
+          version: 20.10.14
+      - run:
+          name: Update package manager
+          command: sudo apt-get update
+      - run:
+          name: Install dependencies
+          command: sudo apt-get -y install rsync
+      - run:
+          name: Sync common code
+          command: ./scripts/sync
+      - run:
+          name: Build images from docker-compose.yml
+          command: docker compose -f docker-compose.build.yml build
+      - run:
+          name: Create front-end image from base
+          command: |
+            docker compose -f docker-compose.build.yml up -d front-end-base
+            docker compose -f docker-compose.build.yml cp front-end-base:/app/build infrastructure/front-end-nginx
+            docker compose -f docker-compose.build.yml down
+            docker build -t project_front-end-nginx:latest infrastructure/front-end-nginx
+      - run:
+          name: Tag images
+          command: |
+            IMAGES=(front-end-nginx front-end-react identity reader reviewer administrator core api)
+            for IMAGE in "${IMAGES[@]}"; do
+              LATEST_TAG="${IMAGE}-${CIRCLE_BRANCH}-latest"
+              HASH_TAG="${IMAGE}-${CIRCLE_BRANCH}-$(git rev-parse --short HEAD)"
+
+              docker tag "project_${IMAGE}:latest" "${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:${LATEST_TAG}"
+              docker tag "project_${IMAGE}:latest" "${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:${HASH_TAG}"
+            done
+      - run:
+          name: Login to DockerHub
+          command: docker login -u "${DOCKERHUB_USER}" -p "${DOCKERHUB_ACCESS_TOKEN}"
+      - run:
+          name: Push images
+          command: |
+            IMAGES=(front-end-nginx front-end-react identity reader reviewer administrator core api)
+            for IMAGE in "${IMAGES[@]}"; do
+              LATEST_TAG="${IMAGE}-${CIRCLE_BRANCH}-latest"
+              HASH_TAG="${IMAGE}-${CIRCLE_BRANCH}-$(git rev-parse --short HEAD)"
+
+              docker push "${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:${LATEST_TAG}" --quiet
+              docker push "${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:${HASH_TAG}" --quiet
+            done
+
+  end-to-end:
+    resource_class: large
+    docker:
+      - image: cimg/base:stable
+    steps:
+      - checkout
+      - setup_remote_docker:
+          docker_layer_caching: true
+          version: 20.10.14
+      - run:
+          name: Update package manager
+          command: sudo apt-get update
+      - run:
+          name: Install dependencies
+          command: sudo apt-get -y install rsync git
+      - run:
+          name: Sync common code
+          command: ./scripts/sync
+      - run:
+          name: Login to DockerHub
+          command: docker login -u "${DOCKERHUB_USER}" -p "${DOCKERHUB_ACCESS_TOKEN}"
+      - run:
+          name: Create .env file
+          command: |
+            echo "DOCKERHUB_USER=${DOCKERHUB_USER}" > .env
+            echo "CIRCLE_PROJECT_REPONAME=${CIRCLE_PROJECT_REPONAME}" >> .env
+            echo "CIRCLE_BRANCH=${CIRCLE_BRANCH}" >> .env
+            echo "GIT_REVISION=$(git rev-parse --short HEAD)" >> .env
+      - run:
+          name: Provision Database
+          command: ./scripts/provision-database ci
+      - run:
+          name: Spin up stack
+          command: docker compose -f docker-compose.ci.yml up -d database cache identity administrator reviewer reader api front-end-nginx
+      - run:
+          name: Wait for front-end
+          command: |
+            COUNT=24
+            for COUNTER in $(seq ${COUNT}); do
+              if [[ $(docker inspect "$(docker ps | grep project-front-end-nginx-1 | cut -d' ' -f1)" --format '{{ .State.Health.Status }}') == "healthy" ]]; then
+                break
+              else
+                echo "waiting for front-end to spin up..."
+                sleep 5
+              fi
+            done
+
+            if [[ $(docker inspect "$(docker ps | grep project-front-end-nginx-1 | cut -d' ' -f1)" --format '{{ .State.Health.Status }}') != "healthy" ]]; then
+              echo "front-end still unhealthy!"
+              exit 1
+            fi
+      - run:
+          name: End to End Tests
+          command: docker compose -f docker-compose.ci.yml run e2e-client bash -c "yarn cypress:ci"
+
+  black-identity:
+    <<: *identity-common
+    steps: *black-steps
+
+  black-administrator:
+    <<: *administrator-common
+    steps: *black-steps
+
+  black-reviewer:
+    <<: *reviewer-common
+    steps: *black-steps
+
+  black-reader:
+    <<: *reader-common
+    steps: *black-steps
+
+  black-core:
+    <<: *core-common
+    steps: *black-steps
+
+  pytest-identity:
+    environment:
+      ACCESS_TOKEN_PRIVATE_KEY_PEM: |
+        -----BEGIN EC PRIVATE KEY-----
+        MIGkAgEBBDDjQPP27NwYB6EuNB/V4lUTjgcQgWNdX5T/n6iogIkNzF2ieKyYjAe1
+        6+dKIhGyqK+gBwYFK4EEACKhZANiAAQ3rRv3r68ceJVEcPTYGdtpqucxAd7Sk2TC
+        dyHS+QqQAOaH2Edz/pyKsNkMOvnTn+j5EeR0jTVtEv904Ng6C/mh9rRdHVLdS6Cl
+        itSvryMab9luaL0GDMJu30M+Q5wJ3lY=
+        -----END EC PRIVATE KEY-----
+      DEFAULT_ADMIN_EMAIL: admin@domain.org
+    <<: *identity-common
+    steps: *pytest-steps
+
+  pytest-administrator:
+    <<: *administrator-common
+    steps: *pytest-steps
+
+  pytest-reviewer:
+    <<: *reviewer-common
+    steps: *pytest-steps
+
+  pytest-reader:
+    <<: *reader-common
+    steps: *pytest-steps
+
+  pytest-core:
+    environment:
+      ACCESS_TOKEN_PUBLIC_KEY_PEM: |
+        -----BEGIN PUBLIC KEY-----
+        MHYwEAYHKoZIzj0CAQYFK4EEACIDYgAEN60b96+vHHiVRHD02BnbaarnMQHe0pNk
+        wnch0vkKkADmh9hHc/6cirDZDDr505/o+RHkdI01bRL/dODYOgv5ofa0XR1S3Uug
+        pYrUr68jGm/Zbmi9BgzCbt9DPkOcCd5W
+        -----END PUBLIC KEY-----
+    <<: *core-common
+    steps: *pytest-steps
+
+  pylint-identity:
+    <<: *identity-common
+    steps: *pylint-steps
+
+  pylint-administrator:
+    <<: *administrator-common
+    steps: *pylint-steps
+
+  pylint-reviewer:
+    <<: *reviewer-common
+    steps: *pylint-steps
+
+  pylint-reader:
+    <<: *reader-common
+    steps: *pylint-steps
+
+  pylint-core:
+    <<: *core-common
+    steps: *pylint-steps
+
+  mypy-identity:
+    <<: *identity-common
+    steps: *mypy-steps
+
+  mypy-administrator:
+    <<: *administrator-common
+    steps: *mypy-steps
+
+  mypy-reviewer:
+    <<: *reviewer-common
+    steps: *mypy-steps
+
+  mypy-reader:
+    <<: *reader-common
+    steps: *mypy-steps
+
+  mypy-core:
+    <<: *core-common
+    steps: *mypy-steps
+
+  eslint-front-end:
+    resource_class: small
+    docker:
+      - image: "${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:front-end-react-${CIRCLE_BRANCH}-latest"
+        auth: *docker-auth
+    steps:
+      - run:
+          name: Eslint
+          command: |
+            cd /app
+            yarn lint
+
+  prettier-front-end:
+    resource_class: small
+    docker:
+      - image: "${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:front-end-react-${CIRCLE_BRANCH}-latest"
+        auth: *docker-auth
+    steps:
+      - run:
+          name: Prettier
+          command: |
+            cd /app
+            yarn prettier
+
+  typecheck-front-end:
+    resource_class: small
+    docker:
+      - image: "${DOCKERHUB_USER}/${CIRCLE_PROJECT_REPONAME}:front-end-react-${CIRCLE_BRANCH}-latest"
+        auth: *docker-auth
+    steps:
+      - run:
+          name: Typecheck
+          command: |
+            cd /app
+            yarn typecheck
+
+
+workflows:
+  everything:
+    jobs:
+      - hold:
+          type: approval
+      - build-images:
+          requires:
+            - hold
+      - end-to-end:
+          requires:
+            - build-images
+      - black-identity:
+          requires:
+            - build-images
+      - black-administrator:
+          requires:
+            - build-images
+      - black-reviewer:
+          requires:
+            - build-images
+      - black-reader:
+          requires:
+            - build-images
+      - black-core:
+          requires:
+            - build-images
+      - pytest-identity:
+          requires:
+            - build-images
+      - pytest-administrator:
+          requires:
+            - build-images
+      - pytest-reviewer:
+          requires:
+            - build-images
+      - pytest-reader:
+          requires:
+            - build-images
+      - pytest-core:
+          requires:
+            - build-images
+      - pylint-identity:
+          requires:
+            - build-images
+      - pylint-administrator:
+          requires:
+            - build-images
+      - pylint-reviewer:
+          requires:
+            - build-images
+      - pylint-reader:
+          requires:
+            - build-images
+      - pylint-core:
+          requires:
+            - build-images
+      - mypy-identity:
+          requires:
+            - build-images
+      - mypy-administrator:
+          requires:
+            - build-images
+      - mypy-reviewer:
+          requires:
+            - build-images
+      - mypy-reader:
+          requires:
+            - build-images
+      - mypy-core:
+          requires:
+            - build-images
+      - typecheck-front-end:
+          requires:
+            - build-images
+      - eslint-front-end:
+          requires:
+            - build-images
+      - prettier-front-end:
+          requires:
+            - build-images
