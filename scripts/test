@@ -24,7 +24,7 @@ EOV
   set -e
   export ACCESS_TOKEN_PUBLIC_KEY_PEM
 
-  docker run --rm -v "$(pwd)/src/service/core:/app" -e ACCESS_TOKEN_PUBLIC_KEY_PEM arad_core-test bash -c "${SHELL_SCRIPT}"
+  docker run --rm -v "$(pwd)/src/service/core:/app" -e ACCESS_TOKEN_PUBLIC_KEY_PEM arad-core-test bash -c "${SHELL_SCRIPT}"
 }
 
 simple_compose_command() {
