@@ -51,13 +51,13 @@ stack_build() {
   docker compose build
   
   for IMAGE in "${IMAGES[@]}"; do
-    docker tag arad_${IMAGE}:latest arad_${IMAGE}:local
+    docker tag arad-${IMAGE}:latest arad-${IMAGE}:local
   done
 
   echo
   echo "building snowflake core testing image..."
   echo
-  docker build --build-arg DEPLOYMENT_ENVIRONMENT=development -f src/service/core/Dockerfile -t arad_core-test src/service/core
+  docker build --build-arg DEPLOYMENT_ENVIRONMENT=development -f src/service/core/Dockerfile -t arad-core-test src/service/core
 
   echo
   echo "building nginx front-end"
@@ -65,8 +65,8 @@ stack_build() {
   docker compose -f docker-compose.build.yml up -d front-end-base
   docker compose -f docker-compose.build.yml cp front-end-base:/app/build infrastructure/front-end-nginx
   docker compose -f docker-compose.build.yml down
-  docker build -t arad_front-end-nginx:latest infrastructure/front-end-nginx
-  docker tag arad_front-end-nginx:latest arad_front-end-nginx:local
+  docker build -t arad-front-end-nginx:latest infrastructure/front-end-nginx
+  docker tag arad-front-end-nginx:latest arad-front-end-nginx:local
 
   echo
   echo "copying node_modules to host (this takes a bit)..."
@@ -74,7 +74,7 @@ stack_build() {
   # this is required since we mount the volume in the same directory, meaning that the node_modules
   # directory on the container would be erased when it launched if we didn't do this
   rm -rf src/front-end/node_modules
-  CONTAINER_ID=$(docker run --rm -d arad_front-end-react sleep 600)
+  CONTAINER_ID=$(docker run --rm -d arad-front-end-react sleep 600)
   docker cp $CONTAINER_ID:/app/node_modules src/front-end
   docker kill $CONTAINER_ID
 }
@@ -85,7 +85,7 @@ poetry_relock() {
   done
 
 #  docker build --build-arg DEPLOYMENT_ENVIRONMENT=development -f src/service/core/Dockerfile -t arad_core-test src/service/core
-  docker run --rm -v "$(pwd)/src/service/core:/app" arad_core-test bash -c "rm -f poetry.lock && poetry lock -vv"
+  docker run --rm -v "$(pwd)/src/service/core:/app" arad-core-test bash -c "rm -f poetry.lock && poetry lock -vv"
 }
 
 be_exec() {
