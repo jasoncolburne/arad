@@ -11,7 +11,10 @@ import {
 } from "../../../api/types/friendly";
 import { modifyAccessToken, useGlobalState } from "../../../GlobalState";
 
+// import { MockUser } from "../../../mock-data-util/mock-interface";
+
 interface UserListRowProps {
+  // MockUser
   user: User;
   roles: Role[];
 }

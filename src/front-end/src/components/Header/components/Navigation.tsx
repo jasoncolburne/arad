@@ -1,7 +1,10 @@
+import React from "react";
 import { Link } from "react-router-dom";
 
 import { useGlobalState } from "../../../GlobalState";
 import { isAdministrator } from "../../../utility/authorization";
+
+import SearchBar from "./SearchBar";
 
 const adminLinks = (
   <>
@@ -22,7 +25,7 @@ const Navigation = () => {
   return (
     <header>
       <nav>
-        <Link to="/search">Search</Link>
+        <SearchBar />
         {state.user !== undefined && isAdministrator(state.user.roles)
           ? adminLinks
           : null}

@@ -4,6 +4,7 @@ import { Credentials, emptyCredentials } from "./Credentials";
 interface ApplicationState {
   credentials: Credentials;
   user: User;
+  query: string;
 }
 
 const emptyState: ApplicationState = {
@@ -13,6 +14,7 @@ const emptyState: ApplicationState = {
     email: "",
     roles: [],
   },
+  query: ""
 };
 
 export type { ApplicationState };
