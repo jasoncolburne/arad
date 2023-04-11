@@ -4,17 +4,17 @@ import { debounce } from "debounce";
 
 import {
   Role,
-  // User
+  User
 } from "../../../api/types/friendly";
 
-import { MockUser } from "../../../mock-data-util/mock-interface";
+// import { MockUser } from "../../../mock-data-util/mock-interface";
 
 import { UserListRow } from "./UserListRow";
 import { Paginator } from "../../../components/Paginator";
 
 interface UserListProps {
-  // ** User
-  users: MockUser[];
+  // MockUser[]
+  users: User[];
   roles: Role[];
   filterText: string;
   setFilterText: Function;
@@ -26,19 +26,19 @@ interface UserListProps {
 const UserList = (props: UserListProps) => {
   const { users, roles, filterText, setFilterText, page, setPage, totalPages } =
     props;
-  const [filteredUsers, setFilteredUsers] = React.useState<MockUser[]>([]);
+  const [filteredUsers, setFilteredUsers] = React.useState<User[]>([]);
 
   useEffect(() => {
     const filtered = users.filter((user) => user.email.includes(filterText));
     setFilteredUsers(filtered);
   }, [users, filterText]);
 
-  const delayFilterChange = debounce(
+  const handleDelayFilter = debounce(
     (event: React.ChangeEvent<HTMLInputElement>) => {
       setFilterText(event.target.value);
       setPage(1);
     },
-    575
+    666
   );
 
 
@@ -55,7 +55,7 @@ const UserList = (props: UserListProps) => {
                 focusBorderColor="black"
                 defaultValue={filterText}
                 placeholder="email filter"
-                onChange={delayFilterChange}
+                onChange={handleDelayFilter}
               />
             </Td>
             {roles.map((role) => {

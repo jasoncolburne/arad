@@ -9,7 +9,7 @@ import {
   RolesResponse,
   TokenRequest,
   TokenResponse,
-  // User,
+  User,
   UsersRequest,
   UsersResponse,
 } from "../../api/types/friendly";
@@ -23,13 +23,14 @@ import {
 import { UserList } from "./components/UserList";
 import { Spinner } from "@chakra-ui/react";
 
-import mockUsers from "../../mock-data-util/mock-users.json";
-import { MockUser } from "../../mock-data-util/mock-interface";
+// import mockUsers from "../../mock-data-util/mock-users.json";
+// (use as default state)
+// import { MockUser } from "../../mock-data-util/mock-interface"; 
 
 const Users = () => {
   const { state, setState } = useGlobalState();
-  //                                    ** User
-  const [users, setUsers] = React.useState<MockUser[]>(mockUsers);
+  //                                ** MockUser[] (mockUsers)
+  const [users, setUsers] = React.useState<User[]>([]);
   const [roles, setRoles] = React.useState<Role[]>([]);
   const [errorMessage, setErrorMessage] = React.useState("");
   const [page, setPage] = React.useState(1);

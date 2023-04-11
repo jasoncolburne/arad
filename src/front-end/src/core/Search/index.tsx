@@ -5,7 +5,7 @@ import { useGlobalState } from "../../GlobalState";
 
 import mockArticles from "../../mock-data-util/mock-articles.json";
 import { Article } from "../../mock-data-util/mock-interface";
-import { searchArray } from "../../helper/searchDatabase";
+import { searchArray } from "../../mock-helpers/searchDatabase";
 
 import ArticlesList from "./ArticlesList";
 
