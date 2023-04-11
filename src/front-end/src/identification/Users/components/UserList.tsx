@@ -2,10 +2,7 @@ import React, { useEffect } from "react";
 import { Input, Table, Tbody, Td, Tr } from "@chakra-ui/react";
 import { debounce } from "debounce";
 
-import {
-  Role,
-  User
-} from "../../../api/types/friendly";
+import { Role, User } from "../../../api/types/friendly";
 
 // import { MockUser } from "../../../mock-data-util/mock-interface";
 
@@ -40,7 +37,6 @@ const UserList = (props: UserListProps) => {
     },
     666
   );
-
 
   return (
     <Paginator page={page} totalPages={totalPages} setPage={setPage}>

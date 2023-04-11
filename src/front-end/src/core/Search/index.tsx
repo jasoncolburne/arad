@@ -14,15 +14,15 @@ import "./index.css";
 const Search = () => {
   const [searchResults, setSearchResults] = useState<Article[]>([]);
   const { state } = useGlobalState();
-  
+
   useEffect(() => {
-    const results = searchArray(mockArticles.results, state.query)
-    setSearchResults(results)
-  }, [state.query])
+    const results = searchArray(mockArticles.results, state.query);
+    setSearchResults(results);
+  }, [state.query]);
 
   return (
     <div className="Search">
-      <ArticlesList results={searchResults}/>
+      <ArticlesList results={searchResults} />
     </div>
   );
 };
