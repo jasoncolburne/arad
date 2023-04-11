@@ -166,7 +166,7 @@ const Users = () => {
   }, [accessTokenValid, setState]);
 
   //  ! <-- remove ****                     ! <-- remove --> !
-  if (!authorized && errorMessage === "" && !usersFetched && !rolesFetched) {
+  if (authorized && errorMessage === "" && usersFetched && rolesFetched) {
     return (
       <Center>
         <Box w="container.xlg" h="100%">

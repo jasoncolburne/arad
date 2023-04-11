@@ -30,7 +30,7 @@ const UserList = (props: UserListProps) => {
     setFilteredUsers(filtered);
   }, [users, filterText]);
 
-  const handleDelayFilter = debounce(
+  const handleDelayFilterChange = debounce(
     (event: React.ChangeEvent<HTMLInputElement>) => {
       setFilterText(event.target.value);
       setPage(1);
@@ -51,7 +51,7 @@ const UserList = (props: UserListProps) => {
                 focusBorderColor="black"
                 defaultValue={filterText}
                 placeholder="email filter"
-                onChange={handleDelayFilter}
+                onChange={handleDelayFilterChange}
               />
             </Td>
             {roles.map((role) => {
