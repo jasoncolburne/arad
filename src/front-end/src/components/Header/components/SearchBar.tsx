@@ -11,9 +11,10 @@ const SearchBar = () => {
 
   const onSearch = useCallback(
     (query: string) => setState((prev) => ({ ...prev, query })),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    []
+    
+    [setState]
   );
+  
 
   const onSearchDelay = debounce((val: string) => onSearch(val), 400);
 
