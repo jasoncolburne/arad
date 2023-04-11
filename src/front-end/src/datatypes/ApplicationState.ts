@@ -14,7 +14,7 @@ const emptyState: ApplicationState = {
     email: "",
     roles: [],
   },
-  query: ""
+  query: "",
 };
 
 export type { ApplicationState };

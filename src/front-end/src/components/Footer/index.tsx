@@ -49,7 +49,10 @@ const Footer = () => {
     <footer>
       <div className="footer">
         <div className="left">
-          <Link id="arad-codeLink" to={location.pathname !== "/search" ? "/code" : "/"}>
+          <Link
+            id="arad-codeLink"
+            to={location.pathname !== "/search" ? "/code" : "/"}
+          >
             Accessible Research Article Database
           </Link>
         </div>

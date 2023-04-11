@@ -25,7 +25,7 @@ import { Spinner } from "@chakra-ui/react";
 
 // import mockUsers from "../../mock-data-util/mock-users.json";
 // (use as default state)
-// import { MockUser } from "../../mock-data-util/mock-interface"; 
+// import { MockUser } from "../../mock-data-util/mock-interface";
 
 const Users = () => {
   const { state, setState } = useGlobalState();

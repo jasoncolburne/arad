@@ -10,7 +10,7 @@ const useMounted = (): MutableRefObject<boolean> => {
     () => (): void => {
       setTimeout(() => {
         isMounted.current = false;
-      }, 0)
+      }, 0);
     },
     []
   );
