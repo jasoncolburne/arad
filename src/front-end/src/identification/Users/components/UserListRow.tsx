@@ -7,12 +7,15 @@ import {
   RoleActions,
   RoleRequest,
   Roles,
-  User,
+  // User,
 } from "../../../api/types/friendly";
 import { modifyAccessToken, useGlobalState } from "../../../GlobalState";
 
+import { MockUser } from "../../../mock-data-util/mock-interface";
+
 interface UserListRowProps {
-  user: User;
+  // ** User
+  user: MockUser;
   roles: Role[];
 }
 
@@ -48,6 +51,8 @@ const UserListRow = (props: UserListRowProps) => {
   };
 
   const emailKey = `users-email-${user.id}`;
+
+  
 
   return (
     <Tr>

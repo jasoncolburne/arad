@@ -28,3 +28,4 @@ const protocol = mapHostnameToProtocol(currentHostname);
 const apiUri = `${protocol}://${hostname}:${port}/api/v1`;
 
 export { currentHostname, apiUri };
+ 

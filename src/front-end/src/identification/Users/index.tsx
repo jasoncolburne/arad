@@ -9,7 +9,7 @@ import {
   RolesResponse,
   TokenRequest,
   TokenResponse,
-  User,
+  // User,
   UsersRequest,
   UsersResponse,
 } from "../../api/types/friendly";
@@ -23,9 +23,13 @@ import {
 import { UserList } from "./components/UserList";
 import { Spinner } from "@chakra-ui/react";
 
+import mockUsers from "../../mock-data-util/mock-users.json";
+import { MockUser } from "../../mock-data-util/mock-interface";
+
 const Users = () => {
   const { state, setState } = useGlobalState();
-  const [users, setUsers] = React.useState<User[]>([]);
+  //                                    ** User
+  const [users, setUsers] = React.useState<MockUser[]>(mockUsers);
   const [roles, setRoles] = React.useState<Role[]>([]);
   const [errorMessage, setErrorMessage] = React.useState("");
   const [page, setPage] = React.useState(1);
@@ -104,7 +108,7 @@ const Users = () => {
       );
 
       if (response !== undefined) {
-        setUsers(response.users);
+        setUsers(response.users); // ****
         setTotalPages(response.pages);
         setUsersFetched(true);
 
@@ -112,7 +116,6 @@ const Users = () => {
           setErrorMessage("");
         }
       }
-
       setFetchingUsers(false);
     };
 
@@ -151,7 +154,6 @@ const Users = () => {
           setErrorMessage("");
         }
       }
-
       setFetchingRoles(false);
     };
 
@@ -162,6 +164,7 @@ const Users = () => {
     // eslint-disable-next-line
   }, [accessTokenValid, setState]);
 
+  //  ! <-- remove ****                     ! <-- remove --> !
   if (authorized && errorMessage === "" && usersFetched && rolesFetched) {
     return (
       <Center>
