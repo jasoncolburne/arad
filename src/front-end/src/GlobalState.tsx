@@ -1,4 +1,4 @@
-import {
+import React, {
   useState,
   createContext,
   useContext,
@@ -64,6 +64,7 @@ const modifyAccessToken = (
         },
       },
       user: state.user!,
+      query: state.query!,
     };
   }
 
@@ -78,18 +79,21 @@ const modifyAccessToken = (
         },
       },
       user: state.user!,
+      query: state.query!,
     };
   }
 
   return {
     credentials: state.credentials!,
     user: state.user!,
+    query: state.query!,
   };
 };
 
 // we are using LoginResponse as a type here and really we sometimes pass an identical RegisterResponse
 // this isn't great and should be fixed
 const stateFromAuthenticationResponseData = (
+  state: Partial<ApplicationState>,
   response: LoginResponse
 ): ApplicationState => {
   return {
@@ -98,6 +102,7 @@ const stateFromAuthenticationResponseData = (
       refresh_token: response.refresh_token,
     },
     user: response.user,
+    query: state.query!,
   };
 };
 

@@ -38,7 +38,7 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
       <React.Suspense fallback={<div>loading...</div>}>
         <Routes>
           <Route path="/" element={<Arad />}>
-            <Route index element={<Search />} />
+            {/* <Route index element={<Search />} /> */}
 
             {/* authentication */}
             <Route path="register" element={<Register />} />
