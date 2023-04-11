@@ -63,3 +63,6 @@
 /secrets.tgz
 
 __pycache__
+
+# misc
+.DS_Store
