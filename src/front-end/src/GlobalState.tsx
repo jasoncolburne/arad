@@ -63,6 +63,7 @@ const modifyAccessToken = (
         },
       },
       user: state.user!,
+      query: state.query!,
     };
   }
 
@@ -77,12 +78,14 @@ const modifyAccessToken = (
         },
       },
       user: state.user!,
+      query: state.query!,
     };
   }
 
   return {
     credentials: state.credentials!,
     user: state.user!,
+    query: state.query!,
   };
 };
 
@@ -97,6 +100,7 @@ const stateFromAuthenticationResponseData = (
       refresh_token: response.refresh_token,
     },
     user: response.user,
+    query: response.query,
   };
 };
 

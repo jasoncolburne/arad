@@ -20,6 +20,7 @@ interface User {
 interface ApplicationState {
   credentials: Credentials;
   user: User;
+  query: string;
 }
 
 const emptyUser: User = {
@@ -40,6 +41,7 @@ const emptyCredentials: Credentials = {
 const emptyState: ApplicationState = {
   credentials: emptyCredentials,
   user: emptyUser,
+  query: "",
 };
 
 const getState = (): ApplicationState => {
