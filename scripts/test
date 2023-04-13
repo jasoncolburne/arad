@@ -106,16 +106,12 @@ e2e() {
 }
 
 fast_e2e() {
-  local SERVICE=front-end-react
-  local COMMAND_STRING="yarn cypress:run"
-
-  set +e
-  read -r -d '' SHELL_SCRIPT << EOS
-${COMMAND_STRING}
-EOS
-  set -e
-
-  docker compose run --rm -v "$(pwd)/src/front-end/cypress/screenshots:/app/cypress/screenshots" -v "$(pwd)/src/front-end/cypress/videos:/app/cypress/videos" "${SERVICE}" bash -c "${SHELL_SCRIPT}"
+  docker compose run \
+      --rm \
+      -v "$(pwd)/src/front-end/cypress/screenshots:/app/cypress/screenshots" \
+      -v "$(pwd)/src/front-end/cypress/videos:/app/cypress/videos" \
+      front-end-react \
+      bash -c "yarn cypress:run"
 }
 
 back_end() {
