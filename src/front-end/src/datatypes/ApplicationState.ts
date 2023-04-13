@@ -4,7 +4,7 @@ import { Credentials, emptyCredentials } from "./Credentials";
 interface ApplicationState {
   credentials: Credentials;
   user: User;
-  query: string;
+  query?: string;
 }
 
 const emptyState: ApplicationState = {
