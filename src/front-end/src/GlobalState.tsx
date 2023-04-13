@@ -62,7 +62,7 @@ const modifyAccessToken = (
           administrator: token_value,
         },
       },
-      user: state.user!
+      user: state.user!,
     };
   }
 
@@ -82,7 +82,7 @@ const modifyAccessToken = (
 
   return {
     credentials: state.credentials!,
-    user: state.user!
+    user: state.user!,
   };
 };
 
