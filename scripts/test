@@ -106,8 +106,12 @@ e2e() {
 }
 
 fast_e2e() {
-  unset ACTIVATE_SCRIPT
-  simple_compose_command front-end-react "yarn cypress:run"
+  docker compose run \
+      --rm \
+      -v "$(pwd)/src/front-end/cypress/screenshots:/app/cypress/screenshots" \
+      -v "$(pwd)/src/front-end/cypress/videos:/app/cypress/videos" \
+      front-end-react \
+      bash -c "yarn cypress:run"
 }
 
 back_end() {
