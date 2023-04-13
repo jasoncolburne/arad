@@ -5,7 +5,6 @@ import { Article } from "../../mock-data-util/mock-interface";
 const ArticlesList: FC<{ results?: Article[] }> = ({
   results = [],
 }): JSX.Element => {
-  // console.log("in ArticlesList")
   return (
     <>
       {Array.isArray(results) && results.length ? (

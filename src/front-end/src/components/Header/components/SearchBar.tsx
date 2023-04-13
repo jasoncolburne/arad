@@ -10,8 +10,6 @@ const SearchBar = () => {
   const location = useLocation();
   const onSearchRef = useRef<(value: string) => void>(() => {});
 
-  console.log("in SearchBar");
-
   const onSearch = useCallback(
     (query: string) => {
       setState((prev) => ({ ...prev, query }));
