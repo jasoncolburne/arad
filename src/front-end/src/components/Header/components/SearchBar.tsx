@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
 
 import { useGlobalState } from "../../../GlobalState";
@@ -8,19 +8,24 @@ const SearchBar = () => {
   const { setState } = useGlobalState();
   const [value, setValue] = useState("");
   const location = useLocation();
+  const onSearchRef = useRef<(value: string) => void>(() => {});
+
+  console.log("in SearchBar");
 
   const onSearch = useCallback(
-    (query: string) => setState((prev) => ({ ...prev, query })),
-    // // eslint-disable-next-line react-hooks/exhaustive-deps
+    (query: string) => {
+      setState((prev) => ({ ...prev, query }));
+    },
     [setState]
   );
-  
-
-  const onSearchDelay = debounce((val: string) => onSearch(val), 400);
 
   useEffect(() => {
-    onSearchDelay(value);
-  }, [onSearchDelay, value]);
+    onSearchRef.current = debounce((val: string) => onSearch(val), 400);
+  }, [onSearch]);
+
+  useEffect(() => {
+    onSearchRef.current(value);
+  }, [value]);
 
   return (
     <>
