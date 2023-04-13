@@ -46,8 +46,6 @@ export interface components {
       /** Refresh Token */
       refresh_token: string;
       user: components["schemas"]["User"];
-      /* this seems wrong */
-      query: string;
     };
     /** LogoutRequest */
     LogoutRequest: {
