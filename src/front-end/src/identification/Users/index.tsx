@@ -109,7 +109,7 @@ const Users = () => {
       );
 
       if (response !== undefined) {
-        setUsers(response.users); // ****
+        setUsers(response.users);
         setTotalPages(response.pages);
         setUsersFetched(true);
 
