@@ -30,19 +30,19 @@ const SearchBar = () => {
       {/* {location.pathname !== "/search" ? (
         <Link to="/search">Search</Link>
       ) : ( */}
-        <section className="search">
-          <form className="search-form" onSubmit={(e) => e.preventDefault()}>
-            <input
-              className="search-input"
-              spellCheck="false"
-              placeholder="search articles"
-              name="search"
-              type="text"
-              value={value}
-              onChange={(e) => setValue(e.target.value)}
-            />
-          </form>
-        </section>
+      <section className="search">
+        <form className="search-form" onSubmit={(e) => e.preventDefault()}>
+          <input
+            className="search-input"
+            spellCheck="false"
+            placeholder="search articles"
+            name="search"
+            type="text"
+            value={value}
+            onChange={(e) => setValue(e.target.value)}
+          />
+        </form>
+      </section>
       {/* )} */}
     </>
   );
