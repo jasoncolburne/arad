@@ -165,7 +165,6 @@ const Users = () => {
     // eslint-disable-next-line
   }, [accessTokenValid, setState]);
 
-  //  ! <-- remove ****                     ! <-- remove --> !
   if (authorized && errorMessage === "" && usersFetched && rolesFetched) {
     return (
       <Center>

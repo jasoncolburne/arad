@@ -1,13 +1,13 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import { Link, useLocation } from "react-router-dom";
+// import { Link, useLocation } from "react-router-dom";
 
-import { useGlobalState } from "../../../GlobalState";
+import { useGlobalState } from "../../GlobalState";
 import { debounce } from "debounce";
 
 const SearchBar = () => {
   const { setState } = useGlobalState();
   const [value, setValue] = useState("");
-  const location = useLocation();
+  // const location = useLocation();
   const onSearchRef = useRef<(value: string) => void>(() => {});
 
   const onSearch = useCallback(
@@ -27,9 +27,9 @@ const SearchBar = () => {
 
   return (
     <>
-      {location.pathname !== "/search" ? (
+      {/* {location.pathname !== "/search" ? (
         <Link to="/search">Search</Link>
-      ) : (
+      ) : ( */}
         <section className="search">
           <form className="search-form" onSubmit={(e) => e.preventDefault()}>
             <input
@@ -43,7 +43,7 @@ const SearchBar = () => {
             />
           </form>
         </section>
-      )}
+      {/* )} */}
     </>
   );
 };

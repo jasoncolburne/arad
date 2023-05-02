@@ -19,7 +19,7 @@ const ArticlesList: FC<{ results?: Article[] }> = ({
           </li>
         ))
       ) : (
-        <h1>Search</h1>
+        ""
       )}
     </>
   );

@@ -7,6 +7,7 @@ import mockArticles from "../../mock-data-util/mock-articles.json";
 import { Article } from "../../mock-data-util/mock-interface";
 import { searchArray } from "../../mock-helpers/searchDatabase";
 
+import SearchBar from "./SearchBar";
 import ArticlesList from "./ArticlesList";
 
 import "./index.css";
@@ -22,6 +23,7 @@ const Search = () => {
 
   return (
     <div className="Search">
+      <SearchBar />
       <ArticlesList results={searchResults} />
     </div>
   );
