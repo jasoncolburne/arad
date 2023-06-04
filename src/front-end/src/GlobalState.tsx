@@ -1,4 +1,4 @@
-import {
+import React, {
   useState,
   createContext,
   useContext,
@@ -44,7 +44,6 @@ const useGlobalState = () => {
   if (!context) {
     throw new Error("useGlobalState must be used within a GlobalState element");
   }
-
   return context;
 };
 

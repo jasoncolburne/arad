@@ -20,6 +20,7 @@ interface User {
 interface ApplicationState {
   credentials: Credentials;
   user: User;
+  query?: string;
 }
 
 const emptyUser: User = {
@@ -40,12 +41,13 @@ const emptyCredentials: Credentials = {
 const emptyState: ApplicationState = {
   credentials: emptyCredentials,
   user: emptyUser,
+  query: "",
 };
 
 const getState = (): ApplicationState => {
   const _state = localStorage.getItem("state");
   const state: ApplicationState =
-    _state === null ? emptyState : JSON.parse(_state);
+    _state === null || _state === "undefined" ? emptyState : JSON.parse(_state);
   return state;
 };
 

@@ -33,7 +33,8 @@ const Header = () => {
 
   React.useEffect(() => {
     const encoded_state: string | null = localStorage.getItem("state");
-    if (encoded_state) {
+    if (encoded_state && encoded_state !== "undefined") {
+      //                 avoids "undefined" JSON
       const state: ApplicationState = JSON.parse(encoded_state);
       setState(state);
     }
