@@ -62,4 +62,7 @@
 
 /secrets.tgz
 
+/*.code-workspace
+**/.venv.*
+
 __pycache__
