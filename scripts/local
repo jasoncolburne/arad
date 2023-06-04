@@ -142,6 +142,29 @@ EOS
   docker compose run --rm -it "${SERVICE}" bash -c "${SHELL_SCRIPT}"
 }
 
+dev_setup() {
+  scripts/sync
+
+  for BACKEND in "${BACKENDS[@]}"; do
+    rm -rf src/service/${BACKEND}/.venv.${BACKEND}
+    python3 -m venv src/service/${BACKEND}/.venv.${BACKEND}
+    source src/service/${BACKEND}/.venv.${BACKEND}/bin/activate
+    pip install --upgrade pip
+    pip install poetry
+    cd src/service/${BACKEND} && poetry install --no-root --with test && cd ../../..
+    deactivate
+  done
+
+  BACKEND=core
+  rm -rf src/service/${BACKEND}/.venv.${BACKEND}
+  python3 -m venv src/service/${BACKEND}/.venv.${BACKEND}
+  source src/service/${BACKEND}/.venv.${BACKEND}/bin/activate
+  pip install --upgrade pip
+  pip install poetry
+  cd src/service/${BACKEND} && poetry install --no-root --with test && cd ../../..
+  deactivate
+}
+
 # we can probably do the rest in a single line by eval or something
 execute() {
   local COMMAND=$1
@@ -175,6 +198,8 @@ execute() {
     shell "${ARGUMENTS}"
   elif [[ "${COMMAND}" == "repl" ]]; then
     repl "${ARGUMENTS}"
+  elif [[ "${COMMAND}" == "dev-setup" ]]; then
+    dev_setup
   else
     echo "unknown command ${COMMAND}"
     exit 1
